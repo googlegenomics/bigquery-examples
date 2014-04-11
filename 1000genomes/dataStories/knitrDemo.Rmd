@@ -1,0 +1,88 @@
+Literate Programming with R and BigQuery
+========================================================
+
+R Markdown Introduction
+-------------------------
+
+This is an R Markdown document. [Markdown](http://daringfireball.net/projects/markdown/syntax) is a simple formatting syntax for authoring web pages (click the RStudio **Help** toolbar button for more details on using R Markdown).  Markdown can also be used to [author slides](http://www.rstudio.com/ide/docs/presentations/overview).
+
+When you click the RStudio **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document (but see [the caveat](#caveat) later in this document).  You can embed an R code chunk like this:
+
+```{r default data}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r plot example, fig.width=7, fig.height=6}
+plot(cars)
+```
+
+Analysis
+--------------
+
+Now let's move onto literate programming for [BigQuery](https://developers.google.com/bigquery/).  
+
+If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you'll likely need to do something like the following to get it installed:
+
+```{r one time setup, eval=FALSE}
+### Only needed the first time around
+install.packages("devtools")
+install.packages("Rook")
+install.packages("rjson")
+install.packages("reshape")
+devtools::install_github("assertthat")
+# Hadley Wickham and craigcitro@ are breaking things right now.  Hardcode
+# these packages to old versions.
+devtools::install_github("httr", 
+                         ref="018ec103825bfb98fadda2bb7a386c63d6107708")
+devtools::install_github("bigrquery", 
+                         ref="dc3176c42b9d9ba7c9efd92600087a99486dab64")
+```
+
+<span id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1kg/dataStories/knitrDemo.Rmd', encoding='UTF-8');` instead of using the RStudio **Knit HTML** button._</span>
+
+Next we'll load our needed packages into our session:
+```{r initialize}
+library(bigrquery)
+library(ggplot2)
+```
+
+And pull in the SQL for an interesting query:
+```{r sql}
+# TODO(deflaux): point to github when world-readable
+sql = readChar('./1kg/sql/minimum-allelic-frequency-by-ethnicity.sql',
+               nchars=1e6)
+cat(sql)
+```
+
+We'll execute our query, bringing the results down to our R session for further examination:
+```{r exec, cache=TRUE}
+billing_project = "google.com:biggene" # put your projectID here
+result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+```
+
+Let's examine our query result:
+```{r result}
+head(result)
+summary(result)
+str(result)
+```
+We can see that we have a row for each sample, with counts for the sample's variants four buckets based upon the allelic frequncy of each variant.
+
+
+Data Visualization
+-------------------
+Some data visualization will help us to see more clearly the pattern resident within the results:
+```{r viz, fig.width=12, fig.height=6}
+ggplot(result, aes(x=population, y=common_variant, fill=super_population)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
+```
+and now its clear to see that the ethnicities within the African super population have a much higher rate of mutation compared to the other ethnicities.
+
+
+Provenance
+-------------------
+Lastly, let's capture version information about R and loaded packages for the sake of provenance.
+```{r}
+sessionInfo()
+```
