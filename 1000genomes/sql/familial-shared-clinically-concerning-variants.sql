@@ -57,8 +57,8 @@ FROM (
           AND alternate_bases = alt
         WHERE
           var.vt='SNP'
-          AND (var.genotype.first_allele != 0
-            OR var.genotype.second_allele != 0)),
+          AND (var.genotype.first_allele > 0
+            OR var.genotype.second_allele > 0)),
         var.genotype)) AS sig
   JOIN
     [google.com:biggene:1000genomes.pedigree] AS ped

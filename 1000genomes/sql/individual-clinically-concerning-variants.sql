@@ -45,8 +45,8 @@ FROM (
   WHERE
     genotype.sample_id = 'NA19764'
     AND var.vt='SNP'
-    AND (var.genotype.first_allele != 0
-      OR var.genotype.second_allele != 0)) AS sig
+    AND (var.genotype.first_allele > 0
+      OR var.genotype.second_allele > 0)) AS sig
 JOIN
   [google.com:biggene:1000genomes.clinvar_disease_names] AS names
 ON

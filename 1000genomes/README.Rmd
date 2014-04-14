@@ -1,0 +1,36 @@
+genomics-bigquery 1,000 Genomes
+=================
+
+### Additional Resources
+* Schema
+* [Provenance](./provenance)
+* [Data Stories](./data-stories)
+ * [Understanding Alternate Alleles in 1,000 Genomes](understanding-alternate-alleles)
+ * Reproducing the output of vcfstats
+ * Examining the clinical significance of variants
+ * [Literate Programming with R and BigQuery](./literate-programming-demo)
+* Index of variant analyses
+
+### Diving right in
+
+The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, in the dataset:
+
+```{r echo=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+sql = readChar('./sql/ratio-of-dbsnp-variants-by-chromosome.sql',
+               nchars=1e6)
+cat(sql)
+billing_project = "google.com:biggene" # put your projectID here
+result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+```
+
+We see tabular results:
+```{r echo=FALSE, warning=FALSE, comment=NA}
+print(result)
+```
+
+And visually:
+```{r echo=FALSE, warning=FALSE, comment=NA, fig.align='center'}
+require(ggplot2)
+qplot(total_num_entries, variants_num_variants, label=variants_contig, data=result) + ylab("Number of dbSNP Variants") + xlab("Number of Variants") + ggtitle("dbSNP Variant Count vs. Total Variant Count by Chromosome") + geom_text(aes(label=variants_contig),hjust=-1, vjust=0)
+```

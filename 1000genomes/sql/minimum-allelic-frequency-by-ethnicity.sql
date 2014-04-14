@@ -28,8 +28,8 @@ ON
   samples.genotype.sample_id = p.sample
 WHERE
   samples.vt = 'SNP'
-  AND (samples.genotype.first_allele != 0
-    OR samples.genotype.second_allele != 0)
+  AND (samples.genotype.first_allele > 0
+    OR samples.genotype.second_allele > 0)
 GROUP BY
   sample_id,
   population,

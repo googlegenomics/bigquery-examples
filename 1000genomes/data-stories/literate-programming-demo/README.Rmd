@@ -8,13 +8,13 @@ This is an R Markdown document. [Markdown](http://daringfireball.net/projects/ma
 
 When you click the RStudio **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document (but see [the caveat](#caveat) later in this document).  You can embed an R code chunk like this:
 
-```{r default data}
+```{r default data, comment=NA}
 summary(cars)
 ```
 
 You can also embed plots, for example:
 
-```{r plot example, fig.width=7, fig.height=6}
+```{r plot example, fig.align='center', fig.width=7, fig.height=6}
 plot(cars)
 ```
 
@@ -49,21 +49,20 @@ library(ggplot2)
 ```
 
 And pull in the SQL for an interesting query:
-```{r sql}
-# TODO(deflaux): point to github when world-readable
-sql = readChar('./1kg/sql/minimum-allelic-frequency-by-ethnicity.sql',
+```{r sql, comment=NA}
+sql = readChar('../../sql/minimum-allelic-frequency-by-ethnicity.sql',
                nchars=1e6)
 cat(sql)
 ```
 
 We'll execute our query, bringing the results down to our R session for further examination:
-```{r exec, cache=TRUE}
+```{r exec}
 billing_project = "google.com:biggene" # put your projectID here
 result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
 ```
 
 Let's examine our query result:
-```{r result}
+```{r result, comment=NA}
 head(result)
 summary(result)
 str(result)
@@ -74,7 +73,7 @@ We can see that we have a row for each sample, with counts for the sample's vari
 Data Visualization
 -------------------
 Some data visualization will help us to see more clearly the pattern resident within the results:
-```{r viz, fig.width=12, fig.height=6}
+```{r viz, fig.align='center', fig.width=12, fig.height=6}
 ggplot(result, aes(x=population, y=common_variant, fill=super_population)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
 ```
 and now its clear to see that the ethnicities within the African super population have a much higher rate of mutation compared to the other ethnicities.
@@ -83,6 +82,6 @@ and now its clear to see that the ethnicities within the African super populatio
 Provenance
 -------------------
 Lastly, let's capture version information about R and loaded packages for the sake of provenance.
-```{r}
+```{r provenance, comment=NA}
 sessionInfo()
 ```
