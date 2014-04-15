@@ -25,10 +25,10 @@ billing_project = "google.com:biggene" # put your projectID here
 result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
 ```
 
-We see tabular results:
+We see the tabular results:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
 require(xtable)
-print(xtable(result), type = "html", include.rownames = F)
+print(xtable(result,digits=6), type = "html", include.rownames = F)
 ```
 
 And visually:
