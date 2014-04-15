@@ -4,13 +4,11 @@ genomics-bigquery 1,000 Genomes
 ### Additional Resources
 * Schema
 * [Provenance](./provenance)
-* [Data Stories](./data-stories)
+* [Data Stories](./data-stories) such as
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
- * [Reproducing the output of vcfstats](./data-stories/reproducing-vcfstats)
- * [Examining the clinical significance of variants](./data-stories/examining-clinical-significance)
  * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
-* Index of variant analyses
+* [Index of variant analyses](./analyses-catalog.md)
 
 ### Diving right in
 
@@ -50,7 +48,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 14 19:30:40 2014 -->
+<!-- Tue Apr 15 09:37:15 2014 -->
 <TABLE border=1>
 <TR> <TH> variants_contig </TH> <TH> variants_num_variants </TH> <TH> total_num_entries </TH> <TH> freq </TH>  </TR>
   <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 0.998275 </TD> </TR>

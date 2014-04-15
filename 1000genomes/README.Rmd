@@ -4,13 +4,11 @@ genomics-bigquery 1,000 Genomes
 ### Additional Resources
 * Schema
 * [Provenance](./provenance)
-* [Data Stories](./data-stories)
+* [Data Stories](./data-stories) such as
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
- * [Reproducing the output of vcfstats](./data-stories/reproducing-vcfstats)
- * [Examining the clinical significance of variants](./data-stories/examining-clinical-significance)
  * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
-* Index of variant analyses
+* [Index of variant analyses](./analyses-catalog.md)
 
 ### Diving right in
 
