@@ -99,4 +99,4 @@ Source:
 * MD5: (disease_names.txt) = 01d77ae29b2de60b46b37b46041bc9a8
 
 Status: 
-* complete, see script [clinvar-disease-name-prep.R](./clinvar-disease-name-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery
+* complete, see script [clinvar-disease-names-prep.R](./clinvar-disease-name-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery

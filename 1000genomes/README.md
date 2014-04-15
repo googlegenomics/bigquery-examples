@@ -5,10 +5,11 @@ genomics-bigquery 1,000 Genomes
 * Schema
 * [Provenance](./provenance)
 * [Data Stories](./data-stories)
- * [Understanding Alternate Alleles in 1,000 Genomes](understanding-alternate-alleles)
- * Reproducing the output of vcfstats
- * Examining the clinical significance of variants
- * [Literate Programming with R and BigQuery](./literate-programming-demo)
+ * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
+ * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
+ * [Reproducing the output of vcfstats](./data-stories/reproducing-vcfstats)
+ * [Examining the clinical significance of variants](./data-stories/examining-clinical-significance)
+ * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
 * Index of variant analyses
 
 ### Diving right in
@@ -48,33 +49,34 @@ ORDER BY
 
 
 We see tabular results:
-
-```
-   variants_contig variants_num_variants total_num_entries   freq
-1                2               3301885           3307592 0.9983
-2                1               3001739           3007196 0.9982
-3                3               2758667           2763454 0.9983
-4                4               2731973           2736765 0.9982
-5                5               2525874           2530217 0.9983
-6                6               2420027           2424425 0.9982
-7                7               2211317           2215231 0.9982
-8                8               2180311           2183839 0.9984
-9               11               1891627           1894908 0.9983
-10              10               1879337           1882663 0.9982
-11              12               1824513           1828006 0.9981
-12               9               1649563           1652388 0.9983
-13               X               1482078           1487477 0.9964
-14              13               1370342           1373000 0.9981
-15              14               1255966           1258254 0.9982
-16              16               1208679           1210619 0.9984
-17              15               1128457           1130554 0.9981
-18              18               1086823           1088820 0.9982
-19              17               1044658           1046733 0.9980
-20              20                853680            855166 0.9983
-21              19                814343            816115 0.9978
-22              21                517920            518965 0.9980
-23              22                493717            494328 0.9988
-```
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Mon Apr 14 19:01:32 2014 -->
+<TABLE border=1>
+<TR> <TH> variants_contig </TH> <TH> variants_num_variants </TH> <TH> total_num_entries </TH> <TH> freq </TH>  </TR>
+  <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 1 </TD> <TD align="right"> 3001739 </TD> <TD align="right"> 3007196 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 2758667 </TD> <TD align="right"> 2763454 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 4 </TD> <TD align="right"> 2731973 </TD> <TD align="right"> 2736765 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 5 </TD> <TD align="right"> 2525874 </TD> <TD align="right"> 2530217 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 6 </TD> <TD align="right"> 2420027 </TD> <TD align="right"> 2424425 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 7 </TD> <TD align="right"> 2211317 </TD> <TD align="right"> 2215231 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 8 </TD> <TD align="right"> 2180311 </TD> <TD align="right"> 2183839 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 11 </TD> <TD align="right"> 1891627 </TD> <TD align="right"> 1894908 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 10 </TD> <TD align="right"> 1879337 </TD> <TD align="right"> 1882663 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 12 </TD> <TD align="right"> 1824513 </TD> <TD align="right"> 1828006 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 9 </TD> <TD align="right"> 1649563 </TD> <TD align="right"> 1652388 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> X </TD> <TD align="right"> 1482078 </TD> <TD align="right"> 1487477 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 13 </TD> <TD align="right"> 1370342 </TD> <TD align="right"> 1373000 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 14 </TD> <TD align="right"> 1255966 </TD> <TD align="right"> 1258254 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 16 </TD> <TD align="right"> 1208679 </TD> <TD align="right"> 1210619 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 15 </TD> <TD align="right"> 1128457 </TD> <TD align="right"> 1130554 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 18 </TD> <TD align="right"> 1086823 </TD> <TD align="right"> 1088820 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 1044658 </TD> <TD align="right"> 1046733 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 20 </TD> <TD align="right"> 853680 </TD> <TD align="right"> 855166 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 19 </TD> <TD align="right"> 814343 </TD> <TD align="right"> 816115 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 21 </TD> <TD align="right"> 517920 </TD> <TD align="right"> 518965 </TD> <TD align="right"> 1.00 </TD> </TR>
+  <TR> <TD> 22 </TD> <TD align="right"> 493717 </TD> <TD align="right"> 494328 </TD> <TD align="right"> 1.00 </TD> </TR>
+   </TABLE>
 
 
 And visually:

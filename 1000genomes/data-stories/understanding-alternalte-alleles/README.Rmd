@@ -3,20 +3,25 @@ Understanding Alternate Alleles in 1,000 Genomes VCF Data
 
 We know from the [FAQ](http://www.1000genomes.org/faq/are-all-genotype-calls-current-release-vcf-files-bi-allelic) that the 1,000 Genomes VCF data is [bi-allelic](http://www.1000genomes.org/faq/are-all-genotype-calls-current-release-vcf-files-bi-allelic) → meaning that each row in the source VCF has only one value in the ALT field.  So for each sample in a row, the genotype was called as either the reference or the single ALT value.  At any particular position in the genome we can have much more variation than a single alternate, so we need to understand how that is encoded in this data set.
 
-_Let’s explore the question “Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_
+Let’s explore the question _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_
 
-For query [chrom-pos-ref-dups.sql](./chrom-pos-ref-dups.sql)
-
-```{r initialize, echo=FALSE, warning=FALSE, cache=TRUE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
 sql = readChar('./chrom-pos-ref-dups.sql',
                nchars=1e6)
 cat(sql)
-billing_project = "google.com:biggene" # put your projectID here
-result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+billing_project = 'google.com:biggene' # put your projectID here
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
 ```
 
-We see tabular results:
-```{r echo=FALSE}
-print(result)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(paste('Number of rows in result:', nrow(result), '\n'))
 ```
+
+We see the first six tabular results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+require(xtable)
+print(xtable(head(result)), type = 'html', include.rownames = F)
+```
+
+TODO(deflaux): more here

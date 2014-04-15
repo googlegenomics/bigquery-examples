@@ -1,0 +1,48 @@
+Exploring the phenotypic data
+========================================================
+
+Note that the full 1,000 dataset has data for 3,500 individuals but the variants in table variants1kG are only for a subset of those individuals.  Let’s explore the phenotypic traits for the individuals whose variant data we do have.
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(xtable)
+billing_project = 'google.com:biggene' # put your projectID here
+```
+
+How many sample are we working with in this variant dataset?
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+sql = readChar('./num-samples.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(head(result)), type = 'html', include.rownames = F)
+```
+So for analyses across all samples, the sample size is 1,092.
+
+What is the gender ratio?
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+sql = readChar('./gender-ratio.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(head(result)), type = 'html', include.rownames = F)
+```
+So for analyses across genders the sample size is roughly even.
+
+What are the ratios of ethnicities?
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(paste('Number of rows in result:', nrow(result), '\n'))
+```
+
+
+TODO(deflaux): more here
