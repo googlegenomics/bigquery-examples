@@ -5,9 +5,9 @@ The projects in this repository demonstrate working with genomic data via [Googl
 
 You can execute these examples by:
  1. Copying and pasting the queries into 
-   1. the BigQuery [Browser Tool](https://developers.google.com/bigquery/bigquery-browser-tool)
-   1. the [bq Command-Line Tool](https://developers.google.com/bigquery/bq-command-line-tool)
-   1. one of the many [third-party tools](https://developers.google.com/bigquery/third-party-tools) that have integrated BigQuery
+   * the BigQuery [Browser Tool](https://developers.google.com/bigquery/bigquery-browser-tool)
+   * the [bq Command-Line Tool](https://developers.google.com/bigquery/bq-command-line-tool)
+   * one of the many [third-party tools](https://developers.google.com/bigquery/third-party-tools) that have integrated BigQuery
  1. Running the chunks of R code within the RMarkdown files in [R](http://www.r-project.org/) or [RStudio](http://www.rstudio.com/)
  1. Running the chunks of Python code within the [iPython Notebooks](http://ipython.org/notebook.html) in [iPython](http://ipython.org/)
  
