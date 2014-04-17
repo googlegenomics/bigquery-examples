@@ -33,4 +33,6 @@ Contributing A Patch
    you are contributing. Refer to the `Google Cloud Platform Samples Style
    Guide`_ for the recommended coding standards for this organization.
 #. Ensure that your code has an appropriate set of unit tests which all pass.
-#. Submit a pull request.
+#. Submit a pull request
+
+.. _Google Cloud Platform Samples Style Guide: https://github.com/GoogleCloudPlatform/Template/wiki/style.html
