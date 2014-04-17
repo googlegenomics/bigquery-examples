@@ -42,3 +42,14 @@ Getting Started
   * click on the drop down icon beside your project name in the left navigator
   * pick _‘Switch to project’_ in the menu, and _‘Display project...’_ in the submenu
 enter the project name in the _‘Add Project’_ dialog.
+
+
+Contributing changes
+--------------------
+
+See [CONTRIB](CONTRIB.rst).
+
+Licensing
+---------
+
+See [LICENSE](LICENSE).
