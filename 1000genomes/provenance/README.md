@@ -100,3 +100,29 @@ Source:
 
 Status: 
 * complete, see script [clinvar-disease-names-prep.R](./clinvar-disease-name-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery
+
+### known_genes
+
+Description:
+* http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/
+
+Source:
+* http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/knownGene.txt.gz
+* Last Modified: 30-Jun-2013
+* MD5 (knownGene.txt.gz) = 3e325d8080c66bc3c0db58d135d30d6d
+
+Status: 
+* complete, no cleaning or transformation needed, see script [known-gene-prep.R](./known-gene-prep.R) for merely generating the BigQuery schema
+
+### known_genes_aliases
+
+Description:
+* http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/
+
+Source:
+* http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/kgAlias.txt.gz
+* Last Modified: 30-Jun-2013
+* MD5 (kgAlias.txt.gz) = 009a037adabe85c4306618038111e363
+
+Status: 
+* complete, no cleaning or transformation needed 

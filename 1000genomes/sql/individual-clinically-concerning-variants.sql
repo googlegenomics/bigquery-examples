@@ -1,3 +1,4 @@
+# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample
 SELECT
   contig,
   position,

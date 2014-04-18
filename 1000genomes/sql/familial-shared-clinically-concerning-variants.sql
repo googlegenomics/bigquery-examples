@@ -1,3 +1,5 @@
+# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the 
+# number of family members sharing the SNP
 SELECT
   contig,
   position,

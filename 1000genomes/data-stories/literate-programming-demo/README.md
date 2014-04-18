@@ -4,9 +4,9 @@ Literate Programming with R and BigQuery
 R Markdown Introduction
 -------------------------
 
-This is an R Markdown document. [Markdown](http://daringfireball.net/projects/markdown/syntax) is a simple formatting syntax for authoring web pages (click the RStudio **Help** toolbar button for more details on using R Markdown).  Markdown can also be used to [author slides](http://www.rstudio.com/ide/docs/presentations/overview).
+This is an R Markdown document. [Markdown](http://daringfireball.net/projects/markdown/syntax) is a simple formatting syntax for authoring web pages (click the [RStudio](http://www.rstudio.com/) **Help** toolbar button for more details on using R Markdown).  Markdown can also be used to [author slides](http://www.rstudio.com/ide/docs/presentations/overview).
 
-When you click the RStudio **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document (but see [the caveat](#caveat) later in this document).  You can embed an R code chunk like this:
+When you click the [RStudio](http://www.rstudio.com/) **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document (but see [the caveat](#caveat) later in this document).  You can embed an R code chunk like this:
 
 
 ```r
@@ -56,7 +56,7 @@ devtools::install_github("bigrquery", ref = "dc3176c42b9d9ba7c9efd92600087a99486
 ```
 
 
-<span id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('README.Rmd', encoding='UTF-8');` instead of using the RStudio **Knit HTML** button._</span>
+<a id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1kg/dataStories/knitrDemo.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</span>
 
 Next we'll load our needed packages into our session:
 
@@ -228,17 +228,16 @@ attached base packages:
 [8] base     
 
 other attached packages:
-[1] httpuv_1.2.3    Rook_1.0-9      brew_1.0-6      ggplot2_0.9.3.1
-[5] bigrquery_0.1   knitr_1.5      
+[1] ggplot2_0.9.3.1 xtable_1.7-3    testthat_0.8.1  knitr_1.5      
+[5] httpuv_1.2.3    Rook_1.0-9      brew_1.0-6      bigrquery_0.1  
 
 loaded via a namespace (and not attached):
- [1] assertthat_0.1.0.99 codetools_0.2-8     colorspace_1.2-4   
- [4] dichromat_2.0-0     digest_0.6.4        evaluate_0.5.1     
- [7] formatR_0.10        grid_3.0.2          gtable_0.1.2       
-[10] httr_0.2.99         labeling_0.2        MASS_7.3-30        
-[13] munsell_0.4.2       plyr_1.8.1          proto_0.3-10       
-[16] RColorBrewer_1.0-5  Rcpp_0.11.1         RCurl_1.95-4.1     
-[19] reshape2_1.2.2      RJSONIO_1.0-3       scales_0.2.3       
-[22] stringr_0.6.2      
+ [1] assertthat_0.1.0.99 colorspace_1.2-4    dichromat_2.0-0    
+ [4] digest_0.6.4        evaluate_0.5.1      formatR_0.10       
+ [7] grid_3.0.2          gtable_0.1.2        httr_0.2.99        
+[10] labeling_0.2        MASS_7.3-30         munsell_0.4.2      
+[13] plyr_1.8.1          proto_0.3-10        RColorBrewer_1.0-5 
+[16] Rcpp_0.11.1         RCurl_1.95-4.1      reshape2_1.2.2     
+[19] RJSONIO_1.0-3       scales_0.2.3        stringr_0.6.2      
 ```
 

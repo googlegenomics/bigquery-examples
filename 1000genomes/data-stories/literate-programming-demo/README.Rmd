@@ -40,7 +40,7 @@ devtools::install_github("bigrquery",
                          ref="dc3176c42b9d9ba7c9efd92600087a99486dab64")
 ```
 
-<span id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1kg/dataStories/knitrDemo.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</span>
+<a id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1kg/dataStories/knitrDemo.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</span>
 
 Next we'll load our needed packages into our session:
 ```{r initialize}

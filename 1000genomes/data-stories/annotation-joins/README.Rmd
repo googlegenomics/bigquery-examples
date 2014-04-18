@@ -1,0 +1,161 @@
+<!-- R Markdown Documentation, DO NOT EDIT THE PLAIN MARKDOWN VERSION OF THIS FILE -->
+
+<!-- Copyright 2014 Google Inc. All rights reserved. -->
+
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+
+<!--     http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
+Annotation JOINs
+========================================================
+
+In this data story we explore JOINing variant data in BigQuery with several annotation databases.
+
+```{r}
+require(bigrquery)
+require(testthat)
+require(xtable)
+billing_project = 'google.com:biggene' # put your projectID here
+```
+
+Let's start by getting an idea of the number of rows in each of our tables.
+```{r cache=TRUE}
+tables = c('variants1kG', 'pedigree', 'sample_info', 'clinvar', 'clinvar_disease_names', 'known_genes', 'known_genes_aliases')
+lapply(tables, function(table) {
+  result = query_exec(project='google.com:biggene', 
+                      dataset='1000genomes', 
+                      query=paste('SELECT count(*) AS cnt FROM [google.com:biggene:1000genomes.', 
+                                  table, ']', sep=''),
+                      billing = billing_project)
+  paste(table, result, sep=': ')
+})
+```
+We can see that all the annotation databases are dwarfed in size by the data in the variants table.
+
+## JOINs that check whether a position overlaps an interval
+
+### JOINing Sample SNP Variants with ClinVar
+
+```{r cache=TRUE, comment=NA}
+sql = readChar('../../sql/individual-clinically-concerning-variants.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+dim(result)
+```
+Display the first few rows of our result
+```{r comment=NA, results='asis'}
+print(xtable(head(result)), type = 'html', include.rownames = F)
+```
+We can see that this indivudual has 53 clinically concerning variants.
+
+### JOINing Sample SNP Variants with ClinVar, Grouped by Family
+```{r cache=TRUE, comment=NA}
+sql = readChar('../../sql/familial-shared-clinically-concerning-variants.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+dim(result)
+```
+Display the first few rows of our result
+```{r comment=NA, results='asis'}
+print(xtable(head(result)), type = 'html', include.rownames = F)
+```
+We can see that some variants are shared by as many as four family members.
+
+## JOINs that check whether an interval overlaps another interval
+
+### JOINing Chromosome 17 Variants with Gene Names
+
+Next we'll JOIN our variants with gene names.  Note that the JOIN criteria is simple - just matching on the chromosome, but the WHERE clause ensures the intervals overlap.
+```{r cache=TRUE, comment=NA}
+sql = readChar('../../sql/gene-variant-counts.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+dim(result)
+```
+Display the first few rows of our result
+```{r comment=NA, results='asis'}
+print(xtable(head(result)), type = 'html', include.rownames = F)
+```
+And drilling down to just the genes with name matching BRCA1
+```{r}
+brca1_all = subset(result, grepl('BRCA1', gene_aliases))
+dim(brca1_all)
+```
+
+```{r comment=NA, results='asis'}
+print(xtable(brca1_all), type = 'html', include.rownames = F)
+```
+We see how many variants we have within these genes for the full dataset.
+
+### JOINing Chromosome 17 Variants for a Particular Sample with Gene Names
+
+Now let's look at these sample variants for a particular sample
+```{r cache=TRUE, comment=NA}
+sql = readChar('../../sql/sample-gene-variant-counts.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+dim(result)
+```
+Display the first few rows of our result
+```{r comment=NA, results='asis'}
+print(xtable(head(result)), type = 'html', include.rownames = F)
+```
+And drilling down to just the genes with name matching BRCA1
+```{r}
+brca1_one = subset(result, grepl('BRCA1', gene_aliases))
+dim(brca1_one)
+```
+
+```{r comment=NA, results='asis'}
+print(xtable(brca1_one), type = 'html', include.rownames = F)
+```
+
+Let's compare these to the dataset level gene counts
+```{r}
+brca1_all$name == brca1_one$name
+expect_that(brca1_all$name, equals(brca1_one$name))
+brca1_all$cnt - brca1_one$cnt
+mean(brca1_all$cnt - brca1_one$cnt)
+qplot(brca1_all$cnt, brca1_one$cnt, 
+      xlim=c(0, max(brca1_all$cnt)), 
+      ylim=c(0, max(brca1_all$cnt)),
+      xlab="count of variants per gene for the full dataset",
+      ylab="count of variants per gene for one sample",
+      )
+```
+And we see that our sample has variants within the same set of genes, but many fewer per gene.
+
+### JOINing All Variants with Gene Names
+Let's go bigger now and run this on the entire 1,000 Genomes dataset.
+```{r cache=TRUE, comment=NA}
+sql = readChar('../../sql/specific-gene-variant-counts.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+dim(result)
+```
+Display the rows of our result
+```{r comment=NA, results='asis'}
+print(xtable(result), type = 'html', include.rownames = F)
+```
+And we sum the count of variants in this entire dataset found within the genes corresponding to BRCA1 and APOE.
+## JOINs that find the nearest interval
+
+We can use table-valued functions to do a sub-select on our annotation tables and emit three rows per interval
+ 1. the interval prior to the region, e.g. {start=geneStart - threshold, end=geneStart-1, type=3primeEndIntergenic}
+ 1. the interval for the region, e.g. {start=geneStart - threshold, end=geneStart-1, type=intragenic}
+ 1. the interval after to the region, e.g. {start=geneEnd + 1, end=geneEnd + threshold, type=3primeEndIntergenic}
+
+Example: TBD
