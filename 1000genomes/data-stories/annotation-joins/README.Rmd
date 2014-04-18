@@ -21,8 +21,9 @@ In this data story we explore JOINing variant data in BigQuery with several anno
 
 ```{r}
 require(bigrquery)
-require(testthat)
+require(ggplot2)
 require(xtable)
+require(testthat)
 billing_project = 'google.com:biggene' # put your projectID here
 ```
 

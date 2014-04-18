@@ -1,3 +1,19 @@
+<!-- R Markdown Documentation, DO NOT EDIT THE PLAIN MARKDOWN VERSION OF THIS FILE -->
+
+<!-- Copyright 2014 Google Inc. All rights reserved. -->
+
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+
+<!--     http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
 Literate Programming with R and BigQuery
 ========================================================
 
@@ -40,7 +56,7 @@ devtools::install_github("bigrquery",
                          ref="dc3176c42b9d9ba7c9efd92600087a99486dab64")
 ```
 
-<a id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1kg/dataStories/knitrDemo.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</span>
+<a id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1kg/dataStories/knitrDemo.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</a>
 
 Next we'll load our needed packages into our session:
 ```{r initialize}

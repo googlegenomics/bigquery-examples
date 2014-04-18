@@ -22,8 +22,9 @@ In this data story we explore JOINing variant data in BigQuery with several anno
 
 ```r
 require(bigrquery)
-require(testthat)
+require(ggplot2)
 require(xtable)
+require(testthat)
 billing_project = "google.com:biggene"  # put your projectID here
 ```
 
@@ -162,7 +163,7 @@ print(xtable(head(result)), type = "html", include.rownames = F)
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 17 17:46:42 2014 -->
+<!-- Thu Apr 17 17:57:34 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ref </TH> <TH> alt </TH> <TH> clinicalsignificance </TH> <TH> diseasename </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD> 11 </TD> <TD align="right"> 88911696 </TD> <TD> C </TD> <TD> A </TD> <TD> Benign;Pathogenic </TD> <TD> Oculocutaneous albinism type 1A </TD> <TD> NA19764 </TD> </TR>
@@ -304,7 +305,7 @@ print(xtable(head(result)), type = "html", include.rownames = F)
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 17 17:46:42 2014 -->
+<!-- Thu Apr 17 17:57:35 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ref </TH> <TH> alt </TH> <TH> clinicalsignificance </TH> <TH> diseasename </TH> <TH> family_id </TH> <TH> num_family_members_with_variant </TH>  </TR>
   <TR> <TD> 11 </TD> <TD align="right"> 88911696 </TD> <TD> C </TD> <TD> A </TD> <TD> Benign;Pathogenic </TD> <TD> Oculocutaneous albinism type 1A </TD> <TD> 1362 </TD> <TD align="right">   4 </TD> </TR>
@@ -415,7 +416,7 @@ print(xtable(head(result)), type = "html", include.rownames = F)
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 17 17:46:42 2014 -->
+<!-- Thu Apr 17 17:57:35 2014 -->
 <TABLE border=1>
 <TR> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> uc031reh.1 </TD> <TD> 17 </TD> <TD align="right"> 68071614 </TD> <TD align="right"> 68131595 </TD> <TD align="right"> 68071365 </TD> <TD align="right"> 68131746 </TD> <TD align="right"> 944 </TD> <TD> IRK16_HUMAN,KCNJ16,NM_001270422,NP_733937,Q9NPI9,uc002jin.3,uc031reh.1 </TD> </TR>
@@ -444,7 +445,7 @@ print(xtable(brca1_all), type = "html", include.rownames = F)
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 17 17:46:42 2014 -->
+<!-- Thu Apr 17 17:57:35 2014 -->
 <TABLE border=1>
 <TR> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 839 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
@@ -578,7 +579,7 @@ print(xtable(head(result)), type = "html", include.rownames = F)
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 17 17:46:42 2014 -->
+<!-- Thu Apr 17 17:57:35 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> NA19764 </TD> <TD> uc002hnm.3 </TD> <TD> 17 </TD> <TD align="right"> 35443085 </TD> <TD align="right"> 35713644 </TD> <TD align="right"> 35441926 </TD> <TD align="right"> 35716059 </TD> <TD align="right"> 249 </TD> <TD> ACAC,ACACA,ACACA_HUMAN,ACC1,ACCA,B2RP68,NM_198836,NP_942135,Q13085,Q6KEV6,Q6XDA8,Q7Z2G8,Q7Z561,Q7Z563,Q7Z564,Q86WB2,Q86WB3,uc002hnm.3 </TD> </TR>
@@ -607,7 +608,7 @@ print(xtable(brca1_one), type = "html", include.rownames = F)
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 17 17:46:42 2014 -->
+<!-- Thu Apr 17 17:57:35 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> NA19764 </TD> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41275645 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 129 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
@@ -668,9 +669,7 @@ qplot(brca1_all$cnt, brca1_one$cnt, xlim = c(0, max(brca1_all$cnt)), ylim = c(0,
     ylab = "count of variants per gene for one sample", )
 ```
 
-```
-## Error: could not find function "qplot"
-```
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
 
 And we see that our sample has variants within the same set of genes, but many fewer per gene.
 
@@ -769,7 +768,7 @@ print(xtable(result), type = "html", include.rownames = F)
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 17 17:46:42 2014 -->
+<!-- Thu Apr 17 17:57:35 2014 -->
 <TABLE border=1>
 <TR> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 839 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
