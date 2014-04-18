@@ -1,25 +1,45 @@
+# Copyright 2014 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Script to auto-generate BigQuery schema and clean the data for BigQuery ingestion
 library(plyr)
 library(testthat)
 
-data_dir = './'
+data_dir <- './'
 
 # Load Data
-pheno = read.delim(file.path(data_dir, '20130606_sample_info.txt'), na.strings=c('NA', 'N/A'))
+pheno <- read.delim(file.path(data_dir, '20130606_sample_info.txt'),
+                    na.strings=c('NA', 'N/A'))
 expect_that(nrow(pheno), equals(3500))
 expect_that(ncol(pheno), equals(61))
 
-pop = read.delim(file.path(data_dir, '20131219.populations.tsv'), na.strings=c('NA', 'N/A'))
+pop <- read.delim(file.path(data_dir, '20131219.populations.tsv'),
+                  na.strings=c('NA', 'N/A'))
 expect_that(nrow(pop), equals(29))
 expect_that(ncol(pop), equals(9))
 
-super_pop = read.delim(file.path(data_dir, '20131219.superpopulations.tsv'), na.strings=c('NA', 'N/A'))
+super_pop <- read.delim(file.path(data_dir, '20131219.superpopulations.tsv'),
+                        na.strings=c('NA', 'N/A'))
 expect_that(nrow(super_pop), equals(5))
 expect_that(ncol(super_pop), equals(2))
 
 # Fix colnames so that colnames to JOIN upon match
-colnames(pop) = gsub('Population.Code', 'Population', colnames(pop))
-colnames(super_pop) = gsub('Population.Code', 'Super.Population', colnames(super_pop))
-colnames(super_pop) = gsub('Description', 'Super.Population.Description', colnames(super_pop))
+colnames(pop) <- gsub('Population.Code', 'Population', colnames(pop))
+colnames(super_pop) <- gsub('Population.Code', 'Super.Population',
+                            colnames(super_pop))
+colnames(super_pop) <- gsub('Description', 'Super.Population.Description',
+                            colnames(super_pop))
 
 # Check our JOIN criteria
 expect_that(length(union(as.character(pop$Population),
@@ -33,18 +53,20 @@ expect_that(setdiff(as.character(super_pop$Super.Population),
             equals(character(0)))
 
 # JOIN it all together
-pop_data = join(pop[,colnames(pop) %in% c('Population','Population.Description','Super.Population')], super_pop)
-data = join(pheno, pop_data, type='inner')
+pop_data <- join(pop[, colnames(pop) %in% c('Population',
+                                            'Population.Description',
+                                            'Super.Population')], super_pop)
+data <- join(pheno, pop_data, type='inner')
 expect_that(nrow(data), equals(3500))
 expect_that(ncol(data), equals(63))
 
 # Clean column names
-colnames(data) = gsub('\\.+', '_', colnames(data))
-colnames(data) = gsub('E_Indel_Ration', 'E_Indel_Ratio', colnames(data))
+colnames(data) <- gsub('\\.+', '_', colnames(data))
+colnames(data) <- gsub('E_Indel_Ration', 'E_Indel_Ratio', colnames(data))
 
 # Descriptions from
 # http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/README_20130606_sample_info
-description = list(
+description <- list(
     Sample='Sample ID',
     Family_ID='Family ID',
     Population='3 letter population cod',
@@ -61,7 +83,7 @@ description = list(
     Third_Order='sample ids for any third order cryptic relations. As mentioned above, this analysis was not as widely run as the other relatedness analyses and as such there may still be unannotated third order relations in the set',
     Other_Comments='other comments with respect to known mutations etc',
     In_Low_Coverage_Pilot='The sample is in the low coverage pilot experiment',
-    LC_Pilot_Platforms='low coverage pilot sequencing platforms	',
+    LC_Pilot_Platforms='low coverage pilot sequencing platforms ',
     LC_Pilot_Centers='low coverage pilot sequencing centers',
     In_High_Coverage_Pilot='The sample is in the high coverage pilot',
     HC_Pilot_Platforms='high coverage sequencing platforms',
@@ -99,51 +121,56 @@ description = list(
     LC_Passed_QC='These are binary flags showing if the sample passed QC, All samples which have passed QC have bam files. Only samples which have both exome and low coverage data are found under ftp/data and listed in the standard alignment index. The small number of other samples are found in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/phase3_EX_or_LC_only_alignment/',
     E_Passed_QC='These are binary flags showing if the sample passed QC, All samples which have passed QC have bam files. Only samples which have both exome and low coverage data are found under ftp/data and listed in the standard alignment index. The small number of other samples are found in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/phase3_EX_or_LC_only_alignment/',
     In_Final_Phase_Variant_Calling='Any sample which has both LC and E QC passed bams is in the final analysis set',
-    Has_Omni_Genotypes='Omni Genotypes in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20120131_omni_genotypes_and_intensities/Omni25_genotypes_2141_samples.b37.vcf.gz	',
-    Has_Axiom_Genotypes='Axiom Genotypes in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20110210_Affymetrix_Axiom/Affymetrix_Axiom_DB_2010_v4_b37.vcf.gz   	',
+    Has_Omni_Genotypes='Omni Genotypes in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20120131_omni_genotypes_and_intensities/Omni25_genotypes_2141_samples.b37.vcf.gz   ',
+    Has_Axiom_Genotypes='Axiom Genotypes in ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20110210_Affymetrix_Axiom/Affymetrix_Axiom_DB_2010_v4_b37.vcf.gz         ',
     Has_Affy_6_0_Genotypes='Affy 6.0 Genotypes in  ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20121128_corriel_p3_sample_genotypes/',
     Has_Exome_LOF_Genotypes='ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20121009_broad_exome_chip/ALL.wgs.broad_exome_lof_indel_v2.20121009.snps_and_indels.snpchip.genotypes.vcf.gz',
-    EBV_Coverage='This was calculated by looking at the alignment of the data to NC_007605 in the low coverage bam files and using that to calculate coverage	',
-    DNA_Source_from_Coriell='This was the annotated DNA Source from Coriell	',
+    EBV_Coverage='This was calculated by looking at the alignment of the data to NC_007605 in the low coverage bam files and using that to calculate coverage   ',
+    DNA_Source_from_Coriell='This was the annotated DNA Source from Coriell     ',
     Has_Sequence_from_Blood_in_Index='In the later stages of the project some populations has multiple study ids, one to indicate sequencing from blood. This data for each sample has not been treated independently in the alignment process but when there is both LCL and Blood sourced data they are both together in single bams',
     Super_Population='From ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv',
-    Super_Population_Description='From ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv'    
+    Super_Population_Description='From ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv'
     )
 
 # Generate BQ Schema
-cols = colnames(data)
-empty_ints = c(NA)
-bool_ints = c(0, 1, NA)
-to_drop = c()
-schema = c()
+cols <- colnames(data)
+empty_ints <- c(NA)
+bool_ints <- c(0, 1, NA)
+to_drop <- c()
+schema <- c()
 for (i in 1:length(cols)) {
-    type = 'STRING'
-    if('logical' == class(data[,i])) {
-        type = 'BOOLEAN'
-        if(setequal(empty_ints, union(empty_ints, data[,i]))) {
-            to_drop = append(to_drop, cols[i])
+    type <- 'STRING'
+    if ('logical' == class(data[, i])) {
+        type <- 'BOOLEAN'
+        if (setequal(empty_ints, union(empty_ints, data[, i]))) {
+            to_drop <- append(to_drop, cols[i])
             print(paste('DROPPING', cols[i]))
             next
         }
-    } else if ('numeric' == class(data[,i])) {
-        type = 'FLOAT'
-    } else if ('integer' == class(data[,i])) {
-        if(setequal(bool_ints, union(bool_ints, data[,i]))) {
-            type = 'BOOLEAN'
+    } else if ('numeric' == class(data[, i])) {
+        type <- 'FLOAT'
+    } else if ('integer' == class(data[, i])) {
+        if (setequal(bool_ints, union(bool_ints, data[, i]))) {
+            type <- 'BOOLEAN'
         } else {
-            type = 'INTEGER'
+            type <- 'INTEGER'
         }
     }
-    schema = append(schema, paste("{'name':'", cols[i],"', 'type':'", type, "', 'description':'", description[[cols[i]]], "'}", sep="", collapse=","))
+    schema <- append(schema, paste("{'name':'", cols[i], "', 'type':'",
+      type, "', 'description':'", description[[cols[i]]], "'}",
+      sep="", collapse=","))
 }
 print(paste(schema, collapse=','))
 
 # Drop empty columns
-cleaned_data = data[,!(names(data) %in% to_drop)]
+cleaned_data <- data[, !(names(data) %in% to_drop)]
 
 # Spot check our result
-expect_that(subset(cleaned_data, Sample == 'HG00114', select=Total_Exome_Sequence)[1,1], equals(10374134700))
-expect_that(subset(cleaned_data, Sample == 'HG00114', select=EBV_Coverage)[1,1], equals(10.78))
+expect_that(subset(cleaned_data, Sample == 'HG00114',
+                   select=Total_Exome_Sequence)[1, 1], equals(10374134700))
+expect_that(subset(cleaned_data, Sample == 'HG00114',
+                   select=EBV_Coverage)[1, 1], equals(10.78))
 
 # Write out file to load into BigQuery
-write.csv(cleaned_data, file.path(data_dir, 'pheno_pop.csv'), row.names=FALSE, na="")
+write.csv(cleaned_data, file.path(data_dir, 'pheno_pop.csv'),
+          row.names=FALSE, na="")
