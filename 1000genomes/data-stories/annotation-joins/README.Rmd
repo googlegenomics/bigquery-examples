@@ -41,6 +41,18 @@ lapply(tables, function(table) {
 ```
 We can see that all the annotation databases are dwarfed in size by the data in the variants table.
 
+Let's also examine the types of variants within ClinVar.
+```{r cache=TRUE}
+result = query_exec(project='google.com:biggene', dataset='1000genomes',
+                    query='SELECT type, count(1) cnt FROM [1000genomes.clinvar] group by type', billing = billing_project)
+dim(result)
+```
+Display the rows of our result
+```{r comment=NA, results='asis'}
+print(xtable(result), type = 'html', include.rownames = F)
+```
+We can see that the vast majority of variants within ClinVar are SNPs.
+
 ## JOINs that check whether a position overlaps an interval
 
 ### JOINing Sample SNP Variants with ClinVar
@@ -71,6 +83,21 @@ Display the first few rows of our result
 print(xtable(head(result)), type = 'html', include.rownames = F)
 ```
 We can see that some variants are shared by as many as four family members.
+
+### JOINing Sample INDEL Variants with ClinVar
+
+First, let's see what the INDEL data looks like in ClinVar:
+```{r cache=TRUE}
+result = query_exec(project='google.com:biggene', dataset='1000genomes',
+                    query="SELECT * FROM [1000genomes.clinvar] where type='indel'", 
+                    billing = billing_project)
+dim(result)
+```
+Display the firs few rows of our result
+```{r comment=NA, results='asis'}
+print(xtable(head(result, 20)), type = 'html', include.rownames = F)
+```
+We can see that its not obvious as to how to parse the the ClinVar INDEL details in order to know which INDELs within 1,000 Genomes might match.
 
 ## JOINs that check whether an interval overlaps another interval
 
@@ -124,7 +151,7 @@ print(xtable(brca1_one), type = 'html', include.rownames = F)
 ```
 
 Let's compare these to the dataset level gene counts
-```{r}
+```{r all vs one}
 brca1_all$name == brca1_one$name
 expect_that(brca1_all$name, equals(brca1_one$name))
 brca1_all$cnt - brca1_one$cnt
@@ -151,12 +178,4 @@ Display the rows of our result
 ```{r comment=NA, results='asis'}
 print(xtable(result), type = 'html', include.rownames = F)
 ```
-And we sum the count of variants in this entire dataset found within the genes corresponding to BRCA1 and APOE.
-## JOINs that find the nearest interval
-
-We can use table-valued functions to do a sub-select on our annotation tables and emit three rows per interval
- 1. the interval prior to the region, e.g. {start=geneStart - threshold, end=geneStart-1, type=3primeEndIntergenic}
- 1. the interval for the region, e.g. {start=geneStart - threshold, end=geneStart-1, type=intragenic}
- 1. the interval after to the region, e.g. {start=geneEnd + 1, end=geneEnd + threshold, type=3primeEndIntergenic}
-
-Example: TBD
+And we see the count of variants in this entire dataset found within the genes corresponding to BRCA1 and APOE.
