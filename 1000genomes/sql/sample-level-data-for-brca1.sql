@@ -1,3 +1,4 @@
+# Get sample level data for variants within BRCA1.
 SELECT
   contig,
   position,

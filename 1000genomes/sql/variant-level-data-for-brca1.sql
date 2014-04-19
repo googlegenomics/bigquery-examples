@@ -1,3 +1,4 @@
+# Get variant level metadata for variants within BRCA1.
 SELECT
   contig,
   position,

@@ -18,7 +18,7 @@ genomics-bigquery 1,000 Genomes
 =================
 
 ### Additional Resources
-* Schema
+* [Schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1)
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
@@ -27,16 +27,19 @@ genomics-bigquery 1,000 Genomes
 * [Index of variant analyses](./analyses-catalog.md)
 
 ### Diving right in
-
 The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, in the dataset:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
+require(ggplot2)
+require(xtable)
+require(testthat)
+billing_project = 'google.com:biggene' # put your projectID here
 sql = readChar('./sql/ratio-of-dbsnp-variants-by-chromosome.sql',
                nchars=1e6)
 cat(sql)
-billing_project = "google.com:biggene" # put your projectID here
-result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+result = query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing = billing_project)
 ```
 
 We see the tabular results:
@@ -46,7 +49,52 @@ print(xtable(result,digits=6), type = "html", include.rownames = F)
 ```
 
 And visually:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center'}
+```{r dbSNP Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center'}
 require(ggplot2)
 qplot(total_num_entries, variants_num_variants, label=variants_contig, data=result) + ylab("Number of dbSNP Variants") + xlab("Number of Variants") + ggtitle("dbSNP Variant Count vs. Total Variant Count by Chromosome") + geom_text(aes(label=variants_contig),hjust=-1, vjust=0)
+```
+
+## Variant Metadata
+The 1000 Genomes variant data is stored in the [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for more detail.
+
+Show variants within BRCA1:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+sql = readChar('./sql/variant-level-data-for-brca1.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing = billing_project)
+```
+Number of rows returned by this query:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(nrow(result))
+```
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+require(xtable)
+print(xtable(head(result)), type = "html", include.rownames = F)
+```
+One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
+
+## Sample Data
+Show variants for a paricular sample within BRCA1:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+sql = readChar('./sql/sample-level-data-for-brca1.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing = billing_project)
+```
+Number of rows returned by this query:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(nrow(result))
+```
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+require(xtable)
+print(xtable(head(result)), type = "html", include.rownames = F)
+```
+Note that this is equivalent to the [vcf-query](http://vcftools.sourceforge.net/perl_module.html#vcf-query) command
+```
+vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 17:41196312-41277500 -c HG00100
 ```

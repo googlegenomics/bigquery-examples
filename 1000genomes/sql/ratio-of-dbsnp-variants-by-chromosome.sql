@@ -1,3 +1,5 @@
+# Get the proportion of variants that have been reported in the dbSNP database 
+# version 132 , by chromosome, in the dataset.
 SELECT
   variants.contig,
   variants.num_variants,
