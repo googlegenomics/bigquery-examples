@@ -24,20 +24,20 @@ genomics-bigquery 1,000 Genomes
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
  * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
-* [Index of variant analyses](./sql)
+* [Index of variant analyses](./analyses-catalog.md)
 
 ### Diving right in
-The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, in the dataset:
+The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, across the entirety of the 1,000 Genomes low coverage variant data for 1,092 individuals:
 
 
 ```
 # Get the proportion of variants that have been reported in the dbSNP database 
 # version 132 , by chromosome, in the dataset.
 SELECT
-  variants.contig,
-  variants.num_variants,
-  total.num_entries,
-  variants.num_variants / total.num_entries freq
+  all_variants.contig AS contig,
+  dbsnp_variants.num_variants AS num_dbsnp_variants,
+  all_variants.num_variants AS num_variants,
+  dbsnp_variants.num_variants / all_variants.num_variants frequency
 FROM (
   SELECT
     contig,
@@ -47,27 +47,27 @@ FROM (
   WHERE
     id IS NOT NULL
   GROUP BY
-    contig) variants
+    contig) dbsnp_variants
 JOIN (
   SELECT
     contig,
-    COUNT(*) num_entries
+    COUNT(*) num_variants
   FROM
     [google.com:biggene:1000genomes.variants1kG]
   GROUP BY
     contig
-    ) total
-  ON variants.contig = total.contig
+    ) all_variants
+  ON dbsnp_variants.contig = all_variants.contig
 ORDER BY
-  total.num_entries DESC;
+  all_variants.num_variants DESC;
 ```
 
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 16:55:46 2014 -->
+<!-- Sat Apr 19 14:37:17 2014 -->
 <TABLE border=1>
-<TR> <TH> variants_contig </TH> <TH> variants_num_variants </TH> <TH> total_num_entries </TH> <TH> freq </TH>  </TR>
+<TR> <TH> contig </TH> <TH> num_dbsnp_variants </TH> <TH> num_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 0.998275 </TD> </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 3001739 </TD> <TD align="right"> 3007196 </TD> <TD align="right"> 0.998185 </TD> </TR>
   <TR> <TD> 3 </TD> <TD align="right"> 2758667 </TD> <TD align="right"> 2763454 </TD> <TD align="right"> 0.998268 </TD> </TR>
@@ -127,7 +127,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 16:55:51 2014 -->
+<!-- Sat Apr 19 14:37:23 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> </TR>
@@ -176,7 +176,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 16:55:56 2014 -->
+<!-- Sat Apr 19 14:37:26 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> ploidy </TH> <TH> phased </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> genotype_ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD> -0.03,-1.19,-5 </TD> </TR>
@@ -191,3 +191,59 @@ Note that this is equivalent to the [vcf-query](http://vcftools.sourceforge.net/
 ```
 vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 17:41196312-41277500 -c HG00100
 ```
+Lastly, let's get an overview of how much variation is shared across the samples.
+
+```
+# Count the number of variants shared by none, shared by one sample, two samples, etc...
+SELECT
+  num_samples_with_variant,
+  COUNT(num_samples_with_variant) AS num_variants_shared_by_this_many_samples
+FROM (
+  SELECT
+    contig,
+    position,
+    reference_bases,
+    SUM(IF(genotype.first_allele > 0
+        OR genotype.second_allele > 0,
+        1,
+        0)) WITHIN RECORD AS num_samples_with_variant
+  FROM
+    [google.com:biggene:1000genomes.variants1kG])
+GROUP BY
+  num_samples_with_variant
+ORDER BY
+  num_samples_with_variant;
+```
+
+Number of rows returned by this query:
+1093
+
+Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Sat Apr 19 14:37:31 2014 -->
+<TABLE border=1>
+<TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
+  <TR> <TD align="right">   0 </TD> <TD align="right"> 325354 </TD> </TR>
+  <TR> <TD align="right">   1 </TD> <TD align="right"> 8204165 </TD> </TR>
+  <TR> <TD align="right">   2 </TD> <TD align="right"> 4225255 </TD> </TR>
+  <TR> <TD align="right">   3 </TD> <TD align="right"> 2631467 </TD> </TR>
+  <TR> <TD align="right">   4 </TD> <TD align="right"> 1843238 </TD> </TR>
+  <TR> <TD align="right">   5 </TD> <TD align="right"> 1377873 </TD> </TR>
+   </TABLE>
+
+Looking at the last few rows in the result, we see that some variants are shared by all samples:
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Sat Apr 19 14:37:31 2014 -->
+<TABLE border=1>
+<TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
+  <TR> <TD align="right"> 1087 </TD> <TD align="right"> 16971 </TD> </TR>
+  <TR> <TD align="right"> 1088 </TD> <TD align="right"> 18875 </TD> </TR>
+  <TR> <TD align="right"> 1089 </TD> <TD align="right"> 23322 </TD> </TR>
+  <TR> <TD align="right"> 1090 </TD> <TD align="right"> 29248 </TD> </TR>
+  <TR> <TD align="right"> 1091 </TD> <TD align="right"> 40544 </TD> </TR>
+  <TR> <TD align="right"> 1092 </TD> <TD align="right"> 122030 </TD> </TR>
+   </TABLE>
+
+And visually:
+<img src="figure/shared_Variants.png" title="plot of chunk shared Variants" alt="plot of chunk shared Variants" style="display: block; margin: auto;" />
+

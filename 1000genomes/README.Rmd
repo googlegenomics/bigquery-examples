@@ -27,7 +27,7 @@ genomics-bigquery 1,000 Genomes
 * [Index of variant analyses](./analyses-catalog.md)
 
 ### Diving right in
-The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, in the dataset:
+The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, across the entirety of the 1,000 Genomes low coverage variant data for 1,092 individuals:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
@@ -44,14 +44,17 @@ result = query_exec(project="google.com:biggene", dataset="1000genomes",
 
 We see the tabular results:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-require(xtable)
 print(xtable(result,digits=6), type = "html", include.rownames = F)
 ```
 
 And visually:
-```{r dbSNP Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center'}
-require(ggplot2)
-qplot(total_num_entries, variants_num_variants, label=variants_contig, data=result) + ylab("Number of dbSNP Variants") + xlab("Number of Variants") + ggtitle("dbSNP Variant Count vs. Total Variant Count by Chromosome") + geom_text(aes(label=variants_contig),hjust=-1, vjust=0)
+```{r dbSNP Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=8}
+qplot(num_variants, num_dbsnp_variants, color=num_variants, data=result) + 
+  scale_colour_gradient("Number of Variants", labels = function(x)round(x)) +
+  ylab("Number of dbSNP Variants") + 
+  xlab("Number of Variants") + 
+  ggtitle("dbSNP Variant Count vs. Total Variant Count by Chromosome") + 
+  geom_text(aes(label=contig), hjust=-1, vjust=0)
 ```
 
 ## Variant Metadata
@@ -71,7 +74,6 @@ cat(nrow(result))
 ```
 Examing the first few rows, we see:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-require(xtable)
 print(xtable(head(result)), type = "html", include.rownames = F)
 ```
 One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
@@ -91,10 +93,41 @@ cat(nrow(result))
 ```
 Examing the first few rows, we see:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-require(xtable)
 print(xtable(head(result)), type = "html", include.rownames = F)
 ```
 Note that this is equivalent to the [vcf-query](http://vcftools.sourceforge.net/perl_module.html#vcf-query) command
 ```
 vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 17:41196312-41277500 -c HG00100
+```
+Lastly, let's get an overview of how much variation is shared across the samples.
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+sql = readChar('./sql/shared-variant-counts.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing = billing_project)
+```
+Number of rows returned by this query:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(nrow(result))
+```
+Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(head(result)), type = "html", include.rownames = F)
+```
+Looking at the last few rows in the result, we see that some variants are shared by all samples:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(tail(result)), type = "html", include.rownames = F)
+```
+And visually:
+```{r shared Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=8}
+ggplot(result, aes(x=num_samples_with_variant, 
+                  y=num_variants_shared_by_this_many_samples,
+                  color=num_variants_shared_by_this_many_samples)) +
+  geom_point() +
+  scale_y_log10() +
+  scale_colour_gradient("Number of Variants", trans = "log", labels = function(x)round(x)) +
+  ylab("Number of variants shared by this many samples") +
+  xlab("Number of samples sharing the variants") +
+  ggtitle("An Overview of How Variation is Shared Across Samples") 
 ```
