@@ -1,3 +1,5 @@
+# Count the number of variants across the entirety of 1,000 Genomes by variant type and 
+# chromosome.
 SELECT
   contig,
   vt,

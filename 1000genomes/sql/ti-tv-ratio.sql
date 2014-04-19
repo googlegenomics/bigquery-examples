@@ -1,3 +1,4 @@
+# Compute the Ti/Tv ratio of the 1,000 Genomes dataset.
 SELECT
   transitions,
   transversions,

@@ -1,3 +1,5 @@
+# The following query computes the allelic frequency for BRCA1 variants in the 
+# 1,000 Genomes dataset further classified by gender from the phenotypic data.
 SELECT
   contig,
   position,

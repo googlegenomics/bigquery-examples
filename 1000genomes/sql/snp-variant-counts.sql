@@ -1,3 +1,4 @@
+# Count SNPs by base pair transition across the dataset
 SELECT
   reference_bases,
   alternate_bases AS allele,

@@ -1,3 +1,4 @@
+# Compute the ratios of variants by type for each chromosome.
 SELECT
   contig,
   vt AS variant_type,

@@ -1,3 +1,4 @@
+# Count the number of INDELs differing from the reference allele by particular lengths
 SELECT
   length_difference,
   COUNT(length_difference) AS count_of_indels_with_length_difference,

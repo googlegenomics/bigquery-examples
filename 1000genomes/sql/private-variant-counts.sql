@@ -1,3 +1,5 @@
+# Compute the number of variants for a particular sample that are shared by 
+# no other samples.
 SELECT
   COUNT(sample_id) AS private_variants_count,
   sample_id
@@ -7,12 +9,12 @@ FROM
     contig,
     position,
     reference_bases,
-    IF(0 != genotype.first_allele
-      OR 0 != genotype.second_allele,
+    IF(genotype.first_allele > 0
+      OR genotype.second_allele > 0,
       genotype.sample_id,
       NULL) AS sample_id,
-    SUM(IF(0 != genotype.first_allele
-        OR 0 != genotype.second_allele,
+    SUM(IF(genotype.first_allele > 0
+        OR genotype.second_allele > 0,
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM

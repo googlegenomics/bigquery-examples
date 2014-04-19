@@ -1,17 +1,34 @@
+# Summarize all the SNPs in 1,000 Genomes also found in ClinVar by clinical significance.
 SELECT
-  clin.clinicalsignificance AS clinical_significance,
-  COUNT(clin.clinicalsignificance) AS cnt
+  clinicalsignificance,
+  COUNT(1) AS num_variants
 FROM
-  [google.com:biggene:1000genomes.variants1kG] var
-JOIN
-  [google.com:biggene:1000genomes.clinvar] clin
+  FLATTEN([google.com:biggene:1000genomes.variants1kG],
+    alternate_bases) AS var
+JOIN (
+  SELECT
+    chromosome,
+    start,
+    clinicalsignificance,
+    REGEXP_EXTRACT(hgvs_c,
+      r'(\w)>\w') AS ref,
+    REGEXP_EXTRACT(hgvs_c,
+      r'\w>(\w)')  AS alt,
+    REGEXP_EXTRACT(phenotypeids,
+      r'MedGen:(\w+)') AS disease_id,
+  FROM
+    [google.com:biggene:1000genomes.clinvar]
+  WHERE
+    type='single nucleotide variant'
+    ) AS clin
 ON
   var.contig = clin.chromosome
   AND var.position = clin.start
+  AND reference_bases = ref
+  AND alternate_bases = alt
 WHERE
   var.vt='SNP'
-  AND clin.type='single nucleotide variant'
 GROUP BY
-  clinical_significance
+  clinicalsignificance,
 ORDER BY
-  cnt DESC;
+  num_variants DESC;

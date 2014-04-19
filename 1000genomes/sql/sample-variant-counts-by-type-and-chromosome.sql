@@ -1,3 +1,5 @@
+# Count the number of variants for each sample across the entirety of the 1,000 
+# Genomes dataset by variant type and chromosome.
 SELECT
   COUNT(genotype.sample_id) AS variant_count,
   genotype.sample_id,
@@ -6,8 +8,8 @@ SELECT
 FROM 
   [google.com:biggene:1000genomes.variants1kG]
 WHERE
-  0 != genotype.first_allele
-  OR 0 != genotype.second_allele
+  genotype.first_allele > 0
+  OR genotype.second_allele > 0
 GROUP BY
   genotype.sample_id,
   contig,

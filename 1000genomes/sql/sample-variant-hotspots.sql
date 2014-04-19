@@ -1,3 +1,5 @@
+# Summarize the variant counts for a particular sample by 10,000 position-wide windows 
+# in order to identify variant hotspots within a chromosome for a particular sample.
 SELECT
   contig,
   window,
@@ -16,8 +18,8 @@ FROM (
   FROM
     [google.com:biggene:1000genomes.variants1kG]
   WHERE
-    (0 != genotype.first_allele
-      OR 0 != genotype.second_allele)
+    (genotype.first_allele > 0
+      OR genotype.second_allele > 0)
     AND genotype.sample_id = 'HG00096')
 GROUP BY
   contig,
