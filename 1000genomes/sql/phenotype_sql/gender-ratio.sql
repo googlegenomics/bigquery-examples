@@ -1,3 +1,4 @@
+# Compute sample count and ratio by gender
 SELECT
   gender,
   gender_count,

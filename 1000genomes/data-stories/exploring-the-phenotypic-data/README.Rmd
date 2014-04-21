@@ -14,51 +14,150 @@
 <!-- See the License for the specific language governing permissions and -->
 <!-- limitations under the License. -->
 
-Exploring the phenotypic data
+Exploring the Phenotypic Data
 ========================================================
 
-Note that the full 1,000 dataset has data for 3,500 individuals but the variants in table variants1kG are only for a subset of those individuals.  Let’s explore the phenotypic traits for the individuals whose variant data we do have.
+[Ethnicity, gender, and family relationship](http://www.1000genomes.org/faq/can-i-get-phenotype-gender-and-family-relationship-information-samples) information is available for the 1,000 Genomes dataset.  Super population groupings are described in the [FAQ](http://www.1000genomes.org/category/frequently-asked-questions/population).
+
+Note that the full 1,000 Genomes dataset has data for 3,500 individuals but the low coverage variant data in table [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) is only for a subset of those individuals.  Let’s explore ethnicity, gender, and family relationships for the individuals whose variant data we do have.
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
+require(ggplot2)
+require(reshape)
 require(xtable)
-billing_project = 'google.com:biggene' # put your projectID here
+require(scales)
+require(testthat)
+billing_project <- 'google.com:biggene' # put your projectID here
 ```
 
 How many sample are we working with in this variant dataset?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql = readChar('./num-samples.sql',
+sql <- readChar('../../sql/phenotype_sql/num-samples.sql',
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = 'html', include.rownames = F)
+print(xtable(head(result)), type='html', include.rownames=F)
 ```
-So for analyses across all samples, the sample size is 1,092.
+
+```{r samples, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+sample_groups <- data.frame(names(result), t(result))
+colnames(sample_groups) <- c("group", "count")
+ggplot(sample_groups, aes(x=group, y=count, fill=group)) + 
+  geom_bar(stat="identity") +
+  scale_fill_discrete("Sample Groups", labels=c('All', 'In BigQuery')) +
+  ylab("Count of Samples") + 
+  xlab("Sample Groups") 
+```
+So for analyses across all samples upon table [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1), the sample size is 1,092.
 
 What is the gender ratio?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql = readChar('./gender-ratio.sql',
+sql <- readChar('../../sql/phenotype_sql/gender-ratio.sql',
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
 ```
-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = 'html', include.rownames = F)
+print(xtable(head(result)), type='html', include.rownames=F)
 ```
-So for analyses across genders the sample size is roughly even.
+
+```{r gender, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+ggplot(result, aes(x="", y=gender_count, fill=gender)) +
+  geom_bar(width=1, stat="identity") +
+  scale_fill_manual(values=c("darkgreen", "yellow")) +
+  coord_polar("y", start=pi / 3) +
+  xlab("") + ylab("gender count")
+```
+So for analyses across genders, the sample size is roughly even.
 
 What are the ratios of ethnicities?
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+sql <- readChar('../../sql/phenotype_sql/ethnicity-ratio.sql',
+               nchars=1e6)
+cat(sql)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+```
 
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(result), type='html', include.rownames=F)
+```
 
+```{r ethnicity, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=4}
+ggplot(result, aes(x=population, y=population_count, fill=super_population)) + 
+  geom_bar(stat="identity") +
+  scale_fill_discrete("Super Population") +
+  ylab("Count of Samples in Population") + 
+  xlab("Populations") 
+```
+So for analyses across ethnicity, we see that our sample sizes will range from 55 to 100, with an outlier of 14.
+
+What are the ratios of ethnicities grouped by super population?
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+sql <- readChar('../../sql/phenotype_sql/ethnicity-by-superpop-ratio.sql',
+               nchars=1e6)
+cat(sql)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(result,digits=4), type='html', include.rownames=F)
+```
+
+```{r superpop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+ggplot(result, aes(x=super_population, y=super_population_count, fill=super_population)) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label=percent(super_population_ratio)), size=5, vjust=2) +
+  scale_fill_discrete("Super Population") +
+  xlab("") + ylab("super population count")
+```
+We see that ratios range from 16.6% to 34.7% of samples per super population.
+
+How are the genders distributed across ethnicities?
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+sql <- readChar('../../sql/phenotype_sql/ethnicity-by-gender-ratio.sql',
+               nchars=1e6)
+cat(sql)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
 cat(paste('Number of rows in result:', nrow(result), '\n'))
 ```
+Displaying the first few rows of our result:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(head(result)), type='html', include.rownames=F)
+```
 
+```{r ethnicity and gender, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=4}
+ggplot(result, aes(x=population, y=population_count, fill=gender)) + 
+  geom_bar(stat="identity", position="dodge") +
+  ylab("Count of Samples in Population") + 
+  xlab("Populations") 
+```
+So for analyses taking into account both ethnicity and gender, we are often near the boundary for small-sample significance tests.
 
-TODO(deflaux): more here
+Some of the individuals are related.  What is the distribution of family sizes?
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+sql <- readChar('../../sql/phenotype_sql/family-sizes.sql',
+               nchars=1e6)
+cat(sql)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(result), type='html', include.rownames=F)
+```
+
+```{r families, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+ggplot(result, aes(x=family_size, y=num_families_of_size, color=num_families_of_size)) +
+  geom_freqpoly(stat="identity") +
+  #scale_y_log10() +
+  scale_colour_gradient("Number of Famlies of Size", trans = "log", labels = function(x)round(x)) +
+  xlab("Number of family members") + 
+  ylab("Count of families of size")
+```
+We see that roughly two thirds of the families are comprised of only one family member.

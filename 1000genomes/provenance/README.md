@@ -42,7 +42,7 @@ Status:
 
 Source Phenotypic Data
 --------------------------------
-Ethnicity, gender, and family relationship information is available for the 1,000 Genomes dataset.  Super population groupings are described in the FAQ.
+[Ethnicity, gender, and family relationship](http://www.1000genomes.org/faq/can-i-get-phenotype-gender-and-family-relationship-information-samples) information is available for the 1,000 Genomes dataset.  Super population groupings are described in the [FAQ](http://www.1000genomes.org/category/frequently-asked-questions/population).
 
 Note: information for sample NA12236 is present in the pedigree table but not sample_info table.  Also sample NA12236 is not a member of the samples within table variants1kg.
 
