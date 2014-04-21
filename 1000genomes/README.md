@@ -24,7 +24,7 @@ genomics-bigquery 1,000 Genomes
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
  * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
-* [Index of variant analyses](./analyses-catalog.md)
+* [Index of variant analyses](./sql)
 
 ### Diving right in
 The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, across the entirety of the 1,000 Genomes low coverage variant data for 1,092 individuals:
@@ -65,7 +65,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Sat Apr 19 14:37:17 2014 -->
+<!-- Mon Apr 21 09:36:36 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> num_dbsnp_variants </TH> <TH> num_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 0.998275 </TD> </TR>
@@ -127,7 +127,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Sat Apr 19 14:37:23 2014 -->
+<!-- Mon Apr 21 09:36:40 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> </TR>
@@ -176,7 +176,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Sat Apr 19 14:37:26 2014 -->
+<!-- Mon Apr 21 09:36:44 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> ploidy </TH> <TH> phased </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> genotype_ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD> -0.03,-1.19,-5 </TD> </TR>
@@ -220,7 +220,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Sat Apr 19 14:37:31 2014 -->
+<!-- Mon Apr 21 09:36:49 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right">   0 </TD> <TD align="right"> 325354 </TD> </TR>
@@ -233,7 +233,7 @@ Examing the first few rows, we see that a substantial number of variants are sha
 
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Sat Apr 19 14:37:31 2014 -->
+<!-- Mon Apr 21 09:36:49 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right"> 1087 </TD> <TD align="right"> 16971 </TD> </TR>

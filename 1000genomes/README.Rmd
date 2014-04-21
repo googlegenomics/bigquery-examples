@@ -24,7 +24,7 @@ genomics-bigquery 1,000 Genomes
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
  * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
-* [Index of variant analyses](./analyses-catalog.md)
+* [Index of variant analyses](./sql)
 
 ### Diving right in
 The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, across the entirety of the 1,000 Genomes low coverage variant data for 1,092 individuals:
