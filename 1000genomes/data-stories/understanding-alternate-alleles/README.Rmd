@@ -122,6 +122,6 @@ result = query_exec(project='google.com:biggene', dataset='1000genomes', query=s
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
 print(xtable(result), type = 'html', include.rownames = F)
 ```
-The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the * [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for details about the other fields.
+The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for details about the other fields.
 
 So a question for our users who have much experience in this domain, which variant is more likely for the second allele of HG00100?
