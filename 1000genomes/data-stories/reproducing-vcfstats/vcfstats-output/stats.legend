@@ -1,0 +1,16 @@
+
+count
+    Number of positions with known genotype
+
+nalt_X
+    Number of monoallelic (X=0), biallelic (X=1), etc. sites
+    
+ref, ref_count
+    Number of sites containing reference allele
+
+shared
+    Number of sites having a non-reference allele in 0,1,2,etc samples
+
+snp_count
+    Number of positions with SNPs
+    
