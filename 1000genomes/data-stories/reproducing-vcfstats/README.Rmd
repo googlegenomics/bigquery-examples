@@ -114,7 +114,7 @@ Examing the first few rows, we see that ten variants are shared by **none** of t
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
 print(xtable(head(result)), type = "html", include.rownames = F)
 ```
-Looking at the last few rows in the result, we see that 743 variants are each shared by 2 samples and two variants are shared by nearly all samples:
+Looking at the last few rows in the result, we see that 743 variants are each shared by 2 samples and one variant is shared by nearly all samples:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
 print(xtable(tail(result)), type = "html", include.rownames = F)
 ```
@@ -160,7 +160,7 @@ cat(paste('Number of rows in result:', nrow(result), '\n'))
 ```
 Examing the first few rows:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result), n=12), type = "html", include.rownames = F)
+print(xtable(head(result, n=12)), type = "html", include.rownames = F)
 ```
 We see in the above query results the contig, position, and reference base of the 10 SNPs in this region in which all samples match the reference for both alleles (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>nalt_0).
 
@@ -182,7 +182,7 @@ We can see that some samples differ from the reference quite a bit in this regio
 
 Now let’s drill down on the INDELs in this region.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/snp-variant-counts-brca1.sql',
+sql = readChar('../../sql/reproducing-vcfstats/indel-length-counts-brca1.sql',
                nchars=1e6)
 cat(sql)
 result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)

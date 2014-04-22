@@ -88,7 +88,7 @@ WHERE
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:16 2014 -->
+<!-- Mon Apr 21 20:53:39 2014 -->
 <TABLE border=1>
 <TR> <TH> num_variants </TH>  </TR>
   <TR> <TD align="right"> 879 </TD> </TR>
@@ -114,7 +114,7 @@ GROUP BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:20 2014 -->
+<!-- Mon Apr 21 20:53:44 2014 -->
 <TABLE border=1>
 <TR> <TH> variant_type </TH> <TH> num_variants_of_type </TH>  </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 843 </TD> </TR>
@@ -156,7 +156,7 @@ Number of rows in result: 143
 
 Examing the first few rows, we see that ten variants are shared by **none** of the samples but roughly 25% of the variants are shared by only one sample:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:24 2014 -->
+<!-- Mon Apr 21 20:53:48 2014 -->
 <TABLE border=1>
 <TR> <TH> num_shared_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD align="right">   0 </TD> <TD align="right">  10 </TD> </TR>
@@ -167,9 +167,9 @@ Examing the first few rows, we see that ten variants are shared by **none** of t
   <TR> <TD align="right">   5 </TD> <TD align="right">  27 </TD> </TR>
    </TABLE>
 
-Looking at the last few rows in the result, we see that 743 variants are each shared by 2 samples and two variants are shared by nearly all samples:
+Looking at the last few rows in the result, we see that 743 variants are each shared by 2 samples and one variant is shared by nearly all samples:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:24 2014 -->
+<!-- Mon Apr 21 20:53:48 2014 -->
 <TABLE border=1>
 <TR> <TH> num_shared_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD align="right"> 742 </TD> <TD align="right">   1 </TD> </TR>
@@ -223,7 +223,7 @@ Number of rows in result: 187
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:27 2014 -->
+<!-- Mon Apr 21 20:53:52 2014 -->
 <TABLE border=1>
 <TR> <TH> private_variants_count </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD> HG00106 </TD> </TR>
@@ -260,7 +260,7 @@ ORDER BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:31 2014 -->
+<!-- Mon Apr 21 20:53:55 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_bases </TH> <TH> allele </TH> <TH> num_snps </TH>  </TR>
   <TR> <TD> A </TD> <TD> C </TD> <TD align="right">  33 </TD> </TR>
@@ -306,7 +306,7 @@ Number of rows in result: 843
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:35 2014 -->
+<!-- Mon Apr 21 20:53:58 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> num_samples_with_variant </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41223240 </TD> <TD> A </TD> <TD align="right">   0 </TD> </TR>
@@ -315,6 +315,12 @@ Examing the first few rows:
   <TR> <TD> 17 </TD> <TD align="right"> 41209165 </TD> <TD> A </TD> <TD align="right">   0 </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41218148 </TD> <TD> C </TD> <TD align="right">   0 </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41245488 </TD> <TD> T </TD> <TD align="right">   0 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41249263 </TD> <TD> G </TD> <TD align="right">   0 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41249258 </TD> <TD> C </TD> <TD align="right">   0 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41247907 </TD> <TD> G </TD> <TD align="right">   0 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41234420 </TD> <TD> C </TD> <TD align="right">   0 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41258228 </TD> <TD> C </TD> <TD align="right">   1 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41258220 </TD> <TD> C </TD> <TD align="right">   1 </TD> </TR>
    </TABLE>
 
 We see in the above query results the contig, position, and reference base of the 10 SNPs in this region in which all samples match the reference for both alleles (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>nalt_0).
@@ -352,7 +358,7 @@ Number of rows in result: 1092
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:38 2014 -->
+<!-- Mon Apr 21 20:54:02 2014 -->
 <TABLE border=1>
 <TR> <TH> variant_count </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD align="right"> 117 </TD> <TD> HG00096 </TD> </TR>
@@ -368,42 +374,47 @@ We can see that some samples differ from the reference quite a bit in this regio
 Now let’s drill down on the INDELs in this region.
 
 ```
-# Count SNPs by base pair transition across BRCA1.
+# Count the number of INDELs differing from the reference allele by particular 
+# lengths for BRCA1.
 SELECT
-  reference_bases,
-  alternate_bases AS allele,
-  COUNT(alternate_bases) AS num_snps
-FROM
-  [google.com:biggene:1000genomes.variants1kG]
-WHERE
-  contig = '17'
-  AND position BETWEEN 41196312
-  AND 41277500
-  AND vt ='SNP'
+  length_difference,
+  COUNT(length_difference) AS count_of_indels_with_length_difference,
+FROM (
+  SELECT
+    contig,
+    position,
+    reference_bases,
+    LENGTH(reference_bases) AS ref_length,
+    alternate_bases AS allele,
+    LENGTH(alternate_bases) AS allele_length,
+    (LENGTH(alternate_bases) - LENGTH(reference_bases)) AS length_difference,
+    FROM
+      [google.com:biggene:1000genomes.variants1kG]
+    WHERE
+      contig = '17'
+      AND position BETWEEN 41196312
+      AND 41277500
+      AND vt ='INDEL'
+    )
 GROUP BY
-  reference_bases,
-  allele
+  length_difference
 ORDER BY
-  reference_bases,
-  allele;
+  length_difference;
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:43 2014 -->
+<!-- Mon Apr 21 20:54:07 2014 -->
 <TABLE border=1>
-<TR> <TH> reference_bases </TH> <TH> allele </TH> <TH> num_snps </TH>  </TR>
-  <TR> <TD> A </TD> <TD> C </TD> <TD align="right">  33 </TD> </TR>
-  <TR> <TD> A </TD> <TD> G </TD> <TD align="right">  97 </TD> </TR>
-  <TR> <TD> A </TD> <TD> T </TD> <TD align="right">  25 </TD> </TR>
-  <TR> <TD> C </TD> <TD> A </TD> <TD align="right">  29 </TD> </TR>
-  <TR> <TD> C </TD> <TD> G </TD> <TD align="right">  20 </TD> </TR>
-  <TR> <TD> C </TD> <TD> T </TD> <TD align="right"> 198 </TD> </TR>
-  <TR> <TD> G </TD> <TD> A </TD> <TD align="right"> 179 </TD> </TR>
-  <TR> <TD> G </TD> <TD> C </TD> <TD align="right">  51 </TD> </TR>
-  <TR> <TD> G </TD> <TD> T </TD> <TD align="right">  23 </TD> </TR>
-  <TR> <TD> T </TD> <TD> A </TD> <TD align="right">  27 </TD> </TR>
-  <TR> <TD> T </TD> <TD> C </TD> <TD align="right"> 141 </TD> </TR>
-  <TR> <TD> T </TD> <TD> G </TD> <TD align="right">  20 </TD> </TR>
+<TR> <TH> length_difference </TH> <TH> count_of_indels_with_length_difference </TH>  </TR>
+  <TR> <TD align="right">  -5 </TD> <TD align="right">   1 </TD> </TR>
+  <TR> <TD align="right">  -3 </TD> <TD align="right">   1 </TD> </TR>
+  <TR> <TD align="right">  -2 </TD> <TD align="right">   5 </TD> </TR>
+  <TR> <TD align="right">  -1 </TD> <TD align="right">  13 </TD> </TR>
+  <TR> <TD align="right">   1 </TD> <TD align="right">   9 </TD> </TR>
+  <TR> <TD align="right">   2 </TD> <TD align="right">   3 </TD> </TR>
+  <TR> <TD align="right">   3 </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD align="right">   4 </TD> <TD align="right">   1 </TD> </TR>
+  <TR> <TD align="right">   6 </TD> <TD align="right">   1 </TD> </TR>
    </TABLE>
 
 We can see that the majority of the indels in this region add or remove a single base pair (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>indels).
@@ -434,7 +445,7 @@ Number of rows in result: 1092
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:46 2014 -->
+<!-- Mon Apr 21 20:54:10 2014 -->
 <TABLE border=1>
 <TR> <TH> variant_count </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD align="right">  16 </TD> <TD> HG00096 </TD> </TR>
@@ -493,7 +504,7 @@ FROM (
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:41:50 2014 -->
+<!-- Mon Apr 21 20:54:13 2014 -->
 <TABLE border=1>
 <TR> <TH> transitions </TH> <TH> transversions </TH> <TH> titv </TH>  </TR>
   <TR> <TD align="right"> 615 </TD> <TD align="right"> 228 </TD> <TD align="right"> 2.70 </TD> </TR>
