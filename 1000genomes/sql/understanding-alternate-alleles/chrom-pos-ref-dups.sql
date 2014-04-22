@@ -1,3 +1,4 @@
+# Find variants on chromosome 17 that reside on the same position with the same reference base
 SELECT
   contig,
   position,
