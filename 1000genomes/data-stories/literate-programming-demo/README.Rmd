@@ -37,7 +37,7 @@ plot(cars)
 Analysis
 --------------
 
-Now let's move onto literate programming for [BigQuery](https://developers.google.com/bigquery/).  
+Now let's move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).  
 
 If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you'll likely need to do something like the following to get it installed:
 
@@ -56,7 +56,7 @@ devtools::install_github("bigrquery",
                          ref="dc3176c42b9d9ba7c9efd92600087a99486dab64")
 ```
 
-<a id="caveat">_Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1kg/dataStories/knitrDemo.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</a>
+<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1000genomes/data-stories/literate-programming-demo/README.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</a>
 
 Next we'll load our needed packages into our session:
 ```{r initialize}
