@@ -90,12 +90,12 @@ cat(sql)
 ```
 
 ```
-# TODO(deflaux@): also compute allelic frequency here instead
-# of using the 'af' annotation from the INFO fields
+# Count the variation for each sample including phenotypic traits
 SELECT
   samples.genotype.sample_id AS sample_id,
-  p.population AS population,
-  p.super_population AS super_population,
+  gender,
+  population,
+  super_population,
   COUNT(samples.genotype.sample_id) AS num_variants_for_sample,
   SUM(IF(samples.af >= 0.05,
       INTEGER(1),
@@ -124,6 +124,7 @@ WHERE
     OR samples.genotype.second_allele > 0)
 GROUP BY
   sample_id,
+  gender,
   population,
   super_population
 ORDER BY
@@ -147,13 +148,13 @@ head(result)
 ```
 
 ```
-  sample_id population super_population num_variants_for_sample
-1   HG00096        GBR              EUR                 3503172
-2   HG00097        GBR              EUR                 3510561
-3   HG00099        GBR              EUR                 3513503
-4   HG00100        GBR              EUR                 3525879
-5   HG00101        GBR              EUR                 3491663
-6   HG00102        GBR              EUR                 3510479
+  sample_id gender population super_population num_variants_for_sample
+1   HG00096   male        GBR              EUR                 3503172
+2   HG00097 female        GBR              EUR                 3510561
+3   HG00099 female        GBR              EUR                 3513503
+4   HG00100 female        GBR              EUR                 3525879
+5   HG00101   male        GBR              EUR                 3491663
+6   HG00102 female        GBR              EUR                 3510479
   common_variant middle_variant rare_variant very_rare_variant
 1        3339817         128924        24135             10296
 2        3319102         152639        27066             11754
@@ -168,27 +169,27 @@ summary(result)
 ```
 
 ```
-  sample_id          population        super_population  
+  sample_id            gender           population       
  Length:1092        Length:1092        Length:1092       
  Class :character   Class :character   Class :character  
  Mode  :character   Mode  :character   Mode  :character  
                                                          
                                                          
                                                          
- num_variants_for_sample common_variant    middle_variant  
- Min.   :3378147         Min.   :3242195   Min.   : 98565  
- 1st Qu.:3497808         1st Qu.:3339579   1st Qu.:118992  
- Median :3523486         Median :3363229   Median :131980  
- Mean   :3701043         Mean   :3391840   Mean   :246709  
- 3rd Qu.:3699966         3rd Qu.:3439482   3rd Qu.:203668  
- Max.   :4396532         Max.   :3625317   Max.   :712288  
-  rare_variant    very_rare_variant
- Min.   : 13735   Min.   : 4193    
- 1st Qu.: 24493   1st Qu.: 9855    
- Median : 27564   Median :13236    
- Mean   : 47543   Mean   :14951    
- 3rd Qu.: 40252   3rd Qu.:17854    
- Max.   :153881   Max.   :46396    
+ super_population   num_variants_for_sample common_variant   
+ Length:1092        Min.   :3378147         Min.   :3242195  
+ Class :character   1st Qu.:3497808         1st Qu.:3339579  
+ Mode  :character   Median :3523486         Median :3363229  
+                    Mean   :3701043         Mean   :3391840  
+                    3rd Qu.:3699966         3rd Qu.:3439482  
+                    Max.   :4396532         Max.   :3625317  
+ middle_variant    rare_variant    very_rare_variant
+ Min.   : 98565   Min.   : 13735   Min.   : 4193    
+ 1st Qu.:118992   1st Qu.: 24493   1st Qu.: 9855    
+ Median :131980   Median : 27564   Median :13236    
+ Mean   :246709   Mean   : 47543   Mean   :14951    
+ 3rd Qu.:203668   3rd Qu.: 40252   3rd Qu.:17854    
+ Max.   :712288   Max.   :153881   Max.   :46396    
 ```
 
 ```r
@@ -196,8 +197,9 @@ str(result)
 ```
 
 ```
-'data.frame':	1092 obs. of  8 variables:
+'data.frame':	1092 obs. of  9 variables:
  $ sample_id              : chr  "HG00096" "HG00097" "HG00099" "HG00100" ...
+ $ gender                 : chr  "male" "female" "female" "female" ...
  $ population             : chr  "GBR" "GBR" "GBR" "GBR" ...
  $ super_population       : chr  "EUR" "EUR" "EUR" "EUR" ...
  $ num_variants_for_sample: int  3503172 3510561 3513503 3525879 3491663 3510479 3499302 3489999 3524334 3489822 ...
@@ -244,16 +246,17 @@ attached base packages:
 [8] base     
 
 other attached packages:
-[1] ggplot2_0.9.3.1 xtable_1.7-3    testthat_0.8.1  knitr_1.5      
-[5] httpuv_1.2.3    Rook_1.0-9      brew_1.0-6      bigrquery_0.1  
+ [1] httpuv_1.2.3    Rook_1.0-9      brew_1.0-6      testthat_0.8.1 
+ [5] scales_0.2.3    xtable_1.7-3    reshape_0.8.4   plyr_1.8.1     
+ [9] ggplot2_0.9.3.1 bigrquery_0.1   knitr_1.5      
 
 loaded via a namespace (and not attached):
- [1] assertthat_0.1.0.99 colorspace_1.2-4    dichromat_2.0-0    
- [4] digest_0.6.4        evaluate_0.5.1      formatR_0.10       
- [7] grid_3.0.2          gtable_0.1.2        httr_0.2.99        
-[10] labeling_0.2        MASS_7.3-30         munsell_0.4.2      
-[13] plyr_1.8.1          proto_0.3-10        RColorBrewer_1.0-5 
+ [1] assertthat_0.1.0.99 codetools_0.2-8     colorspace_1.2-4   
+ [4] dichromat_2.0-0     digest_0.6.4        evaluate_0.5.1     
+ [7] formatR_0.10        grid_3.0.2          gtable_0.1.2       
+[10] httr_0.2.99         labeling_0.2        MASS_7.3-30        
+[13] munsell_0.4.2       proto_0.3-10        RColorBrewer_1.0-5 
 [16] Rcpp_0.11.1         RCurl_1.95-4.1      reshape2_1.2.2     
-[19] RJSONIO_1.0-3       scales_0.2.3        stringr_0.6.2      
+[19] RJSONIO_1.0-3       stringr_0.6.2      
 ```
 

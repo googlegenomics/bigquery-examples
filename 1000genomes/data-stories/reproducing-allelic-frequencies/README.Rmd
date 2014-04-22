@@ -1,0 +1,125 @@
+<!-- R Markdown Documentation, DO NOT EDIT THE PLAIN MARKDOWN VERSION OF THIS FILE -->
+
+<!-- Copyright 2014 Google Inc. All rights reserved. -->
+
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+
+<!--     http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
+Reproducing 1,000 Genomes allele frequencies for variants in BRCA1
+========================================================
+
+The following query computes the frequency of both the reference and alternate SNPs within BRCA1 for all samples within 1,000 Genomes.
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(ggplot2)
+require(reshape)
+require(xtable)
+require(scales)
+require(testthat)
+billing_project <- 'google.com:biggene' # put your projectID here
+```
+
+```{r af, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+sql <- readChar('../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency.sql',
+               nchars=1e6)
+cat(sql)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(paste('Number of rows in result:', nrow(result), '\n'))
+```
+Displaying the first few rows of our result:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(head(result), digits=6), type='html', include.rownames=F)
+```
+
+And do our results match the precomputed values resident in the AF INFO field?
+```{r}
+print(expect_equal(object=result$alt_freq,
+                   expected=result$alt_freq_from_1KG,
+                   tolerance=0.005,
+                   scale=1))
+```
+We can see from the results that when the computed frequency values in column alt_freq are rounded, they exactly match the alternate allele frequencies as reported in the AF INFO field from the 1,000 Genomes VCF data.
+
+Next, we compute those same alternate allele frequencies further broken down by super population groups.
+```{r afeth, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+sql <- readChar('../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency-by-ethnicity.sql',
+               nchars=1e6)
+cat(sql)
+result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(paste('Number of rows in result:', nrow(result), '\n'))
+```
+Displaying the first few rows of our result:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(head(result), digits=6), type='html', include.rownames=F)
+```
+
+And do our results match the precomputed values resident in the superpopulation-specific AF INFO fields?
+```{r}
+# coerce NAs to be zero
+result$alt_freq_from_1KG[is.na(result$alt_freq_from_1KG)] <- 0.0
+print(expect_equal(object=result$alt_freq,
+                   expected=result$alt_freq_from_1KG,
+                   tolerance=0.005,
+                   scale=1))
+```
+We can see from the results that when the computed frequency values in column alt_freq are rounded, they exactly match the alternate allele frequencies as reported in the AFR_AF, ASN_AF, AMR_AF, EUR_AF INFO fields from the 1,000 Genomes VCF data.
+
+Moving onto other results regarding rates of variation across populations:
+```{r sql maf, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+sql = readChar('../../sql/minimum-allelic-frequency-by-ethnicity.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+cat(paste('Number of rows in result:', nrow(result), '\n'))
+```
+Displaying the first few rows of our result:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+print(xtable(head(result), digits=6), type='html', include.rownames=F)
+```
+
+Some data visualization will help us to see more clearly the pattern resident within the results:
+```{r maf, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+ggplot(result, aes(x=population, y=common_variant, fill=super_population)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
+```
+and now its clear to see that the ethnicities within the African super population have a much higher rate of mutation compared to the other ethnicities for the common variants.
+
+This difference is even more notable when looking at all variants:
+```{r all variants, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+ggplot(result, aes(x=population, y=num_variants_for_sample, fill=super_population)) + geom_boxplot() + ylab("Count variants per sample") + ggtitle("All Variants")
+```
+
+Now lets examine the rate of variation across genders:
+```{r common variants by gender, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+ggplot(result, aes(x=super_population, y=common_variant, fill=gender)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
+```
+We see a noticieable difference, BUT this query included variants within chromosome X.  Updating the query to ignore sex chromosomes:
+```{r sql maf no X, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+sql = readChar('../../sql/minimum-allelic-frequency-by-ethnicity-no-sex-chromosomes.sql',
+               nchars=1e6)
+cat(sql)
+result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+```
+We see that the genders are quite close in their rate of variation.
+```{r viz maf no X, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+ggplot(result, aes(x=super_population, y=common_variant, fill=gender)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
+```
+

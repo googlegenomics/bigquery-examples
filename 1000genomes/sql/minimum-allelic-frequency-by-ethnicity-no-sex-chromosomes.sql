@@ -1,4 +1,5 @@
-# Count the variation for each sample including phenotypic traits
+# Count the variation for each sample including phenotypic traits but excluding
+# sex chromosomes
 SELECT
   samples.genotype.sample_id AS sample_id,
   gender,
@@ -30,6 +31,8 @@ WHERE
   samples.vt = 'SNP'
   AND (samples.genotype.first_allele > 0
     OR samples.genotype.second_allele > 0)
+  AND contig != 'X'
+  AND contig != 'Y'
 GROUP BY
   sample_id,
   gender,
