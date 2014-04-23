@@ -127,7 +127,8 @@ ggplot(result, aes(x=num_samples_with_variant,
   geom_point() +
   scale_y_log10() +
   scale_colour_gradient("Number of Variants", trans = "log", labels = function(x)round(x)) +
-  ylab("Number of variants shared by this many samples") +
-  xlab("Number of samples sharing the variants") +
-  ggtitle("An Overview of How Variation is Shared Across Samples") 
+  ylab("Number of variants") +
+  xlab("Number of samples") +
+  ggtitle("An Overview of How Variation is Shared Across Samples\nNumber of variants having a non-reference allele in 0, 1, 2, etc... samples") 
 ```
+At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
