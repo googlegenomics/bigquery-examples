@@ -116,7 +116,7 @@ Looking at the last few rows in the result, we see that some variants are shared
 print(xtable(tail(result)), type="html", include.rownames=F)
 ```
 And visually:
-```{r shared variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+```{r shared Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result, aes(x=num_samples_with_variant, 
                   y=num_variants_shared_by_this_many_samples)) +
   geom_point() +

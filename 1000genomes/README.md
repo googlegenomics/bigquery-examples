@@ -247,7 +247,7 @@ Looking at the last few rows in the result, we see that some variants are shared
    </TABLE>
 
 And visually:
-<img src="figure/shared_variants.png" title="plot of chunk shared variants" alt="plot of chunk shared variants" style="display: block; margin: auto;" />
+<img src="figure/shared_Variants.png" title="plot of chunk shared variants" alt="plot of chunk shared variants" style="display: block; margin: auto;" />
 
 At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
 
