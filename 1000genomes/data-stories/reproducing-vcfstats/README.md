@@ -88,7 +88,7 @@ WHERE
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:53:39 2014 -->
+<!-- Thu Apr 24 20:41:08 2014 -->
 <TABLE border=1>
 <TR> <TH> num_variants </TH>  </TR>
   <TR> <TD align="right"> 879 </TD> </TR>
@@ -114,7 +114,7 @@ GROUP BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:53:44 2014 -->
+<!-- Thu Apr 24 20:41:11 2014 -->
 <TABLE border=1>
 <TR> <TH> variant_type </TH> <TH> num_variants_of_type </TH>  </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 843 </TD> </TR>
@@ -130,12 +130,9 @@ Next lets see how the variation is shared across the samples.
 # two samples, etc... in BRCA1
 SELECT
   num_samples_with_variant AS num_shared_variants,
-  COUNT(num_samples_with_variant) AS frequency
+  COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM (
   SELECT
-    contig,
-    position,
-    reference_bases,
     SUM(IF(0 < genotype.first_allele
         OR 0 < genotype.second_allele,
         1,
@@ -156,9 +153,9 @@ Number of rows in result: 143
 
 Examing the first few rows, we see that ten variants are shared by **none** of the samples but roughly 25% of the variants are shared by only one sample:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:53:48 2014 -->
+<!-- Thu Apr 24 20:41:14 2014 -->
 <TABLE border=1>
-<TR> <TH> num_shared_variants </TH> <TH> frequency </TH>  </TR>
+<TR> <TH> num_shared_variants </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right">   0 </TD> <TD align="right">  10 </TD> </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 243 </TD> </TR>
   <TR> <TD align="right">   2 </TD> <TD align="right"> 103 </TD> </TR>
@@ -169,9 +166,9 @@ Examing the first few rows, we see that ten variants are shared by **none** of t
 
 Looking at the last few rows in the result, we see that 743 variants are each shared by 2 samples and one variant is shared by nearly all samples:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:53:48 2014 -->
+<!-- Thu Apr 24 20:41:14 2014 -->
 <TABLE border=1>
-<TR> <TH> num_shared_variants </TH> <TH> frequency </TH>  </TR>
+<TR> <TH> num_shared_variants </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right"> 742 </TD> <TD align="right">   1 </TD> </TR>
   <TR> <TD align="right"> 743 </TD> <TD align="right">   2 </TD> </TR>
   <TR> <TD align="right"> 745 </TD> <TD align="right">   1 </TD> </TR>
@@ -223,7 +220,7 @@ Number of rows in result: 187
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:53:52 2014 -->
+<!-- Thu Apr 24 20:41:17 2014 -->
 <TABLE border=1>
 <TR> <TH> private_variants_count </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD> HG00106 </TD> </TR>
@@ -260,7 +257,7 @@ ORDER BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:53:55 2014 -->
+<!-- Thu Apr 24 20:41:20 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_bases </TH> <TH> allele </TH> <TH> num_snps </TH>  </TR>
   <TR> <TD> A </TD> <TD> C </TD> <TD align="right">  33 </TD> </TR>
@@ -306,7 +303,7 @@ Number of rows in result: 843
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:53:58 2014 -->
+<!-- Thu Apr 24 20:41:23 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> num_samples_with_variant </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41223240 </TD> <TD> A </TD> <TD align="right">   0 </TD> </TR>
@@ -358,7 +355,7 @@ Number of rows in result: 1092
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:54:02 2014 -->
+<!-- Thu Apr 24 20:41:27 2014 -->
 <TABLE border=1>
 <TR> <TH> variant_count </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD align="right"> 117 </TD> <TD> HG00096 </TD> </TR>
@@ -403,7 +400,7 @@ ORDER BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:54:07 2014 -->
+<!-- Thu Apr 24 20:41:31 2014 -->
 <TABLE border=1>
 <TR> <TH> length_difference </TH> <TH> count_of_indels_with_length_difference </TH>  </TR>
   <TR> <TD align="right">  -5 </TD> <TD align="right">   1 </TD> </TR>
@@ -445,7 +442,7 @@ Number of rows in result: 1092
 
 Examing the first few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:54:10 2014 -->
+<!-- Thu Apr 24 20:41:35 2014 -->
 <TABLE border=1>
 <TR> <TH> variant_count </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD align="right">  16 </TD> <TD> HG00096 </TD> </TR>
@@ -504,7 +501,7 @@ FROM (
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 20:54:13 2014 -->
+<!-- Thu Apr 24 20:41:39 2014 -->
 <TABLE border=1>
 <TR> <TH> transitions </TH> <TH> transversions </TH> <TH> titv </TH>  </TR>
   <TR> <TD align="right"> 615 </TD> <TD align="right"> 228 </TD> <TD align="right"> 2.70 </TD> </TR>

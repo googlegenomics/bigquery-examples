@@ -2,12 +2,9 @@
 # two samples, etc... in BRCA1
 SELECT
   num_samples_with_variant AS num_shared_variants,
-  COUNT(num_samples_with_variant) AS frequency
+  COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM (
   SELECT
-    contig,
-    position,
-    reference_bases,
     SUM(IF(0 < genotype.first_allele
         OR 0 < genotype.second_allele,
         1,
