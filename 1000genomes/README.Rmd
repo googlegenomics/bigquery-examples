@@ -29,106 +29,208 @@ genomics-bigquery 1,000 Genomes
 ### Diving right in
 The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, across the entirety of the 1,000 Genomes low coverage variant data for 1,092 individuals:
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
 require(ggplot2)
+require(dplyr)
 require(xtable)
 require(testthat)
-billing_project = 'google.com:biggene' # put your projectID here
-sql = readChar('./sql/ratio-of-dbsnp-variants-by-chromosome.sql',
-               nchars=1e6)
-cat(sql)
-result = query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing = billing_project)
+billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("./sql/ratio-of-dbsnp-variants-by-chromosome.sql")
 ```
 
 We see the tabular results:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result,digits=6), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result, digits=6), type="html", include.rownames=F)
 ```
 
 And visually:
-```{r dbSNP Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=8}
+```{r dbSNP Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 qplot(num_variants, num_dbsnp_variants, color=num_variants, data=result) + 
-  scale_colour_gradient("Number of Variants", labels = function(x)round(x)) +
+  scale_colour_gradient("Number of Variants", labels=function(x)round(x)) +
   ylab("Number of dbSNP Variants") + 
   xlab("Number of Variants") + 
   ggtitle("dbSNP Variant Count vs. Total Variant Count by Chromosome") + 
   geom_text(aes(label=contig), hjust=-1, vjust=0)
 ```
 
-## Variant Metadata
+### Variant Metadata
 The 1000 Genomes variant data is stored in the [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for more detail.
 
 Show variants within BRCA1:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('./sql/variant-level-data-for-brca1.sql',
-               nchars=1e6)
-cat(sql)
-result = query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing = billing_project)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("./sql/variant-level-data-for-brca1.sql")
 ```
 Number of rows returned by this query:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 cat(nrow(result))
 ```
 Examing the first few rows, we see:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
 
-## Sample Data
+### Sample Data
 Show variants for a paricular sample within BRCA1:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('./sql/sample-level-data-for-brca1.sql',
-               nchars=1e6)
-cat(sql)
-result = query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing = billing_project)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("./sql/sample-level-data-for-brca1.sql")
 ```
 Number of rows returned by this query:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 cat(nrow(result))
 ```
 Examing the first few rows, we see:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 Note that this is equivalent to the [vcf-query](http://vcftools.sourceforge.net/perl_module.html#vcf-query) command
 ```
 vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 17:41196312-41277500 -c HG00100
 ```
-Lastly, let's get an overview of how much variation is shared across the samples.
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('./sql/shared-variant-counts.sql',
-               nchars=1e6)
-cat(sql)
-result = query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing = billing_project)
+
+### Exploring shared variation
+Lastly, let"s get an overview of how much variation is shared across the samples.
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("./sql/shared-variant-counts.sql")
 ```
 Number of rows returned by this query:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 cat(nrow(result))
 ```
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(tail(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(tail(result)), type="html", include.rownames=F)
 ```
 And visually:
-```{r shared Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=8}
+```{r shared variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result, aes(x=num_samples_with_variant, 
-                  y=num_variants_shared_by_this_many_samples,
-                  color=num_variants_shared_by_this_many_samples)) +
+                  y=num_variants_shared_by_this_many_samples)) +
   geom_point() +
   scale_y_log10() +
-  scale_colour_gradient("Number of Variants", trans = "log", labels = function(x)round(x)) +
-  ylab("Number of variants") +
+  ylab("Number of variants (log scale)") +
   xlab("Number of samples") +
-  ggtitle("An Overview of How Variation is Shared Across Samples\nNumber of variants having a non-reference allele in 0, 1, 2, etc... samples") 
+  ggtitle(paste("An Overview of How Variation is Shared Across Samples",
+                "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
+                sep="\n"))
 ```
 At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
+
+Now let"s drill down by super population and common versus rare variants:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+# stash this for sanity checking
+sharedVars <- result
+result <- DisplayAndDispatchQuery("./sql/shared-variant-counts-by-ethnicity.sql")
+```
+Number of rows returned by this query:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(nrow(result))
+```
+
+```{r sanity check, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+# Check that the query logic was correct
+expect_equal(object=sum(as.numeric(result$num_samples_in_pop_with_variant_in_category * 
+                                   result$num_variants_shared_by_this_many_samples)), 
+             expected=sum(as.numeric(sharedVars$num_samples_with_variant * 
+                                     sharedVars$num_variants_shared_by_this_many_samples)))
+# Coerce the variant type to logical so that we can use it for categorization in plots
+result$is_common_variant <- as.logical(result$is_common_variant)
+```
+First few rows:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
+```
+Last few rows:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(tail(result)), type="html", include.rownames=F)
+```
+
+```{r shared variants by pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(result, aes(x=num_samples_in_pop_with_variant_in_category, 
+                   y=num_variants_shared_by_this_many_samples,
+                   color=super_population,
+                   shape=is_common_variant)) +
+  geom_point() +
+  scale_y_log10() +
+  ylab("Number of variants (log scale)") +
+  xlab("Number of samples") +
+  ggtitle(paste("An Overview of How Variation is Shared Across Samples",
+                "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
+                sep="\n"))
+```
+The plot is interesting but a little too busy.  Let"s break it down into 
+separate plots for common and rare variants.  
+
+First, common variants:
+```{r shared common variants by pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(filter(result, is_common_variant == TRUE), aes(x=num_samples_in_pop_with_variant_in_category, 
+                   y=num_variants_shared_by_this_many_samples,
+                   color=super_population,
+                   shape=is_common_variant)) +
+  geom_point() +
+  scale_y_log10() +
+  ylab("Number of variants (log scale)") +
+  xlab("Number of samples") +
+  ggtitle(paste("An Overview of How Variation is Shared Across Samples for Common Variants",
+                "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
+                sep="\n"))
+```
+There seems to be some interesting shape to this plot, but the sample counts are a little misleading since the number of samples within each super population is not the same.  Let's normalize by total number of samples in each super population group.
+```{r shared common variants by percent pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(filter(result, is_common_variant == TRUE), aes(x=percent_samples_in_pop_with_variant_in_category, 
+                   y=num_variants_shared_by_this_many_samples,
+                   color=super_population,
+                   shape=is_common_variant)) +
+  geom_point() +
+  scale_y_log10() +
+  ylab("Number of variants (log scale)") +
+  xlab("Percent of super population samples") +
+  ggtitle(paste("An Overview of How Variation is Shared Across Samples for Common Variants",
+                "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
+                sep="\n"))
+```
+Its interesting to see that the Asian superpopulation has both the most variants for which all samples match the reference and also the most variants for which all samples differ from the reference.
+
+And now for rare variants:
+```{r shared rare variants by pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(filter(result, is_common_variant == FALSE), 
+       aes(x=num_samples_in_pop_with_variant_in_category, 
+           y=num_variants_shared_by_this_many_samples,
+           color=super_population,
+           shape=is_common_variant)) +
+  geom_point() +
+  scale_y_log10() +
+  ylab("Number of variants (log scale)") +
+  xlab("Number of samples") +
+  ggtitle(paste("An Overview of How Variation is Shared Across Samples for Rare Variants",
+                "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
+                sep="\n"))
+```
+Again, normalizing by population size:
+```{r shared rare variants by percent pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(filter(result, is_common_variant == FALSE), 
+       aes(x=percent_samples_in_pop_with_variant_in_category, 
+           y=num_variants_shared_by_this_many_samples,
+           color=super_population,
+           shape=is_common_variant)) +
+  geom_point() +
+  scale_y_log10() +
+  ylab("Number of variants (log scale)") +
+  xlab("Percent of super population samples") +
+  ggtitle(paste("An Overview of How Variation is Shared Across Samples for Rare Variants",
+                "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
+                sep="\n"))
+```

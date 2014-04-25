@@ -30,6 +30,9 @@ genomics-bigquery 1,000 Genomes
 The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, across the entirety of the 1,000 Genomes low coverage variant data for 1,092 individuals:
 
 
+
+
+
 ```
 # Get the proportion of variants that have been reported in the dbSNP database 
 # version 132 , by chromosome, in the dataset.
@@ -65,7 +68,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Apr 23 11:30:46 2014 -->
+<!-- Thu Apr 24 22:06:07 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> num_dbsnp_variants </TH> <TH> num_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 0.998275 </TD> </TR>
@@ -98,7 +101,7 @@ And visually:
 <img src="figure/dbSNP_Variants.png" title="plot of chunk dbSNP Variants" alt="plot of chunk dbSNP Variants" style="display: block; margin: auto;" />
 
 
-## Variant Metadata
+### Variant Metadata
 The 1000 Genomes variant data is stored in the [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for more detail.
 
 Show variants within BRCA1:
@@ -127,7 +130,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Apr 23 11:30:52 2014 -->
+<!-- Thu Apr 24 22:06:12 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> </TR>
@@ -140,7 +143,7 @@ Examing the first few rows, we see:
 
 One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
 
-## Sample Data
+### Sample Data
 Show variants for a paricular sample within BRCA1:
 
 ```
@@ -176,7 +179,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Apr 23 11:30:57 2014 -->
+<!-- Thu Apr 24 22:06:16 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> ploidy </TH> <TH> phased </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> genotype_ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD> -0.03,-1.19,-5 </TD> </TR>
@@ -191,18 +194,17 @@ Note that this is equivalent to the [vcf-query](http://vcftools.sourceforge.net/
 ```
 vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 17:41196312-41277500 -c HG00100
 ```
-Lastly, let's get an overview of how much variation is shared across the samples.
+
+### Exploring shared variation
+Lastly, let"s get an overview of how much variation is shared across the samples.
 
 ```
 # Count the number of variants shared by none, shared by one sample, two samples, etc...
 SELECT
   num_samples_with_variant,
-  COUNT(num_samples_with_variant) AS num_variants_shared_by_this_many_samples
+  COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM (
   SELECT
-    contig,
-    position,
-    reference_bases,
     SUM(IF(genotype.first_allele > 0
         OR genotype.second_allele > 0,
         1,
@@ -220,7 +222,7 @@ Number of rows returned by this query:
 
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Apr 23 11:31:01 2014 -->
+<!-- Thu Apr 24 22:06:20 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right">   0 </TD> <TD align="right"> 325354 </TD> </TR>
@@ -233,7 +235,7 @@ Examing the first few rows, we see that a substantial number of variants are sha
 
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Apr 23 11:31:01 2014 -->
+<!-- Thu Apr 24 22:06:20 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right"> 1087 </TD> <TD align="right"> 16971 </TD> </TR>
@@ -245,6 +247,140 @@ Looking at the last few rows in the result, we see that some variants are shared
    </TABLE>
 
 And visually:
-<img src="figure/shared_Variants.png" title="plot of chunk shared Variants" alt="plot of chunk shared Variants" style="display: block; margin: auto;" />
+<img src="figure/shared_variants.png" title="plot of chunk shared variants" alt="plot of chunk shared variants" style="display: block; margin: auto;" />
 
 At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
+
+Now let"s drill down by super population and common versus rare variants:
+
+```
+# COUNT the number of variants shared BY none, shared BY one sample, two samples, etc...
+# further grouped by super population and common versus rare variants.
+SELECT
+  pops.super_population AS super_population,
+  super_population_count,
+  is_common_variant,
+  num_samples_in_pop_with_variant_in_category,
+  num_samples_in_pop_with_variant_in_category / super_population_count
+  AS percent_samples_in_pop_with_variant_in_category,
+  COUNT(1) AS num_variants_shared_by_this_many_samples
+FROM
+  (
+  SELECT
+    contig,
+    position,
+    reference_bases,
+    alt,
+    vt,
+    end,
+    super_population,
+    IF(af >= 0.05,
+      1,
+      0) AS is_common_variant,
+    SUM(has_variant) AS num_samples_in_pop_with_variant_in_category
+  FROM (
+    SELECT
+      contig,
+      position,
+      reference_bases,
+      GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+      vt,
+      end,
+      super_population,
+      IF(af >= 0.05,
+        TRUE,
+        FALSE) AS is_common_variant,
+      IF(genotype.first_allele > 0
+        OR genotype.second_allele > 0,
+        1,
+        0) AS has_variant
+    FROM
+      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+        genotype) AS samples
+    JOIN
+      [google.com:biggene:1000genomes.sample_info] p
+    ON
+      samples.genotype.sample_id = p.sample)
+    GROUP EACH BY
+    contig,
+    position,
+    reference_bases,
+    alt,
+    vt,
+    end,
+    super_population,
+    is_common_variant) AS vars
+JOIN (
+  SELECT
+    super_population,
+    COUNT(population) AS super_population_count,
+  FROM
+    [google.com:biggene:1000genomes.sample_info]
+  WHERE
+    In_Phase1_Integrated_Variant_Set = TRUE
+  GROUP BY
+    super_population) AS pops
+ON
+  vars.super_population = pops.super_population
+  GROUP EACH BY
+  super_population,
+  super_population_count,
+  is_common_variant,
+  num_samples_in_pop_with_variant_in_category,
+  percent_samples_in_pop_with_variant_in_category
+ORDER BY
+  num_samples_in_pop_with_variant_in_category;
+```
+
+Number of rows returned by this query:
+1447
+
+
+
+
+First few rows:
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Thu Apr 24 22:06:24 2014 -->
+<TABLE border=1>
+<TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples_in_pop_with_variant_in_category </TH> <TH> percent_samples_in_pop_with_variant_in_category </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
+  <TR> <TD> AFR </TD> <TD align="right"> 246 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 31736 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> FALSE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 21891500 </TD> </TR>
+  <TR> <TD> ASN </TD> <TD align="right"> 286 </TD> <TD> FALSE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 24037916 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 192979 </TD> </TR>
+  <TR> <TD> ASN </TD> <TD align="right"> 286 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 620090 </TD> </TR>
+  <TR> <TD> AMR </TD> <TD align="right"> 181 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 8478 </TD> </TR>
+   </TABLE>
+
+Last few rows:
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Thu Apr 24 22:06:24 2014 -->
+<TABLE border=1>
+<TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples_in_pop_with_variant_in_category </TH> <TH> percent_samples_in_pop_with_variant_in_category </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 374 </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 30391 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 375 </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 33317 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 376 </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 38477 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 377 </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 43298 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 378 </TD> <TD align="right"> 1.00 </TD> <TD align="right"> 58326 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 379 </TD> <TD align="right"> 1.00 </TD> <TD align="right"> 328171 </TD> </TR>
+   </TABLE>
+
+
+<img src="figure/shared_variants_by_pop.png" title="plot of chunk shared variants by pop" alt="plot of chunk shared variants by pop" style="display: block; margin: auto;" />
+
+The plot is interesting but a little too busy.  Let"s break it down into 
+separate plots for common and rare variants.  
+
+First, common variants:
+<img src="figure/shared_common_variants_by_pop.png" title="plot of chunk shared common variants by pop" alt="plot of chunk shared common variants by pop" style="display: block; margin: auto;" />
+
+There seems to be some interesting shape to this plot, but the sample counts are a little misleading since the number of samples within each super population is not the same.  Let's normalize by total number of samples in each super population group.
+<img src="figure/shared_common_variants_by_percent_pop.png" title="plot of chunk shared common variants by percent pop" alt="plot of chunk shared common variants by percent pop" style="display: block; margin: auto;" />
+
+Its interesting to see that the Asian superpopulation has both the most variants for which all samples match the reference and also the most variants for which all samples differ from the reference.
+
+And now for rare variants:
+<img src="figure/shared_rare_variants_by_pop.png" title="plot of chunk shared rare variants by pop" alt="plot of chunk shared rare variants by pop" style="display: block; margin: auto;" />
+
+Again, normalizing by population size:
+<img src="figure/shared_rare_variants_by_percent_pop.png" title="plot of chunk shared rare variants by percent pop" alt="plot of chunk shared rare variants by percent pop" style="display: block; margin: auto;" />
+
