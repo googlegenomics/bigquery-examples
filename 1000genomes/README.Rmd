@@ -99,7 +99,7 @@ vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 
 ```
 
 ### Exploring shared variation
-Lastly, let"s get an overview of how much variation is shared across the samples.
+Lastly, let us get an overview of how much variation is shared across the samples.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("./sql/shared-variant-counts.sql")
 ```
@@ -129,7 +129,7 @@ ggplot(result, aes(x=num_samples_with_variant,
 ```
 At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
 
-Now let"s drill down by super population and common versus rare variants:
+Now let us drill down by super population and common versus rare variants:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 # stash this for sanity checking
 sharedVars <- result
@@ -171,7 +171,7 @@ ggplot(result, aes(x=num_samples_in_pop_with_variant_in_category,
                 "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
                 sep="\n"))
 ```
-The plot is interesting but a little too busy.  Let"s break it down into 
+The plot is interesting but a little too busy.  Let us break it down into 
 separate plots for common and rare variants.  
 
 First, common variants:
@@ -188,7 +188,7 @@ ggplot(filter(result, is_common_variant == TRUE), aes(x=num_samples_in_pop_with_
                 "Number of variants having a non-reference allele in 0, 1, 2, etc... samples",
                 sep="\n"))
 ```
-There seems to be some interesting shape to this plot, but the sample counts are a little misleading since the number of samples within each super population is not the same.  Let's normalize by total number of samples in each super population group.
+There seems to be some interesting shape to this plot, but the sample counts are a little misleading since the number of samples within each super population is not the same.  Let us normalize by total number of samples in each super population group.
 ```{r shared common variants by percent pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(filter(result, is_common_variant == TRUE), aes(x=percent_samples_in_pop_with_variant_in_category, 
                    y=num_variants_shared_by_this_many_samples,

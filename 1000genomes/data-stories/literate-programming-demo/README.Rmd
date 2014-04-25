@@ -30,16 +30,16 @@ summary(cars)
 
 You can also embed plots, for example:
 
-```{r plot example, fig.align='center', fig.width=7, fig.height=6}
+```{r plot example, fig.align="center", fig.width=7, fig.height=6}
 plot(cars)
 ```
 
 Analysis
 --------------
 
-Now let's move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).  
+Now let us move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).  
 
-If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you'll likely need to do something like the following to get it installed:
+If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you will likely need to do something like the following to get it installed:
 
 ```{r one time setup, eval=FALSE}
 ### Only needed the first time around
@@ -56,9 +56,9 @@ devtools::install_github("bigrquery",
                          ref="dc3176c42b9d9ba7c9efd92600087a99486dab64")
 ```
 
-<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1000genomes/data-stories/literate-programming-demo/README.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</a>
+<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit("./1000genomes/data-stories/literate-programming-demo/README.Rmd", encoding="UTF-8");` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</a>
 
-Next we'll load our needed packages into our session:
+Next we will load our needed packages into our session:
 ```{r initialize}
 library(bigrquery)
 library(ggplot2)
@@ -66,18 +66,18 @@ library(ggplot2)
 
 And pull in the SQL for an interesting query:
 ```{r sql, comment=NA}
-sql = readChar('../../sql/minimum-allelic-frequency-by-ethnicity.sql',
+sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql",
                nchars=1e6)
 cat(sql)
 ```
 
-We'll execute our query, bringing the results down to our R session for further examination:
+We will execute our query, bringing the results down to our R session for further examination:
 ```{r exec}
-billing_project = "google.com:biggene" # put your projectID here
-result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+billing_project <- "google.com:biggene" # put your projectID here
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-Let's examine our query result:
+Let us examine our query result:
 ```{r result, comment=NA}
 head(result)
 summary(result)
@@ -89,7 +89,7 @@ We can see that we have a row for each sample, with counts for the sample's vari
 Data Visualization
 -------------------
 Some data visualization will help us to see more clearly the pattern resident within the results:
-```{r viz, fig.align='center', fig.width=12, fig.height=6}
+```{r viz, fig.align="center", fig.width=12, fig.height=6}
 ggplot(result, aes(x=population, y=common_variant, fill=super_population)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
 ```
 and now its clear to see that the ethnicities within the African super population have a much higher rate of mutation compared to the other ethnicities.
@@ -97,7 +97,7 @@ and now its clear to see that the ethnicities within the African super populatio
 
 Provenance
 -------------------
-Lastly, let's capture version information about R and loaded packages for the sake of provenance.
+Lastly, let us capture version information about R and loaded packages for the sake of provenance.
 ```{r provenance, comment=NA}
 sessionInfo()
 ```

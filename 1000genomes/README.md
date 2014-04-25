@@ -196,7 +196,7 @@ vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 
 ```
 
 ### Exploring shared variation
-Lastly, let"s get an overview of how much variation is shared across the samples.
+Lastly, let's get an overview of how much variation is shared across the samples.
 
 ```
 # Count the number of variants shared by none, shared by one sample, two samples, etc...
@@ -251,7 +251,7 @@ And visually:
 
 At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
 
-Now let"s drill down by super population and common versus rare variants:
+Now let's drill down by super population and common versus rare variants:
 
 ```
 # COUNT the number of variants shared BY none, shared BY one sample, two samples, etc...
@@ -367,7 +367,7 @@ Last few rows:
 
 <img src="figure/shared_variants_by_pop.png" title="plot of chunk shared variants by pop" alt="plot of chunk shared variants by pop" style="display: block; margin: auto;" />
 
-The plot is interesting but a little too busy.  Let"s break it down into 
+The plot is interesting but a little too busy.  Let's break it down into 
 separate plots for common and rare variants.  
 
 First, common variants:

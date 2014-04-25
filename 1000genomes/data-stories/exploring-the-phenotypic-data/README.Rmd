@@ -28,27 +28,27 @@ require(reshape)
 require(xtable)
 require(scales)
 require(testthat)
-billing_project <- 'google.com:biggene' # put your projectID here
+billing_project <- "google.com:biggene" # put your projectID here
 ```
 
 How many sample are we working with in this variant dataset?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar('../../sql/phenotype_sql/num-samples.sql',
+sql <- readChar("../../sql/phenotype_sql/num-samples.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 
-```{r samples, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+```{r samples, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=6, fig.height=4}
 sample_groups <- data.frame(names(result), t(result))
 colnames(sample_groups) <- c("group", "count")
 ggplot(sample_groups, aes(x=group, y=count, fill=group)) + 
   geom_bar(stat="identity") +
-  scale_fill_discrete("Sample Groups", labels=c('All', 'In BigQuery')) +
+  scale_fill_discrete("Sample Groups", labels=c("All", "In BigQuery")) +
   ylab("Count of Samples") + 
   xlab("Sample Groups") 
 ```
@@ -56,17 +56,17 @@ So for analyses across all samples upon table [variants1kG](https://bigquery.clo
 
 What is the gender ratio?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar('../../sql/phenotype_sql/gender-ratio.sql',
+sql <- readChar("../../sql/phenotype_sql/gender-ratio.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 
-```{r gender, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+```{r gender, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=6, fig.height=4}
 ggplot(result, aes(x="", y=gender_count, fill=gender)) +
   geom_bar(width=1, stat="identity") +
   scale_fill_manual(values=c("darkgreen", "yellow")) +
@@ -77,17 +77,17 @@ So for analyses across genders, the sample size is roughly even.
 
 What are the ratios of ethnicities?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar('../../sql/phenotype_sql/ethnicity-ratio.sql',
+sql <- readChar("../../sql/phenotype_sql/ethnicity-ratio.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
 ```
 
-```{r ethnicity, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=4}
+```{r ethnicity, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=4}
 ggplot(result, aes(x=population, y=population_count, fill=super_population)) + 
   geom_bar(stat="identity") +
   scale_fill_discrete("Super Population") +
@@ -98,17 +98,17 @@ So for analyses across ethnicity, we see that our sample sizes will range from 5
 
 What are the ratios of ethnicities grouped by super population?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar('../../sql/phenotype_sql/ethnicity-by-superpop-ratio.sql',
+sql <- readChar("../../sql/phenotype_sql/ethnicity-by-superpop-ratio.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result,digits=4), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result,digits=4), type="html", include.rownames=F)
 ```
 
-```{r superpop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+```{r superpop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=6, fig.height=4}
 ggplot(result, aes(x=super_population, y=super_population_count, fill=super_population)) +
   geom_bar(stat="identity") +
   geom_text(aes(label=percent(super_population_ratio)), size=5, vjust=2) +
@@ -119,21 +119,21 @@ We see that ratios range from 16.6% to 34.7% of samples per super population.
 
 How are the genders distributed across ethnicities?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar('../../sql/phenotype_sql/ethnicity-by-gender-ratio.sql',
+sql <- readChar("../../sql/phenotype_sql/ethnicity-by-gender-ratio.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Displaying the first few rows of our result:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 
-```{r ethnicity and gender, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=12, fig.height=4}
+```{r ethnicity and gender, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=4}
 ggplot(result, aes(x=population, y=population_count, fill=gender)) + 
   geom_bar(stat="identity", position="dodge") +
   ylab("Count of Samples in Population") + 
@@ -143,20 +143,20 @@ So for analyses taking into account both ethnicity and gender, we are often near
 
 Some of the individuals are related.  What is the distribution of family sizes?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar('../../sql/phenotype_sql/family-sizes.sql',
+sql <- readChar("../../sql/phenotype_sql/family-sizes.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
 ```
 
-```{r families, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align='center', fig.width=6, fig.height=4}
+```{r families, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=6, fig.height=4}
 ggplot(result, aes(x=family_size, y=num_families_of_size, color=num_families_of_size)) +
   geom_freqpoly(stat="identity") +
   #scale_y_log10() +
-  scale_colour_gradient("Number of Famlies of Size", trans = "log", labels = function(x)round(x)) +
+  scale_colour_gradient("Number of Famlies of Size", trans="log", labels=function(x)round(x)) +
   xlab("Number of family members") + 
   ylab("Count of families of size")
 ```

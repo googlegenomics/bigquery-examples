@@ -26,22 +26,22 @@ require(reshape)
 require(xtable)
 require(scales)
 require(testthat)
-billing_project <- 'google.com:biggene' # put your projectID here
+billing_project <- "google.com:biggene" # put your projectID here
 ```
 
 ```{r af, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql <- readChar('../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency.sql',
+sql <- readChar("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Displaying the first few rows of our result:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result), digits=6), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
 ```
 
 And do our results match the precomputed values resident in the AF INFO field?
@@ -55,18 +55,18 @@ We can see from the results that when the computed frequency values in column al
 
 Next, we compute those same alternate allele frequencies further broken down by super population groups.
 ```{r afeth, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql <- readChar('../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency-by-ethnicity.sql',
+sql <- readChar("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency-by-ethnicity.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing=billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Displaying the first few rows of our result:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result), digits=6), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
 ```
 
 And do our results match the precomputed values resident in the superpopulation-specific AF INFO fields?
@@ -82,44 +82,44 @@ We can see from the results that when the computed frequency values in column al
 
 Moving onto other results regarding rates of variation across populations:
 ```{r sql maf, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql = readChar('../../sql/minimum-allelic-frequency-by-ethnicity.sql',
+sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Displaying the first few rows of our result:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result), digits=6), type='html', include.rownames=F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
 ```
 
 Some data visualization will help us to see more clearly the pattern resident within the results:
-```{r maf, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+```{r maf, echo=FALSE, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result, aes(x=population, y=common_variant, fill=super_population)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
 ```
 and now its clear to see that the ethnicities within the African super population have a much higher rate of mutation compared to the other ethnicities for the common variants.
 
 This difference is even more notable when looking at all variants:
-```{r all variants, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+```{r all variants, echo=FALSE, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result, aes(x=population, y=num_variants_for_sample, fill=super_population)) + geom_boxplot() + ylab("Count variants per sample") + ggtitle("All Variants")
 ```
 
 Now lets examine the rate of variation across genders:
-```{r common variants by gender, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+```{r common variants by gender, echo=FALSE, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result, aes(x=super_population, y=common_variant, fill=gender)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
 ```
 We see a noticieable difference, BUT this query included variants within chromosome X.  Updating the query to ignore sex chromosomes:
 ```{r sql maf no X, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql = readChar('../../sql/minimum-allelic-frequency-by-ethnicity-no-sex-chromosomes.sql',
+sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity-no-sex-chromosomes.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
 We see that the genders are quite close in their rate of variation.
-```{r viz maf no X, echo=FALSE, fig.align='center', fig.width=12, fig.height=8}
+```{r viz maf no X, echo=FALSE, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result, aes(x=super_population, y=common_variant, fill=gender)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
 ```
 

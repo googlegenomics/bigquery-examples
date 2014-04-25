@@ -73,149 +73,149 @@ Reproducing the result via BigQuery
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
 require(xtable)
-billing_project = 'google.com:biggene' # put your projectID here
+billing_project <- "google.com:biggene" # put your projectID here
 ```
 
 Let’s explore variants in this gene.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/variant-count-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/variant-count-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result), type = 'html', include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
 ```
 We see that there are 879 variants on the BRCA1 gene in this dataset (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>count). 
 
 Let’s characterize the variants further by type.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/variant-counts-by-type-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/variant-counts-by-type-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result), type = 'html', include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
 ```
 The majority are SNPs but some are INDELs (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entries all=>snp_count and all=>indel_count).
 
 Next lets see how the variation is shared across the samples. 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/shared-variant-counts-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/shared-variant-counts-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Examing the first few rows, we see that ten variants are shared by **none** of the samples but roughly 25% of the variants are shared by only one sample:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 Looking at the last few rows in the result, we see that 743 variants are each shared by 2 samples and one variant is shared by nearly all samples:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(tail(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(tail(result)), type="html", include.rownames=F)
 ```
 (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>shared or [shared](./vcfstats-output/stats.shared))
 
 Next let’s see how many private variants each sample has.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/private-variant-counts-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/private-variant-counts-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Examing the first few rows:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 We see for example that sample HG00152 has three variants on BRAC1 shared by no other samples in this dataset (equivalent to vcf-stats [private](./vcfstats-output/stats.private)).
 
 For the moment, let’s drill down on the SNPs in this region.  First at the variant level:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/snp-variant-counts-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/snp-variant-counts-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result), type = 'html', include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
 ```
 We can see that some variants such as C->T are much more common than others such as T->G (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>snp).  
 
 Note that in this data we have variants that are not present in any of the samples.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/variant-sample-counts-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/variant-sample-counts-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Examing the first few rows:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result, n=12)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result, n=12)), type="html", include.rownames=F)
 ```
 We see in the above query results the contig, position, and reference base of the 10 SNPs in this region in which all samples match the reference for both alleles (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>nalt_0).
 
 Next let’s drill down on the SNPs in this region by sample.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/sample-snp-counts-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/sample-snp-counts-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Examing the first few rows:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 We can see that some samples differ from the reference quite a bit in this region while others are quite similar (equivalent to vcf-stats [snps](./vcfstats-output/stats.snps)).
 
 Now let’s drill down on the INDELs in this region.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/indel-length-counts-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/indel-length-counts-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result), type = 'html', include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
 ```
 We can see that the majority of the indels in this region add or remove a single base pair (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>indels).
 
 Now let’s characterize the number of INDELs per sample.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/sample-indel-counts-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/sample-indel-counts-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-cat(paste('Number of rows in result:', nrow(result), '\n'))
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+cat(paste("Number of rows in result:", nrow(result), "\n"))
 ```
 Examing the first few rows:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(head(result)), type = "html", include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 We can see that some samples differ from the reference quite a bit in this region while others are quite similar (equivalent to vcf-stats [indels](./vcfstats-output/stats.indels))
 
 Another important statistic for quality control is the ratio of transitions vs. transversions in SNPs. 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql = readChar('../../sql/reproducing-vcfstats/ti-tv-ratio-brca1.sql',
+sql <- readChar("../../sql/reproducing-vcfstats/ti-tv-ratio-brca1.sql",
                nchars=1e6)
 cat(sql)
-result = query_exec(project='google.com:biggene', dataset='1000genomes', query=sql, billing = billing_project)
+result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results='asis'}
-print(xtable(result), type = 'html', include.rownames = F)
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
 ```
 We see a transitions vs. transversions ratio of 2.70 for this region (equivalent to vcf-stats [tstv](./vcfstats-output/stats.tstv)).
