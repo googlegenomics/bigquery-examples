@@ -19,26 +19,26 @@ Reproducing 1,000 Genomes allele frequencies for variants in BRCA1
 
 The following query computes the frequency of both the reference and alternate SNPs within BRCA1 for all samples within 1,000 Genomes.
 
-```{r setup, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
 require(ggplot2)
-require(reshape)
+require(dplyr)
 require(xtable)
-require(scales)
 require(testthat)
 billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
 ```
 
 ```{r af, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql <- readChar("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(paste("Number of rows in result:", nrow(result), "\n"))
-```
 Displaying the first few rows of our result:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(head(result), digits=6), type="html", include.rownames=F)
@@ -55,15 +55,10 @@ We can see from the results that when the computed frequency values in column al
 
 Next, we compute those same alternate allele frequencies further broken down by super population groups.
 ```{r afeth, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql <- readChar("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency-by-ethnicity.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency-by-ethnicity.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(paste("Number of rows in result:", nrow(result), "\n"))
-```
 Displaying the first few rows of our result:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(head(result), digits=6), type="html", include.rownames=F)
@@ -82,15 +77,10 @@ We can see from the results that when the computed frequency values in column al
 
 Moving onto other results regarding rates of variation across populations:
 ```{r sql maf, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/minimum-allelic-frequency-by-ethnicity.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(paste("Number of rows in result:", nrow(result), "\n"))
-```
 Displaying the first few rows of our result:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(head(result), digits=6), type="html", include.rownames=F)
@@ -113,10 +103,7 @@ ggplot(result, aes(x=super_population, y=common_variant, fill=gender)) + geom_bo
 ```
 We see a noticieable difference, BUT this query included variants within chromosome X.  Updating the query to ignore sex chromosomes:
 ```{r sql maf no X, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
-sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity-no-sex-chromosomes.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/minimum-allelic-frequency-by-ethnicity-no-sex-chromosomes.sql")
 ```
 We see that the genders are quite close in their rate of variation.
 ```{r viz maf no X, echo=FALSE, fig.align="center", fig.width=12, fig.height=8}

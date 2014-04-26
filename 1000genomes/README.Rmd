@@ -70,10 +70,8 @@ Show variants within BRCA1:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("./sql/variant-level-data-for-brca1.sql")
 ```
-Number of rows returned by this query:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(nrow(result))
-```
+Number of rows returned by this query: `r nrow(result)`.
+
 Examing the first few rows, we see:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -85,10 +83,8 @@ Show variants for a paricular sample within BRCA1:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("./sql/sample-level-data-for-brca1.sql")
 ```
-Number of rows returned by this query:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(nrow(result))
-```
+Number of rows returned by this query: `r nrow(result)`.
+
 Examing the first few rows, we see:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -103,10 +99,8 @@ Lastly, let us get an overview of how much variation is shared across the sample
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("./sql/shared-variant-counts.sql")
 ```
-Number of rows returned by this query:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(nrow(result))
-```
+Number of rows returned by this query: `r nrow(result)`.
+
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -135,10 +129,7 @@ Now let us drill down by super population and common versus rare variants:
 sharedVars <- result
 result <- DisplayAndDispatchQuery("./sql/shared-variant-counts-by-ethnicity.sql")
 ```
-Number of rows returned by this query:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(nrow(result))
-```
+Number of rows returned by this query: `r nrow(result)`.
 
 ```{r sanity check, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 # Check that the query logic was correct

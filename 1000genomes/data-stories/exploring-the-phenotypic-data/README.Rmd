@@ -21,22 +21,24 @@ Exploring the Phenotypic Data
 
 Note that the full 1,000 Genomes dataset has data for 3,500 individuals but the low coverage variant data in table [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) is only for a subset of those individuals.  Let’s explore ethnicity, gender, and family relationships for the individuals whose variant data we do have.
 
-```{r setup, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
 require(ggplot2)
-require(reshape)
+require(dplyr)
 require(xtable)
-require(scales)
 require(testthat)
 billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
 ```
 
 How many sample are we working with in this variant dataset?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar("../../sql/phenotype_sql/num-samples.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/phenotype_sql/num-samples.sql")
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
@@ -56,10 +58,7 @@ So for analyses across all samples upon table [variants1kG](https://bigquery.clo
 
 What is the gender ratio?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar("../../sql/phenotype_sql/gender-ratio.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/phenotype_sql/gender-ratio.sql")
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
@@ -77,10 +76,7 @@ So for analyses across genders, the sample size is roughly even.
 
 What are the ratios of ethnicities?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar("../../sql/phenotype_sql/ethnicity-ratio.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/phenotype_sql/ethnicity-ratio.sql")
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
@@ -98,10 +94,7 @@ So for analyses across ethnicity, we see that our sample sizes will range from 5
 
 What are the ratios of ethnicities grouped by super population?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar("../../sql/phenotype_sql/ethnicity-by-superpop-ratio.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/phenotype_sql/ethnicity-by-superpop-ratio.sql")
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
@@ -119,15 +112,10 @@ We see that ratios range from 16.6% to 34.7% of samples per super population.
 
 How are the genders distributed across ethnicities?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar("../../sql/phenotype_sql/ethnicity-by-gender-ratio.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/phenotype_sql/ethnicity-by-gender-ratio.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(paste("Number of rows in result:", nrow(result), "\n"))
-```
 Displaying the first few rows of our result:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -143,10 +131,7 @@ So for analyses taking into account both ethnicity and gender, we are often near
 
 Some of the individuals are related.  What is the distribution of family sizes?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-sql <- readChar("../../sql/phenotype_sql/family-sizes.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/phenotype_sql/family-sizes.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
