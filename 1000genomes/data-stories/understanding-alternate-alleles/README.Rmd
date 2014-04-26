@@ -19,24 +19,27 @@ Understanding Alternate Alleles in 1,000 Genomes VCF Data
 
 We know from the [FAQ](http://www.1000genomes.org/faq/are-all-genotype-calls-current-release-vcf-files-bi-allelic) that the 1,000 Genomes VCF data is [bi-allelic](http://www.1000genomes.org/faq/are-all-genotype-calls-current-release-vcf-files-bi-allelic) → meaning that each row in the source VCF has only one value in the ALT field.  So for each sample in a row, the genotype was called as either the reference or the single ALT value.  At any particular position in the genome we can have much more variation than a single alternate, so we need to understand how that is encoded in this data set.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
+require(ggplot2)
+require(dplyr)
 require(xtable)
+require(testthat)
 billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
 ```
 
 Let’s explore the question _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql <- readChar("../../sql/understanding-alternate-alleles/chrom-pos-ref-dups.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/chrom-pos-ref-dups.sql")
 ```
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-cat(paste("Number of rows in result:", nrow(result), "\n"))
-```
+Number of rows returned by this query: `r nrow(result)`.
 
 We see the first six tabular results:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
@@ -46,10 +49,7 @@ So we see from the data that the answer to our question is “No”.
 
 So how many rows might we see per (contig, position, reference_bases) tuple?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql <- readChar("../../sql/understanding-alternate-alleles/count-chrom-pos-ref.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/count-chrom-pos-ref.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
@@ -58,10 +58,7 @@ So we see that for any particular (contig, position, reference_bases) tuple the 
 
 Let’s examine a few of the tuples with two alternate alleles more closely.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql <- readChar("../../sql/understanding-alternate-alleles/three-chrom-pos-ref-dups.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/three-chrom-pos-ref-dups.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
@@ -70,10 +67,7 @@ From this small sample, it appears that the alternate allele is either a SNP or 
 
 Is that the case for all the records corresponding to duplicate (contig, position, reference_bases) tuples?  
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql <- readChar("../../sql/understanding-alternate-alleles/count-by-var-type-chrom-pos-ref-dups.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/count-by-var-type-chrom-pos-ref-dups.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
@@ -82,10 +76,7 @@ It appears that for all records for duplicate (contig, position, reference_bases
 
 For records corresponding to a unique (contig, position, reference_bases) tuple, are the variants always SNPs?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql <- readChar("../../sql/understanding-alternate-alleles/count-by-var-type-chrom-pos-ref-singles.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/count-by-var-type-chrom-pos-ref-singles.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
@@ -94,10 +85,7 @@ And we see that the answer to our question is “No” - for records correspondi
 
 So what does this all mean for a particular duplicate (contig, position, reference_bases) tuple for a particular sample at a particular genomic position?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql <- readChar("../../sql/understanding-alternate-alleles/sample-chrom-pos-ref-dups.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/sample-chrom-pos-ref-dups.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
@@ -114,10 +102,7 @@ xxxTGxxx
 ```
 Let’s examine the quality, some INFO fields, and the genotype likelihoods a little more closely.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-sql <- readChar("../../sql/understanding-alternate-alleles/sample-likelihood.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/sample-likelihood.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
@@ -125,3 +110,27 @@ print(xtable(result), type="html", include.rownames=F)
 The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for details about the other fields.
 
 So a question for our users who have much experience in this domain, which variant is more likely for the second allele of HG00100?
+
+### But we digress . . . 
+
+Our original question was _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/not-quite-unique-key.sql")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
+Not quite.  We see a few structural variant deletions called at the same position.
+
+Let's add in the `end` column:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/unique-key.sql")
+```
+
+```{r warning=FALSE, comment=NA}
+print(expect_true(is.null(result)))
+```
+
+And now we have it, the unique key is: (contig, position, reference_bases, alternate_bases, vt, end)

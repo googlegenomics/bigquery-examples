@@ -48,13 +48,11 @@ ORDER BY
   reference_bases;
 ```
 
-
-Number of rows in result: 417 
-
+Number of rows returned by this query: 417.
 
 We see the first six tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 18:47:15 2014 -->
+<!-- Fri Apr 25 17:18:11 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 184673 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
@@ -94,7 +92,7 @@ GROUP BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 18:47:18 2014 -->
+<!-- Fri Apr 25 17:18:15 2014 -->
 <TABLE border=1>
 <TR> <TH> num_alternates </TH> <TH> num_records </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 1045899 </TD> </TR>
@@ -124,15 +122,15 @@ WHERE
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 18:47:21 2014 -->
+<!-- Fri Apr 25 17:18:19 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> ids </TH> <TH> vt </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> T </TD> <TD> rs113983760 </TD> <TD> SNP </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> rs148905490 </TD> <TD> INDEL </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> G </TD> <TD> rs8076712 </TD> <TD> SNP </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> TG </TD> <TD> rs113432301 </TD> <TD> INDEL </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> T </TD> <TD> rs9896330 </TD> <TD> SNP </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> AT </TD> <TD> rs201827568 </TD> <TD> INDEL </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> T </TD> <TD> rs113983760 </TD> <TD> SNP </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> rs148905490 </TD> <TD> INDEL </TD> </TR>
    </TABLE>
 
 From this small sample, it appears that the alternate allele is either a SNP or an INDEL.  
@@ -174,12 +172,12 @@ GROUP EACH BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 18:47:23 2014 -->
+<!-- Fri Apr 25 17:18:24 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
+  <TR> <TD> SV </TD> <TD align="right">   5 </TD> </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 417 </TD> </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 412 </TD> </TR>
-  <TR> <TD> SV </TD> <TD align="right">   5 </TD> </TR>
    </TABLE>
 
 It appears that for all records for duplicate (contig, position, reference_bases) tuples that we have a SNP and also an INDEL or SV.  
@@ -221,12 +219,12 @@ GROUP EACH BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 18:47:27 2014 -->
+<!-- Fri Apr 25 17:18:29 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
+  <TR> <TD> SV </TD> <TD align="right"> 443 </TD> </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 1006702 </TD> </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 38754 </TD> </TR>
-  <TR> <TD> SV </TD> <TD align="right"> 443 </TD> </TR>
    </TABLE>
 
 And we see that the answer to our question is “No” - for records corresponding to a unique (contig, position, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
@@ -274,7 +272,7 @@ FROM(
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 18:47:30 2014 -->
+<!-- Fri Apr 25 17:18:32 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> allele1 </TH> <TH> allele2 </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs8076712 </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
@@ -325,7 +323,7 @@ HAVING
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 18:47:35 2014 -->
+<!-- Fri Apr 25 17:18:37 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> ploidy </TH> <TH> phased </TH> <TH> allele1 </TH> <TH> allele2 </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs8076712 </TD> <TD> T </TD> <TD> G </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
@@ -335,3 +333,96 @@ HAVING
 The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for details about the other fields.
 
 So a question for our users who have much experience in this domain, which variant is more likely for the second allele of HG00100?
+
+### But we digress . . . 
+
+Our original question was _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
+
+
+```
+# This query demonstrates that some additional field is needed to  
+# comprise a unique key for the rows in the table.
+SELECT
+  contig,
+  position,
+  reference_bases,
+  alt,
+  vt,
+  COUNT(1) AS cnt
+FROM (
+  SELECT
+    contig,
+    position,
+    reference_bases,
+    GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+    vt,
+  FROM
+    [google.com:biggene:1000genomes.variants1kG])
+  GROUP EACH BY
+  contig,
+  position,
+  reference_bases,
+  alt,
+  vt
+HAVING
+  cnt > 1;
+```
+
+
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Fri Apr 25 17:18:42 2014 -->
+<TABLE border=1>
+<TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
+  <TR> <TD> 6 </TD> <TD align="right"> 26745501 </TD> <TD> C </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 19 </TD> <TD align="right"> 48773401 </TD> <TD> C </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 14 </TD> <TD align="right"> 106885901 </TD> <TD> G </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+   </TABLE>
+
+Not quite.  We see a few structural variant deletions called at the same position.
+
+Let's add in the `end` column:
+
+```
+# This query demonstrates that an additional field, 'end', is needed to  
+# comprise a unique key for the rows in the table.
+SELECT
+  contig,
+  position,
+  reference_bases,
+  alt,
+  vt,
+  end,
+  COUNT(1) AS cnt
+FROM (
+  SELECT
+    contig,
+    position,
+    reference_bases,
+    GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+    vt,
+    end,
+  FROM
+    [google.com:biggene:1000genomes.variants1kG])
+  GROUP EACH BY
+  contig,
+  position,
+  reference_bases,
+  alt,
+  vt,
+  end
+HAVING
+  cnt > 1;Retrieving data:  2.8sRetrieving data:  3.4sRetrieving data:  3.9s
+```
+
+
+
+```r
+print(expect_true(is.null(result)))
+```
+
+```
+As expected: is.null(result) is true 
+```
+
+
+And now we have it, the unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
