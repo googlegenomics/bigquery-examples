@@ -55,7 +55,7 @@ the [web forum page](https://groups.google.com/forum/#!forum/google-genomics-dis
 Contributing changes
 --------------------
 
-See [CONTRIB](CONTRIB.rst).
+See [CONTRIBUTING](CONTRIBUTING.rst).
 
 Licensing
 ---------
