@@ -1,13 +1,12 @@
-How to become a contributor and submit your own code
-====================================================
+How to contribute to genomics-bigquery
+===================================
+
+Thank you for wanting to contribute!
 
 Contributor License Agreements
 ------------------------------
 
-We'd love to accept your sample apps and patches! Before we can take them, we
-have to jump a couple of legal hurdles.
-
-Please fill out either the individual or corporate Contributor License Agreement
+All pull requests are welcome. Before we can submit them though, there is a legal hurdle we have to jump. You'll need to fill out either the individual or corporate Contributor License Agreement
 (CLA).
 
 * If you are an individual writing original source code and you're sure you
@@ -21,18 +20,21 @@ Follow either of the two links above to access the appropriate CLA and
 instructions for how to sign and return it. Once we receive it, we'll be able to
 accept your pull requests.
 
-Contributing A Patch
---------------------
 
-#. Submit an issue describing your proposed change to the repo in question.
-#. The repo owner will respond to your issue promptly.
-#. If your proposed change is accepted, and you haven't already done so, sign a
-   Contributor License Agreement (see details above).
-#. Fork the desired repo, develop and test your code changes.
-#. Ensure that your code adheres to the existing style in the sample to which
-   you are contributing. Refer to the `Google Cloud Platform Samples Style
-   Guide`_ for the recommended coding standards for this organization.
-#. Ensure that your code has an appropriate set of unit tests which all pass.
-#. Submit a pull request
+Submitting a pull request
+-------------------------
 
-.. _Google Cloud Platform Samples Style Guide: https://github.com/GoogleCloudPlatform/Template/wiki/style.html
+Github provides a nice `overview on how to create a pull request
+<https://help.github.com/articles/creating-a-pull-request>`_.
+
+Some general rules to follow:
+
+* Do your work in `a fork <https://help.github.com/articles/fork-a-repo>`_ of the genomics-bigquery repo.
+* Create a branch for each update that you're working on. 
+  These branches are often called "feature" or "topic" branches. Any changes
+  that you push to your feature branch will automatically be shown in the pull request.
+* Keep your pull requests as small as possible. Large pull requests are hard to review. 
+  Try to break up your changes into self-contained and incremental pull requests.
+* The first line of commit messages should be a short (<80 character) summary, 
+  followed by an empty line and then any details that you want to share about the commit.
+* Please try to follow the existing syntax style
