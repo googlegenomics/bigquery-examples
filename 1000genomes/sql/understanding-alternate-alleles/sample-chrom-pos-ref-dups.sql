@@ -1,6 +1,7 @@
 # Get sample alleles for some specific variants.  
 # TODO(deflaux): update this to a user-defined function to generalize 
-# across more than two alternates.
+# across more than two alternates.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   contig,
   position,
