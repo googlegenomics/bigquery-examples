@@ -48,7 +48,7 @@ devtools::install_github("assertthat")
 devtools::install_github("bigrquery")
 ```
 
-<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but that means you'll want to run a query interactively from the R prompt the very first time around so that it can cache your credentials.  After that you can knit via the [RStudio](http://www.rstudio.com/) **Knit HTML** button or via `require(knitr); knit("./1000genomes/data-stories/literate-programming-demo/README.Rmd", encoding="UTF-8");`._</a>
+<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but that means you will want to run a query interactively from the R prompt the very first time around so that it can cache your credentials.  After that you can knit via the [RStudio](http://www.rstudio.com/) Knit HTML button or via `require(knitr); knit("./1000genomes/data-stories/literate-programming-demo/README.Rmd", encoding="UTF-8");`._</a>
 
 Next we will load our needed packages into our session:
 ```{r initialize}
