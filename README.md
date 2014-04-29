@@ -49,7 +49,7 @@ The mailing list
 ----------------
 
 The [Google Genomics Discuss mailing list](https://groups.google.com/forum/#!forum/google-genomics-discuss) is a good
-way to sync up with other people who use genomics-bigquery (and [genomics-tools](https://github.com/GoogleCloudPlatform/genomics-tools)) including the core developers. You can subscribe
+way to sync up with other people who use googlegenomics including the core developers. You can subscribe
 by sending an email to ``google-genomics-discuss+subscribe@googlegroups.com`` or just post using
 the [web forum page](https://groups.google.com/forum/#!forum/google-genomics-discuss).
 
