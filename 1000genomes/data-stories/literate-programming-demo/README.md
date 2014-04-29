@@ -53,28 +53,22 @@ plot(cars)
 Analysis
 --------------
 
-Now let's move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).  
+Now let us move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).  
 
-If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you'll likely need to do something like the following to get it installed:
+If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you will likely need to do something like the following to get it installed:
 
 
 ```r
 ### Only needed the first time around
 install.packages("devtools")
-install.packages("Rook")
-install.packages("rjson")
-install.packages("reshape")
 devtools::install_github("assertthat")
-# Hadley Wickham and craigcitro@ are breaking things right now.  Hardcode
-# these packages to old versions.
-devtools::install_github("httr", ref = "018ec103825bfb98fadda2bb7a386c63d6107708")
-devtools::install_github("bigrquery", ref = "dc3176c42b9d9ba7c9efd92600087a99486dab64")
+devtools::install_github("bigrquery")
 ```
 
 
-<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit('./1000genomes/data-stories/literate-programming-demo/README.Rmd', encoding='UTF-8');` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</a>
+<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but that means you'll want to run a query interactively from the R prompt the very first time around so that it can cache your credentials.  After that you can knit via the [RStudio](http://www.rstudio.com/) **Knit HTML** button or via `require(knitr); knit("./1000genomes/data-stories/literate-programming-demo/README.Rmd", encoding="UTF-8");`._</a>
 
-Next we'll load our needed packages into our session:
+Next we will load our needed packages into our session:
 
 ```r
 library(bigrquery)
@@ -85,7 +79,7 @@ library(ggplot2)
 And pull in the SQL for an interesting query:
 
 ```r
-sql = readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql", nchars = 1e+06)
+sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql", nchars = 1e+06)
 cat(sql)
 ```
 
@@ -132,16 +126,16 @@ ORDER BY
 ```
 
 
-We'll execute our query, bringing the results down to our R session for further examination:
+We will execute our query, bringing the results down to our R session for further examination:
 
 ```r
-billing_project = "google.com:biggene"  # put your projectID here
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
+billing_project <- "google.com:biggene"  # put your projectID here
+result <- query_exec(project = "google.com:biggene", dataset = "1000genomes", 
     query = sql, billing = billing_project)
 ```
 
 
-Let's examine our query result:
+Let us examine our query result:
 
 ```r
 head(result)
@@ -228,7 +222,7 @@ and now its clear to see that the ethnicities within the African super populatio
 
 Provenance
 -------------------
-Lastly, let's capture version information about R and loaded packages for the sake of provenance.
+Lastly, let us capture version information about R and loaded packages for the sake of provenance.
 
 ```r
 sessionInfo()
@@ -242,21 +236,19 @@ locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 
 attached base packages:
-[1] tools     stats     graphics  grDevices utils     datasets  methods  
-[8] base     
+[1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] httpuv_1.2.3    Rook_1.0-9      brew_1.0-6      testthat_0.8.1 
- [5] scales_0.2.3    xtable_1.7-3    reshape_0.8.4   plyr_1.8.1     
- [9] ggplot2_0.9.3.1 bigrquery_0.1   knitr_1.5      
+[1] ggplot2_0.9.3.1 bigrquery_0.1   knitr_1.5      
 
 loaded via a namespace (and not attached):
- [1] assertthat_0.1.0.99 codetools_0.2-8     colorspace_1.2-4   
- [4] dichromat_2.0-0     digest_0.6.4        evaluate_0.5.1     
- [7] formatR_0.10        grid_3.0.2          gtable_0.1.2       
-[10] httr_0.2.99         labeling_0.2        MASS_7.3-30        
-[13] munsell_0.4.2       proto_0.3-10        RColorBrewer_1.0-5 
-[16] Rcpp_0.11.1         RCurl_1.95-4.1      reshape2_1.2.2     
-[19] RJSONIO_1.0-3       stringr_0.6.2      
+ [1] assertthat_0.1.0.99 colorspace_1.2-4    dichromat_2.0-0    
+ [4] digest_0.6.4        evaluate_0.5.1      formatR_0.10       
+ [7] grid_3.0.2          gtable_0.1.2        httr_0.3.0.99      
+[10] jsonlite_0.9.4      labeling_0.2        MASS_7.3-30        
+[13] munsell_0.4.2       plyr_1.8.1          proto_0.3-10       
+[16] RColorBrewer_1.0-5  Rcpp_0.11.1         RCurl_1.95-4.1     
+[19] reshape2_1.2.2      scales_0.2.3        stringr_0.6.2      
+[22] tools_3.0.2        
 ```
 

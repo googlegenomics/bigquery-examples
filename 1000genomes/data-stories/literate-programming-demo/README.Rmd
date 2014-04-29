@@ -44,19 +44,11 @@ If you have never used the [bigrquery](https://github.com/hadley/bigrquery) pack
 ```{r one time setup, eval=FALSE}
 ### Only needed the first time around
 install.packages("devtools")
-install.packages("Rook")
-install.packages("rjson")
-install.packages("reshape")
 devtools::install_github("assertthat")
-# Hadley Wickham and craigcitro@ are breaking things right now.  Hardcode
-# these packages to old versions.
-devtools::install_github("httr", 
-                         ref="018ec103825bfb98fadda2bb7a386c63d6107708")
-devtools::install_github("bigrquery", 
-                         ref="dc3176c42b9d9ba7c9efd92600087a99486dab64")
+devtools::install_github("bigrquery")
 ```
 
-<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but an unfortunate side effect is that knitting must be kicked off from the interactive R prompt via `require(knitr); knit("./1000genomes/data-stories/literate-programming-demo/README.Rmd", encoding="UTF-8");` instead of using the [RStudio](http://www.rstudio.com/) **Knit HTML** button._</a>
+<a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but that means you'll want to run a query interactively from the R prompt the very first time around so that it can cache your credentials.  After that you can knit via the [RStudio](http://www.rstudio.com/) **Knit HTML** button or via `require(knitr); knit("./1000genomes/data-stories/literate-programming-demo/README.Rmd", encoding="UTF-8");`._</a>
 
 Next we will load our needed packages into our session:
 ```{r initialize}
