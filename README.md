@@ -1,4 +1,4 @@
-genomics-bigquery
+bigquery-examples
 =================
 
 The projects in this repository demonstrate working with genomic data via [Google BigQuery](https://developers.google.com/bigquery/).  All examples are built upon public datasets.  
