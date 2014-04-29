@@ -21,10 +21,10 @@ Sample analyses upon VCF data from the [1,000 Genomes Project](http://www.1000ge
 
 **Project Name**: _google.com:biggene_
     
-### [pgp](./pgp)
+### pgp
 Sample analyses upon the [Personal Genome Project](http://www.personalgenomes.org/)
 
-**Project Name**: _google.com:pgp_
+**Project Name**: Coming soon!
 
 Getting Started
 -----------------
@@ -43,6 +43,7 @@ Getting Started
   * pick _‘Switch to project’_ in the menu, and _‘Display project...’_ in the submenu
 enter the project name in the _‘Add Project’_ dialog.
 
+Note: If you get the message "No datasets found in project google.com:biggene. Please ensure you have read access to a dataset in this project." these instructions will be updated soon with details regarding how to request access.
 
 The mailing list
 ----------------
