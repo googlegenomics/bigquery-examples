@@ -43,8 +43,6 @@ Getting Started
   * pick _‘Switch to project’_ in the menu, and _‘Display project...’_ in the submenu
 enter the project name in the _‘Add Project’_ dialog.
 
-Note: If you get the message "No datasets found in project google.com:biggene. Please ensure you have read access to a dataset in this project." these instructions will be updated soon with details regarding how to request access.
-
 The mailing list
 ----------------
 

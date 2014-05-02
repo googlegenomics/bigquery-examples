@@ -1,5 +1,5 @@
 cache
-genomics-bigquery.Rproj
+*.Rproj
 .Rproj.user
 .Rhistory
 .RData
