@@ -14,7 +14,7 @@
 <!-- See the License for the specific language governing permissions and -->
 <!-- limitations under the License. -->
 
-genomics-bigquery 1,000 Genomes
+1,000 Genomes
 =================
 
 ### Additional Resources
@@ -22,6 +22,7 @@ genomics-bigquery 1,000 Genomes
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
+ * [Exploring the variant data](./data-stories/exploring-the-variant-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
  * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
 * [Index of variant analyses](./sql)

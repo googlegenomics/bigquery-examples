@@ -14,7 +14,7 @@
 <!-- See the License for the specific language governing permissions and -->
 <!-- limitations under the License. -->
 
-genomics-bigquery 1,000 Genomes
+1,000 Genomes
 =================
 
 ### Additional Resources
@@ -22,6 +22,7 @@ genomics-bigquery 1,000 Genomes
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
+ * [Exploring the variant data](./data-stories/exploring-the-variant-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
  * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
 * [Index of variant analyses](./sql)
@@ -68,7 +69,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 24 22:06:07 2014 -->
+<!-- Wed May  7 13:16:15 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> num_dbsnp_variants </TH> <TH> num_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 0.998275 </TD> </TR>
@@ -125,12 +126,11 @@ WHERE
       AND 41277500;
 ```
 
-Number of rows returned by this query:
-879
+Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 24 22:06:12 2014 -->
+<!-- Wed May  7 13:16:19 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> </TR>
@@ -174,12 +174,11 @@ HAVING
   sample_id = 'HG00100';
 ```
 
-Number of rows returned by this query:
-879
+Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 24 22:06:16 2014 -->
+<!-- Wed May  7 13:16:24 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> ploidy </TH> <TH> phased </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> genotype_ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD> -0.03,-1.19,-5 </TD> </TR>
@@ -196,7 +195,7 @@ vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 
 ```
 
 ### Exploring shared variation
-Lastly, let's get an overview of how much variation is shared across the samples.
+Lastly, let us get an overview of how much variation is shared across the samples.
 
 ```
 # Count the number of variants shared by none, shared by one sample, two samples, etc...
@@ -217,12 +216,11 @@ ORDER BY
   num_samples_with_variant;
 ```
 
-Number of rows returned by this query:
-1093
+Number of rows returned by this query: 1093.
 
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 24 22:06:20 2014 -->
+<!-- Wed May  7 13:16:26 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right">   0 </TD> <TD align="right"> 325354 </TD> </TR>
@@ -235,7 +233,7 @@ Examing the first few rows, we see that a substantial number of variants are sha
 
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 24 22:06:20 2014 -->
+<!-- Wed May  7 13:16:26 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right"> 1087 </TD> <TD align="right"> 16971 </TD> </TR>
@@ -247,11 +245,11 @@ Looking at the last few rows in the result, we see that some variants are shared
    </TABLE>
 
 And visually:
-<img src="figure/shared_Variants.png" title="plot of chunk shared variants" alt="plot of chunk shared variants" style="display: block; margin: auto;" />
+<img src="figure/shared_Variants.png" title="plot of chunk shared Variants" alt="plot of chunk shared Variants" style="display: block; margin: auto;" />
 
 At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
 
-Now let's drill down by super population and common versus rare variants:
+Now let us drill down by super population and common versus rare variants:
 
 ```
 # COUNT the number of variants shared BY none, shared BY one sample, two samples, etc...
@@ -332,28 +330,26 @@ ORDER BY
   num_samples_in_pop_with_variant_in_category;
 ```
 
-Number of rows returned by this query:
-1447
-
+Number of rows returned by this query: 1447.
 
 
 
 First few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 24 22:06:24 2014 -->
+<!-- Wed May  7 13:16:30 2014 -->
 <TABLE border=1>
 <TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples_in_pop_with_variant_in_category </TH> <TH> percent_samples_in_pop_with_variant_in_category </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
-  <TR> <TD> AFR </TD> <TD align="right"> 246 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 31736 </TD> </TR>
+  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 192979 </TD> </TR>
   <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> FALSE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 21891500 </TD> </TR>
   <TR> <TD> ASN </TD> <TD align="right"> 286 </TD> <TD> FALSE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 24037916 </TD> </TR>
-  <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 192979 </TD> </TR>
-  <TR> <TD> ASN </TD> <TD align="right"> 286 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 620090 </TD> </TR>
+  <TR> <TD> AFR </TD> <TD align="right"> 246 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 31736 </TD> </TR>
   <TR> <TD> AMR </TD> <TD align="right"> 181 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 8478 </TD> </TR>
+  <TR> <TD> AMR </TD> <TD align="right"> 181 </TD> <TD> FALSE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 19034125 </TD> </TR>
    </TABLE>
 
 Last few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Apr 24 22:06:24 2014 -->
+<!-- Wed May  7 13:16:30 2014 -->
 <TABLE border=1>
 <TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples_in_pop_with_variant_in_category </TH> <TH> percent_samples_in_pop_with_variant_in_category </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 374 </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 30391 </TD> </TR>
@@ -367,13 +363,13 @@ Last few rows:
 
 <img src="figure/shared_variants_by_pop.png" title="plot of chunk shared variants by pop" alt="plot of chunk shared variants by pop" style="display: block; margin: auto;" />
 
-The plot is interesting but a little too busy.  Let's break it down into 
+The plot is interesting but a little too busy.  Let us break it down into 
 separate plots for common and rare variants.  
 
 First, common variants:
 <img src="figure/shared_common_variants_by_pop.png" title="plot of chunk shared common variants by pop" alt="plot of chunk shared common variants by pop" style="display: block; margin: auto;" />
 
-There seems to be some interesting shape to this plot, but the sample counts are a little misleading since the number of samples within each super population is not the same.  Let's normalize by total number of samples in each super population group.
+There seems to be some interesting shape to this plot, but the sample counts are a little misleading since the number of samples within each super population is not the same.  Let us normalize by total number of samples in each super population group.
 <img src="figure/shared_common_variants_by_percent_pop.png" title="plot of chunk shared common variants by percent pop" alt="plot of chunk shared common variants by percent pop" style="display: block; margin: auto;" />
 
 Its interesting to see that the Asian superpopulation has both the most variants for which all samples match the reference and also the most variants for which all samples differ from the reference.
