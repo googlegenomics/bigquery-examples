@@ -16,20 +16,20 @@
 library(plyr)
 library(testthat)
 
-data_dir <- './'
+dataDir <- './'
 
 # Load Data
-pheno <- read.delim(file.path(data_dir, '20130606_sample_info.txt'),
+pheno <- read.delim(file.path(dataDir, '20130606_sample_info.txt'),
                     na.strings=c('NA', 'N/A'))
 expect_that(nrow(pheno), equals(3500))
 expect_that(ncol(pheno), equals(61))
 
-pop <- read.delim(file.path(data_dir, '20131219.populations.tsv'),
+pop <- read.delim(file.path(dataDir, '20131219.populations.tsv'),
                   na.strings=c('NA', 'N/A'))
 expect_that(nrow(pop), equals(29))
 expect_that(ncol(pop), equals(9))
 
-super_pop <- read.delim(file.path(data_dir, '20131219.superpopulations.tsv'),
+super_pop <- read.delim(file.path(dataDir, '20131219.superpopulations.tsv'),
                         na.strings=c('NA', 'N/A'))
 expect_that(nrow(super_pop), equals(5))
 expect_that(ncol(super_pop), equals(2))
@@ -172,5 +172,5 @@ expect_that(subset(cleaned_data, Sample == 'HG00114',
                    select=EBV_Coverage)[1, 1], equals(10.78))
 
 # Write out file to load into BigQuery
-write.csv(cleaned_data, file.path(data_dir, 'pheno_pop.csv'),
+write.csv(cleaned_data, file.path(dataDir, 'pheno_pop.csv'),
           row.names=FALSE, na="")
