@@ -36,12 +36,17 @@ Getting Started
  1. You’ll need to enable billing and you will be charged for any queries you execute.
   * See BigQuery [pricing](https://developers.google.com/bigquery/pricing) for more detail.
   * For example, queries within the 1,000 Genomes dataset that examine sample genotype columns will process approximately 1TB of data per query. (1,000 GB * $0.005 per GB processed = $5.00)
-
+  * Note that if you would like to try a few queries prior to enabling billing, see the queries for the much smaller phenotypic dataset available in the data story ["Exploring the phenotypic data"](./1000genomes/data-stories/exploring-the-phenotypic-data).
+  
  1. To add a dataset to your project:
   * go to the BigQuery [Browser Tool](https://developers.google.com/bigquery/bigquery-browser-tool)
   * click on the drop down icon beside your project name in the left navigator
   * pick _‘Switch to project’_ in the menu, and _‘Display project...’_ in the submenu
 enter the project name in the _‘Add Project’_ dialog.
+
+### Loading Variant Data into BigQuery
+
+The Google Genomics API spec includes a not-yet-implemented [import method that loads VCF files](https://developers.google.com/genomics/v1beta/reference/variants/import) directly from Cloud Storage. Until an implementation of the method is available, you will need to transform your VCF data into JSON with a schema similar to what you see in these examples, and then load the JSON into BigQuery.  See [Preparing Data for BigQuery](https://developers.google.com/bigquery/preparing-data-for-bigquery) and also [BigQuery in Practice : Loading Data Sets That are Terabytes and Beyond](https://cloud.google.com/developers/articles/bigquery-in-practice) for more detail.
 
 The mailing list
 ----------------
