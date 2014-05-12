@@ -1,0 +1,162 @@
+<!-- R Markdown Documentation, DO NOT EDIT THE PLAIN MARKDOWN VERSION OF THIS FILE -->
+
+<!-- Copyright 2014 Google Inc. All rights reserved. -->
+
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+
+<!--     http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
+Comparing PGP variants data to that of 1,000 Genomes
+========================================================
+
+How does the structure and composition of the PGP dataset vary from that of 1,000 Genomes, described in detail via the [1,000 Genomes data stories](../../../1000genomes/data-stories)?
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(ggplot2)
+require(dplyr)
+require(xtable)
+require(testthat)
+billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
+```
+
+Variant Level Data
+------------------
+
+First let us get an overview of how many variants we have in these datasets:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/variant-counts-by-chromosome.sql")
+```
+
+We see the first few tabular results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
+```
+
+```{r variant counts, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+result$contig_name <- factor(result$contig_name, levels=c(as.character(seq(1,22)), "X", "Y", "M"))
+ggplot(result, aes(x=contig_name, y=cnt, fill=dataset)) + 
+  geom_bar(stat="identity", position="dodge") +
+  ylab("Number of variants") +
+  xlab("Chromosome") + 
+  ggtitle("Total Variant Count by Chromosome")
+```
+We see that the PGP dataset has more variants for all chromosomes except X.
+
+Let's break this down further by variant type:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/variant-counts-by-type-and-chromosome.sql")
+```
+_Notice in this query that the PGP dataset does not have a column indicating the variant type.  Instead we are inferring if from both the `svtype` and length of the reference and alternate alleles.  **Does this seem reasonable?**_
+
+We see the first few tabular results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
+```
+
+```{r variant type counts, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+result$contig_name <- factor(result$contig_name, levels=c(as.character(seq(1,22)), "X", "Y", "M"))
+ggplot(result, aes(x=contig_name, y=cnt, fill=vt)) + 
+  geom_bar(stat="identity", position="dodge") +
+  facet_grid(dataset ~ .) +
+  scale_y_log10() +
+  ylim(c(0, 3200000)) +
+  ylab("Number of variants (log scale)") +
+  xlab("Chromosome") + 
+  ggtitle("Total Variant Count by Chromosome and Type")
+```
+In 1,000 Genomes the vast majority of variants are SNPs but the PGP dataset is much more diverse.  
+
+Re-plotting the data to just show the PGP variants:
+```{r pgp variant type counts, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+result$contig_name <- factor(result$contig_name, levels=c(as.character(seq(1,22)), "X", "Y", "M"))
+ggplot(result[result$dataset == 'PGP',], aes(x=contig_name, y=cnt, fill=vt)) + 
+  geom_bar(stat="identity", position="dodge") +
+  ylab("Number of variants") +
+  xlab("Chromosome") + 
+  ggtitle("Total Variant Count by Chromosome and Type")
+```
+We can see that for PGP the proportion of indels is much higher and we have many more structural variants than in 1,000 Genomes.
+
+Sample Level Data
+-----------------
+
+Now let us see our distribution of genotypes across the PGP variants:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/genotype-counts.sql")
+```
+
+We see the tabular results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result, digits=6), type="html", include.rownames=F)
+```
+
+Comparing this to 1,000 Genomes:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+# TODO(deflaux): fix SQL to eliminate warning message "inaccurate integer conversion in coercion"
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/parsed-genotype-counts.sql")
+```
+_Notice in this query that the genotype in PGP requires further parsing to extract its constituents.  The next version of the schema will include the parsed values as columns._
+
+```{r genotype heatmap, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(result) +
+  aes(x=first_allele, y=second_allele) +
+  geom_tile(aes(fill=cnt)) +
+  scale_fill_gradient("Number of Variants", trans = "log", labels=function(x){round(x)}) +
+  facet_grid(dataset ~ .) +
+  ylab("Second Allele") +
+  xlab("First Allele") + 
+  ggtitle("Heatmaps of PGP and 1,000 Genomes genotypes")
+
+```
+The two most notable aspects of these heatmaps is that PGP contains no genotypes that match the reference and it does have some variants with a second alternate bases value.
+
+Next let us examine the upper and lower bounds on the number of samples per variant:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/sample-counts-minmax-by-chromosome.sql")
+```
+
+We see the tabular results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result, digits=6), type="html", include.rownames=F)
+```
+For all chromosomes, we have private variants (shared by only one sample) and that for all chromosomes except Y, we have variants shared by all samples.
+
+Other Miscellaneous Differences
+-------
+
+There is a new column, `end_pos`, that was computed from the source data when imported into the Variant Store:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/what-is-the-meaning-of-end-pos.sql")
+```
+
+We see the tabular results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result, digits=6), type="html", include.rownames=F)
+```
+_Notice that `end_pos` is not computed for structural variants but we expect this to be available at a later date.  It can be helpful when joining with annotations that span a genomic position interval._
+
+Lastly, let us see which columns are sufficient to serve as a unique key into this dataset:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/unique-key.sql")
+```
+
+```{r warning=FALSE, comment=NA}
+print(expect_true(is.null(result)))
+```
+
+The minimal unique key is: `(contig_name, start_pos, reference_bases, alternate_bases)`  Compare this to the [unique key for 1,000 Genomes](../../../1000genomes/data-stories/understanding-alternate-alleles).
