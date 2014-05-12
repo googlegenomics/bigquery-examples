@@ -59,7 +59,7 @@ ORDER BY
 
 We see the first few tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 15:47:05 2014 -->
+<!-- Mon May 12 16:09:01 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> cnt </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 3007196 </TD> <TD> 1000Genomes </TD> </TR>
@@ -129,7 +129,7 @@ _Notice in this query that the PGP dataset does not have a column indicating the
 
 We see the first few tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 15:47:10 2014 -->
+<!-- Mon May 12 16:09:04 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> vt </TH> <TH> cnt </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD> BND </TD> <TD align="right">   96169 </TD> <TD> PGP </TD> </TR>
@@ -171,7 +171,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 15:47:14 2014 -->
+<!-- Mon May 12 16:09:09 2014 -->
 <TABLE border=1>
 <TR> <TH> call_gt </TH> <TH> cnt </TH>  </TR>
   <TR> <TD> 1/0 </TD> <TD align="right"> 258784955 </TD> </TR>
@@ -260,8 +260,10 @@ _Notice in this query that the genotype in PGP requires further parsing to extra
 
 <img src="figure/genotype_heatmap.png" title="plot of chunk genotype heatmap" alt="plot of chunk genotype heatmap" style="display: block; margin: auto;" />
 
-The two most notable aspects of these heatmaps is that PGP contains no genotypes that match the reference and it does have some variants with a second alternate bases value.
-
+The two most notable aspects of these heatmaps is that PGP (unlike 1,000 Genomes)
+ 1. contains no genotypes that match the reference 
+ 1. does have some variants with more than one alternate allele
+ 
 Next let us examine the upper and lower bounds on the number of samples per variant:
 
 ```
@@ -286,7 +288,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 15:47:24 2014 -->
+<!-- Mon May 12 16:09:17 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> minimum_sample_count </TH> <TH> maximum_sample_count </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right">       1 </TD> <TD align="right">     172 </TD> </TR>
@@ -343,7 +345,7 @@ GROUP BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 15:47:29 2014 -->
+<!-- Mon May 12 16:09:20 2014 -->
 <TABLE border=1>
 <TR> <TH> svtype </TH> <TH> min_length_delta </TH> <TH> max_length_delta </TH> <TH> is_snp </TH> <TH> cnt </TH>  </TR>
   <TR> <TD>  </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 29791008 </TD> </TR>
@@ -384,7 +386,7 @@ FROM (
   HAVING
     cnt > 1)
 GROUP BY
-  contig_name;Retrieving data:  2.5sRetrieving data:  2.6sRetrieving data:  3.2sRetrieving data:  3.6s
+  contig_name;Retrieving data:  2.2sRetrieving data:  2.4s
 ```
 
 

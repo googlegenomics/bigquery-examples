@@ -123,8 +123,10 @@ ggplot(result) +
   ggtitle("Heatmaps of PGP and 1,000 Genomes genotypes")
 
 ```
-The two most notable aspects of these heatmaps is that PGP contains no genotypes that match the reference and it does have some variants with a second alternate bases value.
-
+The two most notable aspects of these heatmaps is that PGP (unlike 1,000 Genomes)
+ 1. contains no genotypes that match the reference 
+ 1. does have some variants with more than one alternate allele
+ 
 Next let us examine the upper and lower bounds on the number of samples per variant:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/sample-counts-minmax-by-chromosome.sql")

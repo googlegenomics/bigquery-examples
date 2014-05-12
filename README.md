@@ -21,7 +21,7 @@ Sample analyses upon VCF data from the [1,000 Genomes Project](http://www.1000ge
 
 **Project Name**: _google.com:biggene_
     
-### pgp
+### [pgp](./pgp)
 Sample analyses upon the [Personal Genome Project](http://www.personalgenomes.org/)
 
 **Project Name**: _google.com:biggene_
