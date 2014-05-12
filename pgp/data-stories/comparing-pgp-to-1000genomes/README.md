@@ -59,7 +59,7 @@ ORDER BY
 
 We see the first few tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 16:09:01 2014 -->
+<!-- Mon May 12 16:26:32 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> cnt </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 3007196 </TD> <TD> 1000Genomes </TD> </TR>
@@ -129,7 +129,7 @@ _Notice in this query that the PGP dataset does not have a column indicating the
 
 We see the first few tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 16:09:04 2014 -->
+<!-- Mon May 12 16:26:36 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> vt </TH> <TH> cnt </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD> BND </TD> <TD align="right">   96169 </TD> <TD> PGP </TD> </TR>
@@ -171,7 +171,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 16:09:09 2014 -->
+<!-- Mon May 12 16:26:42 2014 -->
 <TABLE border=1>
 <TR> <TH> call_gt </TH> <TH> cnt </TH>  </TR>
   <TR> <TD> 1/0 </TD> <TD align="right"> 258784955 </TD> </TR>
@@ -288,7 +288,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 16:09:17 2014 -->
+<!-- Mon May 12 16:26:48 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> minimum_sample_count </TH> <TH> maximum_sample_count </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right">       1 </TD> <TD align="right">     172 </TD> </TR>
@@ -329,29 +329,31 @@ There is a new column, `end_pos`, that was computed from the source data when im
 # What is the meaning of end_pos?
 SELECT
   svtype,
+  IF(end IS NULL, FALSE, TRUE) AS has_end,
   MIN(end_pos - start_pos) AS min_length_delta,
   MAX(end_pos - start_pos) AS max_length_delta,
   IF((end_pos - start_pos) = 1,
     TRUE,
-    FALSE) AS is_snp,
+    FALSE) AS is_ref_allele_one_bp_long,
   COUNT(1) AS cnt,
 FROM
   [google.com:biggene:pgp.variants]
 GROUP BY
   svtype,
-  is_snp
+  has_end,
+  is_ref_allele_one_bp_long
 ```
 
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon May 12 16:09:20 2014 -->
+<!-- Mon May 12 16:26:52 2014 -->
 <TABLE border=1>
-<TR> <TH> svtype </TH> <TH> min_length_delta </TH> <TH> max_length_delta </TH> <TH> is_snp </TH> <TH> cnt </TH>  </TR>
-  <TR> <TD>  </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 29791008 </TD> </TR>
-  <TR> <TD>  </TD> <TD align="right">       2 </TD> <TD align="right">     195 </TD> <TD> FALSE </TD> <TD align="right"> 10303720 </TD> </TR>
-  <TR> <TD> INS </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 2474927 </TD> </TR>
-  <TR> <TD> BND </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 1261792 </TD> </TR>
+<TR> <TH> svtype </TH> <TH> has_end </TH> <TH> min_length_delta </TH> <TH> max_length_delta </TH> <TH> is_ref_allele_one_bp_long </TH> <TH> cnt </TH>  </TR>
+  <TR> <TD>  </TD> <TD> FALSE </TD> <TD align="right">       2 </TD> <TD align="right">     195 </TD> <TD> FALSE </TD> <TD align="right"> 10303720 </TD> </TR>
+  <TR> <TD>  </TD> <TD> FALSE </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 29791008 </TD> </TR>
+  <TR> <TD> INS </TD> <TD> TRUE </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 2474927 </TD> </TR>
+  <TR> <TD> BND </TD> <TD> FALSE </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 1261792 </TD> </TR>
    </TABLE>
 
 _Notice that `end_pos` is not computed for structural variants but we expect this to be available at a later date.  It can be helpful when joining with annotations that span a genomic position interval._
@@ -386,7 +388,7 @@ FROM (
   HAVING
     cnt > 1)
 GROUP BY
-  contig_name;Retrieving data:  2.2sRetrieving data:  2.4s
+  contig_name;Retrieving data:  2.3sRetrieving data:  2.6sRetrieving data:  2.8s
 ```
 
 
