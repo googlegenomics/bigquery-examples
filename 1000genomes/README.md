@@ -144,7 +144,7 @@ Examing the first few rows, we see:
 One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
 
 ### Sample Data
-Show variants for a paricular sample within BRCA1:
+Show variants for a particular sample within BRCA1:
 
 ```
 # Get sample level data for variants within BRCA1.
