@@ -19,13 +19,12 @@ library(dplyr)
 library(testthat)
 
 dataDir <- './'
-dataDir <- '/Users/deflaux/testData/pgp'
 
 #----------------------------------------------------------------------------
 # Load Demographic Data
 demo <- read.csv(file.path(dataDir, 'PGPParticipantSurvey-20140506220023.csv'),
                  stringsAsFactors=FALSE,
-                 na.strings=c('NA', 'N/A', 'No response'))
+                 na.strings=c('NA', 'N/A', 'No response', 'null', ''))
 expect_equal(nrow(demo), 2627)
 expect_equal(ncol(demo), 52)
 # Substitute whitespace and punctuation for underscores
@@ -73,7 +72,7 @@ files <- c(
 traits <- lapply(files, function(file) {
   data <- read.csv(file.path(dataDir, file),
                    stringsAsFactors=FALSE,
-                   na.strings=c('NA', 'N/A', 'No response'))
+                   na.strings=c('NA', 'N/A', 'No response', 'null', ''))
   print(paste('file:', file, 'nrow:', nrow(data), 'ncol:', ncol(data)))
   expect_equal(ncol(data), 5)
   # This column name differs between the surveys but its the same data.  Update
@@ -121,11 +120,6 @@ expect_equal(length(unique(wideTrait$Participant)), nrow(wideTrait))
 # Substitute whitespace and punctuation for underscores
 colnames(wideTrait) <- gsub('\\W$', '', colnames(wideTrait))
 colnames(wideTrait) <- gsub('\\W+', '_', colnames(wideTrait))
-# Some people who filled out the trait survey had none of the conditions
-expect_false(setequal(as.character(wideTrait$Participant), as.character(trait$Participant)))
-expect_that(subset(trait, !Participant %in% wideTrait$Participant, 
-                   Have.you.ever.been.diagnosed.with.any.of.the.following.conditions.),
-            matches(''))
 
 # Spot check our data to verify that it was reshaped correctly.
 expect_true(wideTrait[wideTrait$Participant=='hu005023', 'has_Dental_cavities'])
