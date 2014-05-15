@@ -22,3 +22,49 @@ Personal Genomes Project
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Comparing PGP to 1000 Genomes](./data-stories/comparing-pgp-to-1000genomes)
+
+
+
+
+This data was recently loaded and there are not too many data stories yet.  Please help us add some!
+
+Here is an initial query joining the variant data with the phenotypic data.  See the [phenotypes schema](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.phenotypes?pli=1) for more detail.
+
+
+```
+# Compute sample count by gender
+SELECT
+  Sex_Gender,
+  COUNT(1) AS cnt
+FROM
+  (
+  SELECT
+    call.callset_name,
+    Sex_Gender
+  FROM
+    FLATTEN([google.com:biggene:pgp.variants],
+      call) AS var
+  JOIN
+    [google.com:biggene:pgp.phenotypes] AS pheno
+  ON
+    pheno.Participant = var.call.callset_name
+  GROUP BY
+    call.callset_name,
+    Sex_Gender)
+GROUP BY
+  Sex_Gender
+```
+
+
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Wed May 14 18:13:56 2014 -->
+<TABLE border=1>
+<TR> <TH> Sex_Gender </TH> <TH> cnt </TH>  </TR>
+  <TR> <TD> Female </TD> <TD align="right">  53 </TD> </TR>
+  <TR> <TD>  </TD> <TD align="right">   6 </TD> </TR>
+  <TR> <TD> Male </TD> <TD align="right"> 112 </TD> </TR>
+   </TABLE>
+
+
+<img src="figure/gender.png" title="plot of chunk gender" alt="plot of chunk gender" style="display: block; margin: auto;" />
+

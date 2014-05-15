@@ -22,3 +22,38 @@ Personal Genomes Project
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Comparing PGP to 1000 Genomes](./data-stories/comparing-pgp-to-1000genomes)
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(ggplot2)
+require(dplyr)
+require(xtable)
+require(testthat)
+billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
+```
+
+This data was recently loaded and there are not too many data stories yet.  Please help us add some!
+
+Here is an initial query joining the variant data with the phenotypic data.  See the [phenotypes schema](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.phenotypes?pli=1) for more detail.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("./sql/gender-count.sql")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result)), type="html", include.rownames=F)
+```
+
+```{r gender, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=6, fig.height=4}
+result$Sex_Gender[is.na(result$Sex_Gender)] <- "Unknown"
+ggplot(result, aes(x="", y=cnt, fill=Sex_Gender)) +
+  geom_bar(width=1, stat="identity") +
+  coord_polar("y", start=pi / 3) +
+  xlab("") + ylab("Gender Count")
+```
