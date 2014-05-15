@@ -80,7 +80,7 @@ print(xtable(head(result)), type="html", include.rownames=F)
 One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
 
 ### Sample Data
-Show variants for a paricular sample within BRCA1:
+Show variants for a particular sample within BRCA1:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("./sql/sample-level-data-for-brca1.sql")
 ```
