@@ -6,11 +6,12 @@ Source Variant Data
 
 ### variants table
 
-Description:
-* http://www.completegenomics.com/FAQs/Variant-Calls-SNPs-and-Small-Indels/
-
 Source:
 * https://my.pgp-hms.org/public_genetic_data?utf8=%E2%9C%93&data_type=Complete+Genomics&commit=Search
+
+Description:
+* http://www.completegenomics.com/FAQs/
+* http://www.completegenomics.com/FAQs/Variant-Calls-SNPs-and-Small-Indels/
 
 Files:
 * 172 of the 174 CGI genomes in Google Cloud Storage bucket gs://pgp-harvard-data-public were converted from native format to VCF via [Complete Genomics Analysis Tools](http://www.completegenomics.com/analysis-tools/cgatools/) [mkvcf](http://www.google.com/url?q=http%3A%2F%2Fcgatools.sourceforge.net%2Fdocs%2F1.8.0%2Fcgatools-command-line-reference.html%23mkvcf&sa=D&sntz=1&usg=AFQjCNGWkNsJIVWoTqn81tM77abZr5J1aQ) with command line: 
@@ -22,3 +23,12 @@ cgatools mkvcf --beta --reference <reference> --genome-root <dir> --output <vcf 
 Added and Derived Values:
 * `call.callset_id` is an identifier created during the Variant Store import
 * `end_pos` is computed from POSTIION and REF in the source VCF data as part of the Variant Store import
+
+### phenotypes table
+
+Source: 
+* https://my.pgp-hms.org/google_surveys
+* Date Downloaded: May 6, 2014
+
+Status: 
+* complete, see script [phenotype-prep.R](phenotype-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery
