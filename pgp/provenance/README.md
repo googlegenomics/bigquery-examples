@@ -7,7 +7,7 @@ Source Variant Data
 ### variants table
 
 Source:
-* https://my.pgp-hms.org/public_genetic_data?utf8=%E2%9C%93&data_type=Complete+Genomics&commit=Search
+* Google Cloud Storage gs://pgp-harvard-data-public/ which is a subset of https://my.pgp-hms.org/public_genetic_data?utf8=%E2%9C%93&data_type=Complete+Genomics&commit=Search
 
 Description:
 * http://www.completegenomics.com/FAQs/

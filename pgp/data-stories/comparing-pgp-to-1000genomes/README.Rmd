@@ -124,8 +124,8 @@ ggplot(result) +
 
 ```
 The two most notable aspects of these heatmaps is that PGP (unlike 1,000 Genomes)
- 1. contains no genotypes that match the reference 
  1. does have some variants with more than one alternate allele
+ 1. contains no genotypes that match the reference but note that this difference is an artifact of how the data was converted to VCF format (see [provenance](../../provenance) for more detail).  The native Complete Genomics files explicitly call most of the genome as "matching reference".
  
 Next let us examine the upper and lower bounds on the number of samples per variant:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
