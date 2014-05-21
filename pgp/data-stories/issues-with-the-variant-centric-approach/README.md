@@ -16,12 +16,13 @@ data as it is currently represented in Google Genomics' BigQuery
 database (as of May 16 2014).
 
 This story contains two vignettes based on real world data, an interlude,
-and a final piece of speculative fiction.
+a piece of speculative fiction, and a happy conclusion.
 
 1. Frederick can't find participants with Factor V Leiden
 2. Thomas confirms the amazing intelligence of PGP participants
 3. Interlude: Casey updates the database
 4. Emily is confused about variant frequencies
+5. Ending: Casey retroactively makes data variant-agnostic
 
 Frederick can't find participants with Factor V Leiden
 ------------------------------------------------------
@@ -78,18 +79,22 @@ so I guess there aren't any homozygotes in the PGP."
 
 "Why?" asks Frederick.
 
-"Google Genomics converted each personal genome into classic VCF
-format before loading it," responds Dr. Brainy. "The only
-information they loaded were positions where a participant had
-at least one variant."
+"Using tools provided by Complete Genomics -- the sequencer
+of these genomes -- Google Genomics converted the data into
+classic VCF format before loading it," responds Dr. Brainy.
+"Unfortunately, the classic VCF format only reports
+information where a participant has at least one variant.
+So that's what got loaded into the database."
 
 "Wait," responds Frederick. He quickly searches for more
-information about the PGP data. "Look, there's 174 genomes
-total. 167 and 5 add up to 172 - we can infer the other two
-were homozygous!"
+information about the PGP data. "Look, there's 172 genomes
+total. 167 and 5 add up to 172 - so we can tell there aren't
+any homozygous reference participants."
 
-"Or they just weren't covered," counters Dr. Brainy. "Whole
-genome data always has some missing regions."
+"That's good. But if those numbers hadn't matched up, we
+wouldn't really know if the remainder were homozygous. They
+might simply be missing that data, whole genome data always
+has some missing regions."
 
 "Oh." Fred frowns. "So, like, we're never sure how many are
 homozygous for reference? In any of the PGP data?!" he asks.
@@ -215,3 +220,21 @@ sample sets."
 "Yes," agrees Dr. Brainy, "That's a fair summary."
 
 "This is hard," reflects Emily, "I feel bad for Casey!"
+
+Ending: Casey retroactively makes data variant-agnostic
+-------------------------------------------------------
+
+Back at Google Genomics, Casey realizes a better solution for storing
+the data. The original Complete Genomics data, and the gVCF format
+created by Illumina, both report "matching reference" regions rather
+than individual positions. Storing the *regions* in the database, and
+reworking database queries to check for such fragments, would provide
+the complete solution.
+
+But going back to all the old data to redo data processing is tedious,
+so Casey applies for one cycle of Retroactive Messaging time at the
+Googleplex (a popular internal feature where you send messages to
+your past self). The database is retroactively upgraded.
+
+In Timeline 2, Emily examines the database and finds perfect data, an
+interesting finding, and publishes it in PLoS Genetics!
