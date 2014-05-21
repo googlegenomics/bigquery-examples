@@ -59,13 +59,6 @@ FROM (
     population,
     reference_bases,
     alternate_bases,
-    alt,
-  ORDER BY
-    contig,
-    position,
-    population,
-    reference_bases,
-    alternate_bases,
     alt)
 GROUP BY
   contig,
