@@ -23,5 +23,6 @@ FROM (
   GROUP BY
     contig_name)
 ORDER BY
-  contig_name;
+  contig_name,
+  dataset;
 

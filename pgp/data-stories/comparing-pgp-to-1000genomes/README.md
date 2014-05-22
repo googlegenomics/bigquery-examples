@@ -53,21 +53,22 @@ FROM (
   GROUP BY
     contig_name)
 ORDER BY
-  contig_name;
+  contig_name,
+  dataset;
 ```
 
 
 We see the first few tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri May 16 06:42:23 2014 -->
+<!-- Thu May 22 16:36:11 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> cnt </TH> <TH> dataset </TH>  </TR>
-  <TR> <TD> 1 </TD> <TD align="right"> 3349506 </TD> <TD> PGP </TD> </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 3007196 </TD> <TD> 1000Genomes </TD> </TR>
+  <TR> <TD> 1 </TD> <TD align="right"> 3349506 </TD> <TD> PGP </TD> </TR>
   <TR> <TD> 10 </TD> <TD align="right"> 1882663 </TD> <TD> 1000Genomes </TD> </TR>
   <TR> <TD> 10 </TD> <TD align="right"> 2093521 </TD> <TD> PGP </TD> </TR>
-  <TR> <TD> 11 </TD> <TD align="right"> 2110229 </TD> <TD> PGP </TD> </TR>
   <TR> <TD> 11 </TD> <TD align="right"> 1894908 </TD> <TD> 1000Genomes </TD> </TR>
+  <TR> <TD> 11 </TD> <TD align="right"> 2110229 </TD> <TD> PGP </TD> </TR>
    </TABLE>
 
 
@@ -129,7 +130,7 @@ _Notice in this query that the PGP dataset does not have a column indicating the
 
 We see the first few tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri May 16 06:42:28 2014 -->
+<!-- Thu May 22 16:36:14 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> vt </TH> <TH> cnt </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD> BND </TD> <TD align="right">   96169 </TD> <TD> PGP </TD> </TR>
@@ -149,6 +150,68 @@ Re-plotting the data to just show the PGP variants:
 <img src="figure/pgp_variant_type_counts.png" title="plot of chunk pgp variant type counts" alt="plot of chunk pgp variant type counts" style="display: block; margin: auto;" />
 
 We can see that for PGP the proportion of indels is much higher and we have many more structural variants than in 1,000 Genomes.
+
+But let's take an even closer look:
+
+```
+# Inner SELECT filters just the records in which we are interested
+# Outer SELECT performs our analysis, in this case just a count of the genotypes
+# at a particular position in chromosome 3.
+SELECT
+  contig_name,
+  start_pos,
+  ref,
+  alt,
+  genotype,
+  COUNT(genotype) AS cnt,
+FROM (
+  SELECT
+    contig_name,
+    start_pos,
+    reference_bases AS ref,
+    GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+    call.callset_name AS sample_id,
+    call.gt AS genotype,
+    call.gl AS likelihood,
+  FROM
+    [google.com:biggene:pgp.variants]
+  WHERE
+    contig_name = '3'
+    AND start_pos = 65440410)
+GROUP BY
+  contig_name,
+  start_pos,
+  ref,
+  alt,
+  genotype
+ORDER BY
+  alt,
+  cnt DESC;
+```
+
+
+We see the tabular results:
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Thu May 22 16:36:19 2014 -->
+<TABLE border=1>
+<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> ref </TH> <TH> alt </TH> <TH> genotype </TH> <TH> cnt </TH>  </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> AAC </TD> <TD> 1|0 </TD> <TD align="right">  17 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> AAC </TD> <TD> 1|. </TD> <TD align="right">   5 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> AAC </TD> <TD> 1/. </TD> <TD align="right">   4 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> AAC </TD> <TD> 1/1 </TD> <TD align="right">   3 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> AAC,C </TD> <TD> 1|2 </TD> <TD align="right">  37 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> AC,C </TD> <TD> 1/2 </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> AC,C </TD> <TD> 1|2 </TD> <TD align="right">   1 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> C </TD> <TD> 1/1 </TD> <TD align="right">  41 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> C </TD> <TD> 1/0 </TD> <TD align="right">  17 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> C </TD> <TD> 1|. </TD> <TD align="right">  10 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> C </TD> <TD> 1|0 </TD> <TD align="right">   8 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> C </TD> <TD> 1/. </TD> <TD align="right">   6 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> C </TD> <TD> 1|1 </TD> <TD align="right">   1 </TD> </TR>
+  <TR> <TD> 3 </TD> <TD align="right"> 65440410 </TD> <TD> A </TD> <TD> C </TD> <TD> 0|1 </TD> <TD align="right">   1 </TD> </TR>
+   </TABLE>
+
+So some records have both SNPs and INDELs.
 
 Sample Level Data
 -----------------
@@ -171,7 +234,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri May 16 06:42:32 2014 -->
+<!-- Thu May 22 16:36:22 2014 -->
 <TABLE border=1>
 <TR> <TH> call_gt </TH> <TH> cnt </TH>  </TR>
   <TR> <TD> 1/0 </TD> <TD align="right"> 258784955 </TD> </TR>
@@ -288,7 +351,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri May 16 06:42:39 2014 -->
+<!-- Thu May 22 16:36:28 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> minimum_sample_count </TH> <TH> maximum_sample_count </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right">       1 </TD> <TD align="right">     172 </TD> </TR>
@@ -347,7 +410,7 @@ GROUP BY
 
 We see the tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri May 16 06:42:42 2014 -->
+<!-- Thu May 22 16:36:30 2014 -->
 <TABLE border=1>
 <TR> <TH> svtype </TH> <TH> has_end </TH> <TH> min_length_delta </TH> <TH> max_length_delta </TH> <TH> is_ref_allele_one_bp_long </TH> <TH> cnt </TH>  </TR>
   <TR> <TD>  </TD> <TD> FALSE </TD> <TD align="right">       1 </TD> <TD align="right">       1 </TD> <TD> TRUE </TD> <TD align="right"> 29791008 </TD> </TR>
