@@ -92,6 +92,17 @@ ggplot(result[result$dataset == 'PGP',], aes(x=contig_name, y=cnt, fill=vt)) +
 ```
 We can see that for PGP the proportion of indels is much higher and we have many more structural variants than in 1,000 Genomes.
 
+But let's take an even closer look:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/taking-a-closer-look-at-variant-types.sql")
+```
+
+We see the tabular results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
+So some records have both SNPs and INDELs.
+
 Sample Level Data
 -----------------
 
