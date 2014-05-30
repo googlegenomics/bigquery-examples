@@ -5,7 +5,7 @@ The projects in this repository demonstrate working with genomic data via [Googl
 
 You can execute these examples by:
  1. Copying and pasting the queries into 
-   * the BigQuery [Browser Tool](https://developers.google.com/bigquery/bigquery-browser-tool)
+   * the BigQuery [Browser Tool](https://bigquery.cloud.google.com)
    * the [bq Command-Line Tool](https://developers.google.com/bigquery/bq-command-line-tool)
    * one of the many [third-party tools](https://developers.google.com/bigquery/third-party-tools) that have integrated BigQuery
  1. Running the chunks of R code within the RMarkdown files in [R](http://www.r-project.org/) or [RStudio](http://www.rstudio.com/)
@@ -33,13 +33,20 @@ Getting Started
   * Follow the [BigQuery instructions](https://developers.google.com/bigquery/sign-up) on how to sign up for BigQuery and set up a new API project.
   * You can use the Team tab to share a project with other people at your company
   
- 1. You’ll need to enable billing and you will be charged for any queries you execute.
-  * See BigQuery [pricing](https://developers.google.com/bigquery/pricing) for more detail.
-  * For example, queries within the 1,000 Genomes dataset that examine sample genotype columns will process approximately 1TB of data per query. (1,000 GB * $0.005 per GB processed = $5.00)
-  * Note that if you would like to try a few queries prior to enabling billing, see the queries for the much smaller phenotypic dataset available in the data story ["Exploring the phenotypic data"](./1000genomes/data-stories/exploring-the-phenotypic-data).
-  
- 1. To add a dataset to your project:
-  * go to the BigQuery [Browser Tool](https://developers.google.com/bigquery/bigquery-browser-tool)
+ 1. Run a query.
+  * Note: you do not need to enable billing to run the smaller queries. 
+  * go to the BigQuery [Browser Tool](https://bigquery.cloud.google.com)
+  * click on the **Compose query** button
+  * paste the sql code from [indel-length-counts](1000genomes/sql/indel-length-counts.sql) into the query textbox
+  * click **Run query** to get your results
+  * All of the queries for the small phenotypic dataset available in the data story ["Exploring the phenotypic data"](./1000genomes/data-stories/exploring-the-phenotypic-data) should be runnable in this free mode.
+
+If you see an `Exceeded quota` error, that means you will need to enable billing and you will be charged for that query. See BigQuery [pricing](https://developers.google.com/bigquery/pricing) for more detail.
+
+For example, queries within the 1,000 Genomes dataset that examine sample genotype columns will process approximately 1TB of data per query. (1,000 GB * $0.005 per GB processed = $5.00)
+
+### To add a dataset to your project
+  * go to the BigQuery [Browser Tool](https://bigquery.cloud.google.com)
   * click on the drop down icon beside your project name in the left navigator
   * pick _‘Switch to project’_ in the menu, and _‘Display project...’_ in the submenu
 enter the project name in the _‘Add Project’_ dialog.
@@ -55,13 +62,3 @@ The [Google Genomics Discuss mailing list](https://groups.google.com/forum/#!for
 way to sync up with other people who use googlegenomics including the core developers. You can subscribe
 by sending an email to ``google-genomics-discuss+subscribe@googlegroups.com`` or just post using
 the [web forum page](https://groups.google.com/forum/#!forum/google-genomics-discuss).
-
-Contributing changes
---------------------
-
-See [CONTRIBUTING](CONTRIBUTING.rst).
-
-Licensing
----------
-
-See [LICENSE](LICENSE).
