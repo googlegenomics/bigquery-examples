@@ -57,8 +57,7 @@ description <- list(
     allele2ReadCount='Number of reads that support the second allele. For homozygous loci, this number is identical to allele1ReadCount.',
     referenceAlleleReadCount='Number of reads that support the reference sequence. For loci where one of the alleles is reference, this number is identical to the read count of that allele.',
     totalReadCount='Total number of reads in the evidence file that overlap the interval. Note that this count also includes reads that do not strongly support one allele over the other and consequently are not accounted for in allele1ReadCount or allele2ReadCount. For loci where one of the alleles contains a no-call, the totalReadCount also includes the reads that support that no-called allele. The totalReadCount does not include reads that do not overlap the locus, even if they do overlap the evidence interval, and, hence, are present in the evidence file.',
-    allele1Gene='Semicolon-separated list of all gene annotations for the first allele of the locus.
-    For every gene annotation, the following fields from the gene file are concatenated together using colon as separator: geneId, mrnaAcc, symbol, component, and impact. For example:
+    allele1Gene='Semicolon-separated list of all gene annotations for the first allele of the locus.  For every gene annotation, the following fields from the gene file are concatenated together using colon as separator: geneId, mrnaAcc, symbol, component, and impact. For example:
       100130417:NR_026874.1:FLJ39609:TSS-UPSTREAM:UNKNOWNINC;148398:NM_152486.2:SAMD11:TSS-UPSTREAM:UNKNOWN-INC',
     allele2Gene='Gene annotation list for the second allele formatted in the same way as allele1Gene.',
     pfam='Pfam domain information that overlap with the locus.',
@@ -67,7 +66,7 @@ description <- list(
       - repeat name
       - repeat family
       - overall divergence percentage (number of bases changed, deleted, or inserted relative to the repeat consensus sequence per hundred bases)
-    Mitochondrion loci are not annotated.  See RepeatMasker in “References” for more information.',
+Mitochondrion loci are not annotated.  See RepeatMasker in “References” for more information.',
     segDupOverlap='Number of distinct segmental duplications that overlap this locus.',
     relativeCoverageDiploid='Normalized coverage level, under a diploid model, for the segment that overlaps the current locus (for loci that overlap two segments, the data from the cnvSegmentsDiploidBeta file with the longer overlap are chosen). This column corresponds to the relativeCvg field in the cnvSegmentsDiploidBeta file.',
     calledPloidy='Ploidy of the segment, as called using a diploid model. Only present if the ploidy calls were made during the assembly (only when the calledPloidy column is present in the source cnvSegmentsDiploidBeta file). This column corresponds to the calledPloidy field in the cnvSegmentsDiploidBeta file.',
@@ -75,15 +74,13 @@ description <- list(
     calledLevel='Coverage level of the segment, as called using a non-diploid model. Only present if the ploidy coverage levels were made during the assembly (only when the calledLevel column is present in the source cnvSegmentsNondiploidBeta file). This column corresponds to the calledLevel field in the cnvSegmentsNondiploidBeta file.'
 )
 
-# Load a subset of data from our Hadoop job
 dataDir <- './'
-dataDir <- '/Users/deflaux/testData/pgp/cgi'
-data <- read.delim(file.path(dataDir, 'hadoop-out-pgp-master-calls-part-00028'),
+# Load a subset of data from our Hadoop job
+data <- read.delim(file.path(dataDir, 'part-00028'),
                    col.names=names(description))
 expect_that(ncol(data), equals(36))
 
 ## Load a subset of the source CGI data
-#dataDir <- '/Users/deflaux/testData/pgp/cgi/hu34D5B9'
 #data <- read.delim(file.path(dataDir, 'masterVarBeta-GS000015891-ASM-brief.tsv'),
 #                             skip=19,
 #                             header=TRUE)
