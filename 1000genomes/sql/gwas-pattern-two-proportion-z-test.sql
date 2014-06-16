@@ -3,6 +3,7 @@
 # --> for example in its treatment of no-call variants.  Feedback to improve
 # this query is most welcome!
 
+# http://www.statisticslectures.com/topics/ztestproportions/
 # two-proportion z-test
 # alpha = 0.01
 
@@ -49,11 +50,15 @@ FROM (
     reference_bases,
     alternate_bases,
     vt,
-    SUM(TRUE = is_case) AS case_count,
-    SUM(FALSE = is_case) AS control_count,
-    SUM(1) AS allele_count,
+    SUM(ref_count + alt_count) AS allele_count,
     SUM(ref_count) AS ref_count,
     SUM(alt_count) AS alt_count,
+    SUM(IF(TRUE = is_case,
+        INTEGER(ref_count + alt_count),
+        0)) AS case_count,
+    SUM(IF(FALSE = is_case,
+        INTEGER(ref_count + alt_count),
+        0)) AS control_count,
     SUM(IF(TRUE = is_case,
         ref_count,
         0)) AS case_ref_count,
@@ -77,7 +82,7 @@ FROM (
       alternate_bases,
       END,
       vt,
-      # Ignore no-calls (-1) and 1,000 genomes data bi-allelic
+      # Ignore no-calls (-1) and 1,000 genomes data is bi-allelic
       (0 = genotype.first_allele) + (0 = genotype.second_allele) AS ref_count,
       (1 = genotype.first_allele) + (1 = genotype.second_allele) AS alt_count,
     FROM

@@ -8,7 +8,7 @@
 # n = {case, control} = 2
 # m = {alt, ref} = 2 
 # df = (n-1)*(m-1) = 1
-# Chi-squared critical value for 0.01 = 6.63
+# Chi-squared critical value for df=1,alpha=0.01 is 6.635
 
 # For example, see alcohol flush reaction at position 112241766 
 
@@ -47,11 +47,15 @@ FROM (
     reference_bases,
     alternate_bases,
     vt,
-    SUM(TRUE = is_case) AS case_count,
-    SUM(FALSE = is_case) AS control_count,
-    SUM(1) AS allele_count,
+    SUM(ref_count + alt_count) AS allele_count,
     SUM(ref_count) AS ref_count,
     SUM(alt_count) AS alt_count,
+    SUM(IF(TRUE = is_case,
+        INTEGER(ref_count + alt_count),
+        0)) AS case_count,
+    SUM(IF(FALSE = is_case,
+        INTEGER(ref_count + alt_count),
+        0)) AS control_count,
     SUM(IF(TRUE = is_case,
         ref_count,
         0)) AS case_ref_count,
@@ -75,7 +79,7 @@ FROM (
       alternate_bases,
       END,
       vt,
-      # Ignore no-calls (-1) and 1,000 genomes data bi-allelic
+      # Ignore no-calls (-1) and 1,000 genomes data is bi-allelic
       (0 = genotype.first_allele) + (0 = genotype.second_allele) AS ref_count,
       (1 = genotype.first_allele) + (1 = genotype.second_allele) AS alt_count,
     FROM
@@ -87,9 +91,6 @@ FROM (
       g.genotype.sample_id = p.sample
     WHERE
       contig = '12'
-      AND position BETWEEN 112241750
-      AND 112241800
-# 112241766 alcohol flush reaction
       )
   GROUP BY
     contig,
@@ -98,8 +99,15 @@ FROM (
     reference_bases,
     alternate_bases,
     vt)
+WHERE
+  # For chi-squared, expected counts must be at least 5 for each group
+  (ref_count/allele_count)*case_count >= 5.0
+  AND (ref_count/allele_count)*control_count >= 5.0
+  AND (alt_count/allele_count)*case_count >= 5.0
+  AND (alt_count/allele_count)*control_count >= 5.0
 HAVING
-  chi_squared_score >= 6.63
+  # Chi-squared critical value for df=1 at alpha 0.01 = 6.635
+  chi_squared_score >= 6.635
 ORDER BY
   chi_squared_score DESC,
   allele_count DESC
