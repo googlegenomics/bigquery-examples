@@ -18,8 +18,9 @@ Description:
 * _Note that VCF positions 1-based but CGI positions 0-based_
 
 CGI Version Information:
-* extracted from the masterVarBeta-[ASM-ID].tsv.bz2 headers using Hadoop Streaming script [cgi-header-mapper.py](cgi-header-mapper.py) via [Hadoop on Google Cloud Platform](https://developers.google.com/hadoop/) with command line: `./bin/hadoop jar contrib/streaming/hadoop-streaming-1.2.1.jar -input gs://pgp-harvard-data-public/hu*/*/*/*/ASM/var* -mapper /home/$USER/cgi-header-mapper.py -file /home/$USER/cgi-header-mapper.py -reducer aggregate --numReduceTasks 1 -output gs://<output bucket>` producing output:
-
+* extracted from the masterVarBeta-[ASM-ID].tsv.bz2 headers using Hadoop Streaming script [cgi-header-mapper.py](cgi-header-mapper.py) via [Hadoop on Google Cloud Platform](https://developers.google.com/hadoop/) with command line: 
+```./bin/hadoop jar contrib/streaming/hadoop-streaming-1.2.1.jar -input gs://pgp-harvard-data-public/hu*/*/*/*/ASM/var* -mapper /home/$USER/cgi-header-mapper.py -file /home/$USER/cgi-header-mapper.py -reducer aggregate --numReduceTasks 1 -output gs://<output bucket>```
+producing output:
 ```
 ~/>cat part-00000 | grep -v GENERA | grep -v SAMPLE | grep -v ASSEM
 #CNV_DIPLOID_WINDOW_WIDTH 2000  174
@@ -44,7 +45,7 @@ CGI Version Information:
 #TYPE VAR-OLPL	174
 ```
 
-### calls table
+### cgi_variants table
 
 Data was loaded from the master variations files "a simple, integrated report of the variant calls and annotation information produced by the Complete Genomics assembly process".
 

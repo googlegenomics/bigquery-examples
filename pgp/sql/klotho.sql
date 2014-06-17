@@ -3,7 +3,7 @@
 SELECT
   *
 FROM
-  [pgp.calls]
+  [google.com:biggene:pgp.cgi_variants]
 WHERE
   chromosome = "chr13"
   AND locusBegin <= 33628137

@@ -3,7 +3,7 @@ SELECT
   sample_id,
   COUNT(1) AS cnt
 FROM
-  [pgp.calls]
+  [google.com:biggene:pgp.cgi_variants]
 GROUP BY
   1
 ORDER BY
