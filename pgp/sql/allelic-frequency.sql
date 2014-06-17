@@ -1,5 +1,7 @@
 # The following query computes the allelic frequency for BRCA1 variants in the 
-# PGP dataset.
+# PGP dataset.  Note that the new BigQuery feature of user-defined javascript
+# functions is in limited preview.  The output of this query can be found in
+# table [google.com:biggene:pgp.brca1_freq].
 SELECT
   vars.chromosome AS chromosome,
   vars.reference AS reference,
@@ -44,9 +46,9 @@ FROM (
         chromosome = 'chr17'
         AND locusBegin BETWEEN 41196311
         AND 41277499
-        AND reference != '='
+        AND (reference != '=' OR reference IS NULL)
         AND allele1Seq != '?'
-        AND reference != allele1Seq
+        AND (reference != allele1Seq OR reference IS NULL)
       GROUP BY
         chromosome,
         reference,
@@ -67,9 +69,9 @@ FROM (
         chromosome = 'chr17'
         AND locusBegin BETWEEN 41196311
         AND 41277499
-        AND reference != '='
+        AND (reference != '=' OR reference IS NULL)
         AND allele2Seq != '?'
-        AND reference != allele2Seq
+        AND (reference != allele2Seq OR reference IS NULL)
       GROUP BY
         chromosome,
         reference,
