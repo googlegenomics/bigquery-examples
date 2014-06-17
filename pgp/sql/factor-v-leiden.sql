@@ -11,7 +11,7 @@
   zygosity,
   has_Hereditary_thrombophilia_includes_Factor_V_Leiden_and_Prothrombin_G20210A
 FROM
-  [pgp.calls] AS var
+  [google.com:biggene:pgp.cgi_variants] AS var
 JOIN
   [google.com:biggene:pgp.phenotypes] AS pheno
 ON
