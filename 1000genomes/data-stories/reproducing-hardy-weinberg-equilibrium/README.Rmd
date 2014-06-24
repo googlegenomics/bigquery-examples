@@ -1,0 +1,94 @@
+<!-- R Markdown Documentation, DO NOT EDIT THE PLAIN MARKDOWN VERSION OF THIS FILE -->
+
+<!-- Copyright 2014 Google Inc. All rights reserved. -->
+
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+
+<!--     http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
+Reproducing the Hardy-Weinberg Equilibrium test for BRCA1 in 1,000 Genomes
+========================================================
+
+Provenance for the expected result
+---------------------------
+First get a slice of the VCF containing just the variants within BRCA1:
+```
+vcftools --gzvcf ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz --chr 17 --from-bp 41196312 --to-bp 41277500 --out brca1  --recode-INFO-all --recode
+
+VCFtools - v0.1.11
+(C) Adam Auton 2009
+
+Parameters as interpreted:
+  --gzvcf ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
+	--chr 17
+	--to-bp 41277500
+	--recode-INFO-all
+	--out brca1
+	--recode
+	--from-bp 41196312
+
+Using zlib version: 1.2.3.4
+Versions of zlib >= 1.2.4 will be *much* faster when reading zipped VCF files.
+Reading Index file.
+File contains 1046733 entries and 1092 individuals.
+Filtering by chromosome.
+	Chromosome: 17
+Keeping 1046733 entries on specified chromosomes.
+Applying Required Filters.
+Filtering sites by chromosome and/or position
+After filtering, kept 1092 out of 1092 Individuals
+After filtering, kept 879 out of a possible 1046733 Sites
+Outputting VCF file... Done
+Run Time = 200.00 seconds
+```
+Then run vcftools:
+```
+vcftools --vcf brca1.recode.vcf --hardy
+```
+Producing output file: [out.hwe](./vcfstats-output/out.hwe)
+
+See [details](http://vcftools.sourceforge.net/man_latest.html#OUTPUT OPTIONS) about the --hardy option for vcftools for more detail about the calculaton.
+ 
+Reproducing the result via BigQuery
+------------------------------------
+[BRCA1](http://www.genecards.org/cgi-bin/carddisp.pl?gene=BRCA1) resides on chromosome 17 from position 41196312 to 41277500.  
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(ggplot2)
+require(dplyr)
+require(xtable)
+require(testthat)
+billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
+```
+
+Let’s compute the Hardy-Weinberg Equilibrium test for each variant within BRCA1:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/hardy-weinberg-equilibrium.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.
+
+Displaying the first few rows of our result:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(head(xtable(result), 10), type="html", include.rownames=F)
+```
+and the last few rows:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(tail(xtable(result), 10), type="html", include.rownames=F)
+```
+Comparing these to the results in [out.hwe](./vcfstats-output/out.hwe) from vcftools we see that the test scores match.
+

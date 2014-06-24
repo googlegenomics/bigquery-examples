@@ -1,7 +1,7 @@
 # An example of a pattern one might use for Hardy-Weinberg Equilibrium
 # queries upon 1,000 Genomes variants.  It is specifically computing
 # the Hardy-Weinberg Equilibrium for the variants found in BRCA1 and
-# then computing the chi-squared score for the observed verssus
+# then computing the chi-squared score for the observed versus
 # expected counts for the genotypes.
 
 # http://scienceprimer.com/hardy-weinberg-equilibrium-calculator
@@ -9,7 +9,7 @@
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.p.htm
 # We have three genotypes, we therefore have 3 minus 1, or 2 degrees of freedom. 
 # Chi-squared critical value for df=2, alpha=5*10^-8 is 29.71679
-# > qchisq(1 - 5e-08, df=2) 
+# > qchisq(1 - 5e-08, df=2)
 # [1] 33.62249
 
 SELECT
@@ -53,7 +53,9 @@ FROM (
       2) * total_count AS expected_hom_ref_count,
     POW(1 - (hom_ref_freq + (.5 * het_freq)),
       2) * total_count AS expected_hom_alt_count,
-    2 * (hom_ref_freq + (.5 * het_freq)) * (1 - (hom_ref_freq + (.5 * het_freq))) * total_count AS expected_het_count,
+    2 * (hom_ref_freq + (.5 * het_freq)) 
+      * (1 - (hom_ref_freq + (.5 * het_freq))) 
+      * total_count AS expected_het_count,
     total_count,
     hom_ref_count,
     het_count,
@@ -109,15 +111,6 @@ FROM (
       contig = '17'
       AND position BETWEEN 41196312 AND 41277500
 ))
-WHERE
-  # For chi-squared, expected counts must be at least 5 for each group
-  expected_hom_ref_count >= 5.0
-  AND expected_het_count >= 5.0
-  AND expected_hom_alt_count >= 5.0
-HAVING
-  # Chi-squared critical value for df=2, alpha=5*10^-8 is 33.62249
-  chi_squared_score >= 33.62249
 ORDER BY
-  chi_squared_score DESC,
   contig,
   position
