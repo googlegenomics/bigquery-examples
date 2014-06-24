@@ -1,14 +1,20 @@
-# An example of a pattern one might use for GWAS queries upon 1,000 Genomes
-# variants.  Note that this particular query below is naive in _many_ respects
-# --> for example in its treatment of no-call variants.  Feedback to improve
-# this query is most welcome!
+# An example of a pattern one might use for GWAS queries upon 1,000
+# Genomes variants.  It is specifically examining differences allelic
+# frequency for variants upon chromosome 12 between the ASN super
+# population versus all other individuals, returning a ranked list of
+# variants by decreasing variation between groups.  Note that this
+# particular query below is naive in many, many respects and is merely
+# meant as an over-simplified example that might help domain experts
+# translate their scientifically correct data filtering and
+# statistical methods to BigQuery.  Feedback to improve this query is
+# most welcome!
 
+# http://www.statisticslectures.com/topics/goodnessoffit/
 # http://homes.cs.washington.edu/~suinlee/genome560/lecture7.pdf
-# X^2 = sum((observed - expected)^2/expected)
-# n = {case, control} = 2
-# m = {alt, ref} = 2 
-# df = (n-1)*(m-1) = 1
-# Chi-squared critical value for df=1,alpha=0.01 is 6.635
+# http://bioinformatics.ca/files/Statistics/Statistics_Day2-Module8.pdf
+# Chi-squared critical value for df=1,alpha=5*10^-8 is 29.71679
+# > qchisq(1 - 5e-08, df=1) 
+#   [1] 29.71679
 
 # For example, see alcohol flush reaction at position 112241766 
 
@@ -106,8 +112,8 @@ WHERE
   AND (alt_count/allele_count)*case_count >= 5.0
   AND (alt_count/allele_count)*control_count >= 5.0
 HAVING
-  # Chi-squared critical value for df=1 at alpha 0.01 = 6.635
-  chi_squared_score >= 6.635
+  # Chi-squared critical value for df=1, alpha=5*10^-8 is 29.71679
+  chi_squared_score >= 29.71679
 ORDER BY
   chi_squared_score DESC,
   allele_count DESC

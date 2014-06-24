@@ -1,11 +1,18 @@
-# An example of a pattern one might use for GWAS queries upon 1,000 Genomes
-# variants.  Note that this particular query below is naive in _many_ respects
-# --> for example in its treatment of no-call variants.  Feedback to improve
-# this query is most welcome!
+# An example of a pattern one might use for GWAS queries upon 1,000
+# Genomes variants.  It is specifically examining differences allelic
+# frequency for variants upon chromosome 12 between the ASN super
+# population versus all other individuals, returning a ranked list of
+# variants by decreasing variation between groups.  Note that this
+# particular query below is naive in many, many respects and is merely
+# meant as an over-simplified example that might help domain experts
+# translate their scientifically correct data filtering and
+# statistical methods to BigQuery.  Feedback to improve this query is
+# most welcome!
 
 # http://www.statisticslectures.com/topics/ztestproportions/
 # two-proportion z-test
-# alpha = 0.01
+# > qnorm(1 - 5e-08) 
+# [1] 5.326724
 
 # For example, see alcohol flush reaction at position 112241766 
 
@@ -103,7 +110,7 @@ FROM (
     alternate_bases,
     vt)
 HAVING
-  z_score >= 2.33
+  z_score >= 5.326724 OR z_score <= -5.326724
 ORDER BY
   z_score DESC,
   allele_count DESC
