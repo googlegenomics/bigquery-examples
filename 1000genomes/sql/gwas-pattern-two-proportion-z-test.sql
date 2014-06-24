@@ -11,6 +11,7 @@
 
 # http://www.statisticslectures.com/topics/ztestproportions/
 # two-proportion z-test
+# z-score critical value for p-value=5*10^-8 is +/-5.326724
 # > qnorm(1 - 5e-08) 
 # [1] 5.326724
 

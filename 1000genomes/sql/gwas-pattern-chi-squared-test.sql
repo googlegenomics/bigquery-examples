@@ -12,7 +12,7 @@
 # http://www.statisticslectures.com/topics/goodnessoffit/
 # http://homes.cs.washington.edu/~suinlee/genome560/lecture7.pdf
 # http://bioinformatics.ca/files/Statistics/Statistics_Day2-Module8.pdf
-# Chi-squared critical value for df=1,alpha=5*10^-8 is 29.71679
+# Chi-squared critical value for df=1, p-value=5*10^-8 is 29.71679
 # > qchisq(1 - 5e-08, df=1) 
 #   [1] 29.71679
 
@@ -114,7 +114,7 @@ WHERE
   AND (alt_count/allele_count)*case_count >= 5.0
   AND (alt_count/allele_count)*control_count >= 5.0
 HAVING
-  # Chi-squared critical value for df=1, alpha=5*10^-8 is 29.71679
+  # Chi-squared critical value for df=1, p-value=5*10^-8 is 29.71679
   chi_squared_score >= 29.71679
 ORDER BY
   chi_squared_score DESC,

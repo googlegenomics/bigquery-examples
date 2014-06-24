@@ -8,7 +8,7 @@
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.htm
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.p.htm
 # We have three genotypes, we therefore have 3 minus 1, or 2 degrees of freedom. 
-# Chi-squared critical value for df=2, alpha=5*10^-8 is 29.71679
+# Chi-squared critical value for df=2, p-value=5*10^-8 is 29.71679
 # > qchisq(1 - 5e-08, df=2)
 # [1] 33.62249
 
