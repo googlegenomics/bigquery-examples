@@ -15,7 +15,7 @@
 SELECT
   contig,
   position,
-  END,
+  end,
   reference_bases,
   alt,
   vt,
@@ -36,19 +36,19 @@ SELECT
   hom_alt_count,
   ROUND(expected_hom_alt_count,
     2) AS expected_hom_alt_count,
-  ROUND(hw_alt_freq,
-    4) AS hw_alt_freq,
+  ROUND(alt_freq,
+    4) AS alt_freq,
   af,
 FROM (
   SELECT
     contig,
     position,
-    END,
+    end,
     reference_bases,
     alt,
     vt,
     hom_ref_freq + (.5 * het_freq) AS hw_ref_freq,
-    1 - (hom_ref_freq + (.5 * het_freq)) AS hw_alt_freq,
+    1 - (hom_ref_freq + (.5 * het_freq)) AS alt_freq,
     POW(hom_ref_freq + (.5 * het_freq),
       2) * total_count AS expected_hom_ref_count,
     POW(1 - (hom_ref_freq + (.5 * het_freq)),
@@ -66,11 +66,12 @@ FROM (
     SELECT
       contig,
       position,
-      END,
+      end,
       reference_bases,
       GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
       vt,
-      # exclude no-calls (-1); also 1000 genomes data IS bi-allelic
+      # 1,000 genomes data is bi-allelic so there is only ever a single alt
+      # We also exclude genotypes where one or both alleles were not called (-1)
       SUM((0 = genotype.first_allele
           OR 1 = genotype.first_allele)
         AND (0 = genotype.second_allele
@@ -100,13 +101,14 @@ FROM (
           OR 1 = genotype.first_allele)
         AND (0 = genotype.second_allele
           OR 1 = genotype.second_allele)) WITHIN RECORD AS hom_alt_freq,
+      # Also return the pre-computed allelic frequency to help us check our work
       af,
     FROM
       [google.com:biggene:1000genomes.variants1kG]
     WHERE
       contig = '17'
-      AND position BETWEEN 41196312
-      AND 41277500))
+      AND position BETWEEN 41196312 AND 41277500
+))
 WHERE
   # For chi-squared, expected counts must be at least 5 for each group
   expected_hom_ref_count >= 5.0

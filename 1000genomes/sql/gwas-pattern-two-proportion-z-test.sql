@@ -19,7 +19,7 @@
 SELECT
   contig,
   position,
-  END,
+  end,
   reference_bases,
   alternate_bases,
   vt,
@@ -53,7 +53,7 @@ FROM (
   SELECT
     contig,
     position,
-    END,
+    end,
     reference_bases,
     alternate_bases,
     vt,
@@ -87,9 +87,9 @@ FROM (
         FALSE) AS is_case,
       reference_bases,
       alternate_bases,
-      END,
+      end,
       vt,
-      # Ignore no-calls (-1) and 1,000 genomes data is bi-allelic
+      # 1,000 genomes data is bi-allelic so there is only ever a single alt
       (0 = genotype.first_allele) + (0 = genotype.second_allele) AS ref_count,
       (1 = genotype.first_allele) + (1 = genotype.second_allele) AS alt_count,
     FROM
@@ -101,11 +101,13 @@ FROM (
       g.genotype.sample_id = p.sample
     WHERE
       contig = '12'
+      # Exclude genotypes where one or both alleles were not called (-1)
+      AND 0 <= genotype.first_allele AND 0 <= genotype.second_allele
       )
   GROUP BY
     contig,
     position,
-    END,
+    end,
     reference_bases,
     alternate_bases,
     vt)
