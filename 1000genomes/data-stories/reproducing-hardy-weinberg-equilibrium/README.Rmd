@@ -53,7 +53,7 @@ Then run vcftools:
 ```
 vcftools --vcf brca1.recode.vcf --hardy
 ```
-Producing output file: [out.hwe](./vcfstats-output/out.hwe)
+Producing output file: [out.hwe](./vcftools-output/out.hwe)
 
 See [details](http://vcftools.sourceforge.net/man_latest.html#OUTPUT OPTIONS) about the --hardy option for vcftools for more detail about the calculaton.
  
@@ -90,5 +90,5 @@ and the last few rows:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(tail(xtable(result), 10), type="html", include.rownames=F)
 ```
-Comparing these to the results in [out.hwe](./vcfstats-output/out.hwe) from vcftools we see that the test scores match.
+Comparing these to the results in [out.hwe](./vcftools-output/out.hwe) from vcftools we see that the test scores match.
 
