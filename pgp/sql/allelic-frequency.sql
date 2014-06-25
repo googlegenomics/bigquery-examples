@@ -41,7 +41,7 @@ FROM (
         allele1Seq AS allele,
         COUNT(1) AS cnt
       FROM
-        [deflaux-test-1:pgp.calls]
+        [google.com:biggene:pgp.cgi_variants]
       WHERE
         chromosome = 'chr17'
         AND locusBegin BETWEEN 41196311

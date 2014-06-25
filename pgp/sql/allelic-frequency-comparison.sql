@@ -25,7 +25,7 @@ JOIN (
     allele,
     freq AS pgp_freq
   FROM
-    [deflaux-test-1:pgp.brca1_freq_with_ins]
+    [google.com:biggene:pgp.brca1_freq]
     ) AS pgp
 ON
   pgp.contig = kg.contig
