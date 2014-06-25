@@ -53,7 +53,7 @@ Then run vcftools:
 ```
 vcftools --vcf brca1.recode.vcf --hardy
 ```
-Producing output file: [out.hwe](./vcfstats-output/out.hwe)
+Producing output file: [out.hwe](./vcftools-output/out.hwe)
 
 See [details](http://vcftools.sourceforge.net/man_latest.html#OUTPUT OPTIONS) about the --hardy option for vcftools for more detail about the calculaton.
  
@@ -76,10 +76,6 @@ Let’s compute the Hardy-Weinberg Equilibrium test for each variant within BRCA
 # http://scienceprimer.com/hardy-weinberg-equilibrium-calculator
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.htm
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.p.htm
-# We have three genotypes, we therefore have 3 minus 1, or 2 degrees of freedom. 
-# Chi-squared critical value for df=2, p-value=5*10^-8 is 29.71679
-# > qchisq(1 - 5e-08, df=2)
-# [1] 33.62249
 
 SELECT
   contig,
@@ -189,7 +185,7 @@ Number of rows returned by this query: 879.
 
 Displaying the first few rows of our result:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Tue Jun 24 15:32:49 2014 -->
+<!-- Wed Jun 25 13:55:54 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> end </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> chi_squared_score </TH> <TH> total_count </TH> <TH> hom_ref_count </TH> <TH> expected_hom_ref_count </TH> <TH> het_count </TH> <TH> expected_het_count </TH> <TH> hom_alt_count </TH> <TH> expected_hom_alt_count </TH> <TH> alt_freq </TH> <TH> af </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right">  </TD> <TD> C </TD> <TD> T </TD> <TD> SNP </TD> <TD align="right"> 34.47 </TD> <TD align="right"> 1092 </TD> <TD align="right"> 1082 </TD> <TD align="right"> 1081.03 </TD> <TD align="right">   9 </TD> <TD align="right"> 10.94 </TD> <TD align="right">   1 </TD> <TD align="right"> 0.03 </TD> <TD align="right"> 0.01 </TD> <TD align="right"> 0.01 </TD> </TR>
@@ -206,7 +202,7 @@ Displaying the first few rows of our result:
 
 and the last few rows:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Tue Jun 24 15:32:49 2014 -->
+<!-- Wed Jun 25 13:55:54 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> end </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> chi_squared_score </TH> <TH> total_count </TH> <TH> hom_ref_count </TH> <TH> expected_hom_ref_count </TH> <TH> het_count </TH> <TH> expected_het_count </TH> <TH> hom_alt_count </TH> <TH> expected_hom_alt_count </TH> <TH> alt_freq </TH> <TH> af </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41276764 </TD> <TD align="right">  </TD> <TD> T </TD> <TD> G </TD> <TD> SNP </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 1092 </TD> <TD align="right"> 1091 </TD> <TD align="right"> 1091.00 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
@@ -221,5 +217,5 @@ and the last few rows:
   <TR> <TD> 17 </TD> <TD align="right"> 41277460 </TD> <TD align="right">  </TD> <TD> A </TD> <TD> G </TD> <TD> SNP </TD> <TD align="right"> 0.03 </TD> <TD align="right"> 1092 </TD> <TD align="right"> 1081 </TD> <TD align="right"> 1081.03 </TD> <TD align="right">  11 </TD> <TD align="right"> 10.94 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.03 </TD> <TD align="right"> 0.01 </TD> <TD align="right"> 0.01 </TD> </TR>
    </TABLE>
 
-Comparing these to the results in [out.hwe](./vcfstats-output/out.hwe) from vcftools we see that the test scores match.
+Comparing these to the results in [out.hwe](./vcftools-output/out.hwe) from vcftools we see that the test scores match.
 
