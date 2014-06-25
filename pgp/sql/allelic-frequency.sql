@@ -64,7 +64,7 @@ FROM (
         allele2Seq AS allele,
         COUNT(1) AS cnt
       FROM
-        [deflaux-test-1:pgp.calls]
+        [google.com:biggene:pgp.cgi_variants]
       WHERE
         chromosome = 'chr17'
         AND locusBegin BETWEEN 41196311
@@ -106,7 +106,7 @@ FROM (
       # This User-defined function helps us reduce the size of the cross product
       # considered by this JOIN thereby greatly speeding up the query
       FROM js(
-      [deflaux-test-1:pgp.calls],
+      [google.com:biggene:pgp.cgi_variants],
       sample_id, chromosome, reference, locusBegin, locusEnd,
       "[{name: 'sample_id', type: 'string'},
         {name: 'chromosome', type: 'string'},
