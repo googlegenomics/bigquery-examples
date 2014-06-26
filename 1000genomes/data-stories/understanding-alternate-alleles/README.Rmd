@@ -133,4 +133,15 @@ result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/uni
 print(expect_true(is.null(result)))
 ```
 
-And now we have it, the unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
+And now we have it, a unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
+
+Lastly, what is a minimal unique key?
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/minimal-unique-key.sql")
+```
+
+```{r warning=FALSE, comment=NA}
+print(expect_true(is.null(result)))
+```
+
+We see that a minimal unique key is: (contig, position, alternate_bases, end) or alternatively (contig, position, end, vt)

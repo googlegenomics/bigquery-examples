@@ -52,7 +52,7 @@ Number of rows returned by this query: 417.
 
 We see the first six tabular results:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:11 2014 -->
+<!-- Thu Jun 26 14:44:49 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 184673 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
@@ -92,7 +92,7 @@ GROUP BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:15 2014 -->
+<!-- Thu Jun 26 14:44:51 2014 -->
 <TABLE border=1>
 <TR> <TH> num_alternates </TH> <TH> num_records </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 1045899 </TD> </TR>
@@ -122,15 +122,15 @@ WHERE
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:19 2014 -->
+<!-- Thu Jun 26 14:44:54 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> ids </TH> <TH> vt </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> T </TD> <TD> rs113983760 </TD> <TD> SNP </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> rs148905490 </TD> <TD> INDEL </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> G </TD> <TD> rs8076712 </TD> <TD> SNP </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> TG </TD> <TD> rs113432301 </TD> <TD> INDEL </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> T </TD> <TD> rs9896330 </TD> <TD> SNP </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> AT </TD> <TD> rs201827568 </TD> <TD> INDEL </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> T </TD> <TD> rs113983760 </TD> <TD> SNP </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> rs148905490 </TD> <TD> INDEL </TD> </TR>
    </TABLE>
 
 From this small sample, it appears that the alternate allele is either a SNP or an INDEL.  
@@ -172,12 +172,12 @@ GROUP EACH BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:24 2014 -->
+<!-- Thu Jun 26 14:44:57 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
-  <TR> <TD> SV </TD> <TD align="right">   5 </TD> </TR>
-  <TR> <TD> SNP </TD> <TD align="right"> 417 </TD> </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 412 </TD> </TR>
+  <TR> <TD> SNP </TD> <TD align="right"> 417 </TD> </TR>
+  <TR> <TD> SV </TD> <TD align="right">   5 </TD> </TR>
    </TABLE>
 
 It appears that for all records for duplicate (contig, position, reference_bases) tuples that we have a SNP and also an INDEL or SV.  
@@ -219,12 +219,12 @@ GROUP EACH BY
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:29 2014 -->
+<!-- Thu Jun 26 14:44:59 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
-  <TR> <TD> SV </TD> <TD align="right"> 443 </TD> </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 1006702 </TD> </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 38754 </TD> </TR>
+  <TR> <TD> SV </TD> <TD align="right"> 443 </TD> </TR>
    </TABLE>
 
 And we see that the answer to our question is “No” - for records corresponding to a unique (contig, position, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
@@ -234,7 +234,8 @@ So what does this all mean for a particular duplicate (contig, position, referen
 ```
 # Get sample alleles for some specific variants.  
 # TODO(deflaux): update this to a user-defined function to generalize 
-# across more than two alternates.
+# across more than two alternates.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   contig,
   position,
@@ -272,7 +273,7 @@ FROM(
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:32 2014 -->
+<!-- Thu Jun 26 14:45:03 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> allele1 </TH> <TH> allele2 </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs8076712 </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
@@ -323,7 +324,7 @@ HAVING
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:37 2014 -->
+<!-- Thu Jun 26 14:45:06 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> ploidy </TH> <TH> phased </TH> <TH> allele1 </TH> <TH> allele2 </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs8076712 </TD> <TD> T </TD> <TD> G </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
@@ -370,12 +371,12 @@ HAVING
 
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 25 17:18:42 2014 -->
+<!-- Thu Jun 26 14:45:10 2014 -->
 <TABLE border=1>
 <TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
   <TR> <TD> 6 </TD> <TD align="right"> 26745501 </TD> <TD> C </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 19 </TD> <TD align="right"> 48773401 </TD> <TD> C </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
   <TR> <TD> 14 </TD> <TD align="right"> 106885901 </TD> <TD> G </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 19 </TD> <TD align="right"> 48773401 </TD> <TD> C </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
    </TABLE>
 
 Not quite.  We see a few structural variant deletions called at the same position.
@@ -411,7 +412,7 @@ FROM (
   vt,
   end
 HAVING
-  cnt > 1;Retrieving data:  2.8sRetrieving data:  3.4sRetrieving data:  3.9s
+  cnt > 1;
 ```
 
 
@@ -425,4 +426,45 @@ As expected: is.null(result) is true
 ```
 
 
-And now we have it, the unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
+And now we have it, a unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
+
+Lastly, what is a minimal unique key?
+
+```
+# This query demonstrates the minimal set of fields needed to  
+# comprise a unique key for the rows in the table.
+SELECT
+  contig,
+  position,
+  alt,
+  end,
+  COUNT(1) AS cnt
+FROM (
+  SELECT
+    contig,
+    position,
+    GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+    end,
+  FROM
+    [google.com:biggene:1000genomes.variants1kG])
+  GROUP EACH BY
+  contig,
+  position,
+  alt,
+  end
+HAVING
+  cnt > 1;
+```
+
+
+
+```r
+print(expect_true(is.null(result)))
+```
+
+```
+As expected: is.null(result) is true 
+```
+
+
+We see that a minimal unique key is: (contig, position, alternate_bases, end) or alternatively (contig, position, end, vt)
