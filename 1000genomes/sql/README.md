@@ -19,6 +19,8 @@ Analysis | Category | Use Case
 [Het/Hom ratio](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/heterozygous-homozygous-ratio.sql) | quality control | 
 [Gender-specific Het/Hom Ratio](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/gender-het-hom-ratio.sql) | quality control | confirm genotypes match specified gender
 [Allelic Frequency](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/allelic-frequency.sql) | summary statistics | 
+[Hardy-Weinberg Equilibrium](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/hardy-weinberg-equilibrium.sql) | quality control | 
+
 ## Variants and Phenotypes
 
 Analysis | Category | Use Case
@@ -26,6 +28,10 @@ Analysis | Category | Use Case
 [Allelic Frequency by Ethnicity](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/allelic-frequency-by-ethnicity.sql) | summary statistics | 
 [Allelic Frequency by Gender](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/allelic-frequency-by-gender.sql) | summary statistics | 
 [Minimum Allelic Frequency by Ethnicity](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/minimum-allelic-frequency-by-ethnicity.sql) | discovery | 
+[Simplistic GWAS Pattern, Chi Squared test](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/gwas-pattern-chi-squared-test.sql) | discovery | 
+[Simplistic GWAS Pattern, two proportion z-score test](https://github.com/GoogleCloudPlatform/genomics-bigquery/blob/master/1000genomes/sql/gwas-pattern-two-proportion-z-test.sql) | discovery | 
+
+
 ## Variants and Annotations
 
 Analysis | Category | Use Case
