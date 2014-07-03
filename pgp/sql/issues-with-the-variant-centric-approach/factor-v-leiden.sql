@@ -9,10 +9,10 @@
   allele1Seq,
   allele2Seq,
   zygosity,
-  has_Hereditary_thrombophilia_includes_Factor_V_Leiden_and_Prothrombin_G20210A
+  has_Hereditary_thrombophilia_includes_Factor_V_Leiden_and_Prothrombin_G20210A AS has_Hereditary_thrombophilia
 FROM
   [google.com:biggene:pgp.cgi_variants] AS var
-JOIN
+LEFT OUTER JOIN
   [google.com:biggene:pgp.phenotypes] AS pheno
 ON
   pheno.Participant = var.sample_id

@@ -32,6 +32,7 @@ a piece of speculative fiction, and a happy conclusion.
 3. Interlude: Casey updates the database
 4. Emily is confused about variant frequencies
 5. Ending: Casey retroactively makes data variant-agnostic
+6. Appendix: Queries upon native CGI data
 
 Frederick can't find participants with Factor V Leiden
 ------------------------------------------------------
@@ -247,3 +248,195 @@ your past self). The database is retroactively upgraded.
 
 In Timeline 2, Emily examines the database and finds perfect data, an
 interesting finding, and publishes it in PLoS Genetics!
+
+Appendix: Queries upon native CGI data
+-------------------------------------------------------------
+At a later date, the native CGI data was also loaded into BigQuery.  For more detail, see the [provenance](../../provenance) of table [cgi_variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.cgi_variants?pli=1).  Note that this data is for 174 individuals whereas table [variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.variants?pli=1) only has data for 172 individuals.
+
+
+
+
+First let's take a look at the data relevant to Klotho:
+
+```
+# Sample level data for Klotho variant rs9536314 for use in the "amazing
+# intelligence of PGP participants" data story. 
+SELECT
+  sample_id,
+  chromosome,
+  locusBegin,
+  locusEnd,
+  reference,
+  allele1Seq,
+  allele2Seq,
+FROM
+  [google.com:biggene:pgp.cgi_variants]
+WHERE
+  chromosome = "chr13"
+  AND locusBegin <= 33628137
+  AND locusEnd >= 33628138
+```
+
+Number of rows returned by this query: 174.  We have one row for every indivudual in this dataset.
+
+Examing the first few rows, we see:
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Wed Jul  2 17:04:28 2014 -->
+<TABLE border=1>
+<TR> <TH> sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH>  </TR>
+  <TR> <TD> hu60180F </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628654 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> huB4D223 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33629508 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu26B551 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> huD10E53 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628571 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu0CF2EE </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu0D879F </TD> <TD> chr13 </TD> <TD align="right"> 33628137 </TD> <TD align="right"> 33628138 </TD> <TD> T </TD> <TD> G </TD> <TD> T </TD> </TR>
+  <TR> <TD> hu868880 </TD> <TD> chr13 </TD> <TD align="right"> 33628137 </TD> <TD align="right"> 33628138 </TD> <TD> T </TD> <TD> G </TD> <TD> G </TD> </TR>
+  <TR> <TD> huEDEA65 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33629725 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu57A769 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu241DEA </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+   </TABLE>
+
+
+And summarizing by genotype:
+
+```
+# Sample counts for Klotho variant rs9536314 for use in the "amazing
+# intelligence of PGP participants" data story. 
+SELECT
+  COUNT(sample_id) AS sample_counts,
+  chromosome,
+  reference,
+  allele1Seq,
+  allele2Seq,
+FROM
+  [google.com:biggene:pgp.cgi_variants]
+WHERE
+  chromosome = "chr13"
+  AND locusBegin <= 33628137
+  AND locusEnd >= 33628138
+GROUP BY
+  chromosome,
+  reference,
+  allele1Seq,
+  allele2Seq
+ORDER BY
+  sample_counts DESC
+```
+
+
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Wed Jul  2 17:04:31 2014 -->
+<TABLE border=1>
+<TR> <TH> sample_counts </TH> <TH> chromosome </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH>  </TR>
+  <TR> <TD align="right"> 135 </TD> <TD> chr13 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD align="right">  32 </TD> <TD> chr13 </TD> <TD> T </TD> <TD> G </TD> <TD> T </TD> </TR>
+  <TR> <TD align="right">   5 </TD> <TD> chr13 </TD> <TD> T </TD> <TD> G </TD> <TD> G </TD> </TR>
+  <TR> <TD align="right">   2 </TD> <TD> chr13 </TD> <TD> = </TD> <TD> ? </TD> <TD> ? </TD> </TR>
+   </TABLE>
+
+We see that 135 individuals are homozygous reference but two individuals were no-calls at this genomic position.
+
+Next let's look at the data relevant to Factor V Leiden:
+
+```
+# Sample level data for rs6025 and hereditary thrombophilia trait  
+# for use in the Factor V Leiden data story. 
+ SELECT
+  sample_id,
+  chromosome,
+  locusBegin,
+  locusEnd,
+  reference,
+  allele1Seq,
+  allele2Seq,
+  zygosity,
+  has_Hereditary_thrombophilia_includes_Factor_V_Leiden_and_Prothrombin_G20210A AS has_Hereditary_thrombophilia
+FROM
+  [google.com:biggene:pgp.cgi_variants] AS var
+LEFT OUTER JOIN
+  [google.com:biggene:pgp.phenotypes] AS pheno
+ON
+  pheno.Participant = var.sample_id
+  WHERE
+  chromosome = 'chr1'
+  AND locusBegin <= 169519048
+  AND locusEnd >= 169519049
+```
+
+Number of rows returned by this query: 174.
+
+Examing the first few rows, we see:
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Wed Jul  2 17:04:35 2014 -->
+<TABLE border=1>
+<TR> <TH> sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> zygosity </TH> <TH> has_Hereditary_thrombophilia </TH>  </TR>
+  <TR> <TD> huEA4EE5 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> huDF04CC </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu0211D6 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> huFFB09D </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu620F18 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu868880 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu4BE6F2 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu032C04 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu3073E3 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu448C4B </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+   </TABLE>
+
+
+And summarizing by genotype:
+
+```
+# Summary data for rs6025 and hereditary thrombophilia trait  
+# for use in the Factor V Leiden data story. 
+ SELECT
+  COUNT(sample_id) AS sample_counts,
+  chromosome,
+  reference,
+  allele1Seq,
+  allele2Seq,
+  has_Hereditary_thrombophilia_includes_Factor_V_Leiden_and_Prothrombin_G20210A AS has_Hereditary_thrombophilia
+FROM
+  [google.com:biggene:pgp.cgi_variants] AS var
+LEFT OUTER JOIN
+  [google.com:biggene:pgp.phenotypes] AS pheno
+ON
+  pheno.Participant = var.sample_id
+  WHERE
+  chromosome = 'chr1'
+  AND locusBegin <= 169519048
+  AND locusEnd >= 169519049
+GROUP BY
+  chromosome,
+  reference,
+  allele1Seq,
+  allele2Seq,
+  has_Hereditary_thrombophilia
+ORDER BY
+  sample_counts DESC
+```
+
+
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Wed Jul  2 17:04:38 2014 -->
+<TABLE border=1>
+<TR> <TH> sample_counts </TH> <TH> chromosome </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> has_Hereditary_thrombophilia </TH>  </TR>
+  <TR> <TD align="right"> 169 </TD> <TD> chr1 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD>  </TD> </TR>
+  <TR> <TD align="right">   5 </TD> <TD> chr1 </TD> <TD> T </TD> <TD> C </TD> <TD> T </TD> <TD>  </TD> </TR>
+   </TABLE>
+
+We see that no individuals are homozygous reference and no one responded _true_ for the _Hereditary thrombophilia includes Factor V Leiden and Prothrombin G20210A_ trait.
+
+<!-- TODO(deflaux): clean up the display of results for these next two queries and add content -->
+
+
+
+
+
+
+
+
+
+
+
+
+

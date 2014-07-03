@@ -32,6 +32,7 @@ a piece of speculative fiction, and a happy conclusion.
 3. Interlude: Casey updates the database
 4. Emily is confused about variant frequencies
 5. Ending: Casey retroactively makes data variant-agnostic
+6. Appendix: Queries upon native CGI data
 
 Frederick can't find participants with Factor V Leiden
 ------------------------------------------------------
@@ -247,3 +248,83 @@ your past self). The database is retroactively upgraded.
 
 In Timeline 2, Emily examines the database and finds perfect data, an
 interesting finding, and publishes it in PLoS Genetics!
+
+Appendix: Queries upon native CGI data
+-------------------------------------------------------------
+At a later date, the native CGI data was also loaded into BigQuery.  For more detail, see the [provenance](../../provenance) of table [cgi_variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.cgi_variants?pli=1).  Note that this data is for 174 individuals whereas table [variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.variants?pli=1) only has data for 172 individuals.
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(ggplot2)
+require(dplyr)
+require(xtable)
+require(testthat)
+billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
+```
+
+First let's take a look at the data relevant to Klotho:
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/issues-with-the-variant-centric-approach/klotho.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.  We have one row for every indivudual in this dataset.
+
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result, n=10)), type="html", include.rownames=F)
+```
+
+And summarizing by genotype:
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/issues-with-the-variant-centric-approach/klotho-summary.sql")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
+We see that 135 individuals are homozygous reference but two individuals were no-calls at this genomic position.
+
+Next let's look at the data relevant to Factor V Leiden:
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/issues-with-the-variant-centric-approach/factor-v-leiden.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.
+
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result, n=10)), type="html", include.rownames=F)
+```
+
+And summarizing by genotype:
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/issues-with-the-variant-centric-approach/factor-v-leiden-summary.sql")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
+We see that no individuals are homozygous reference and no one responded _true_ for the _Hereditary thrombophilia includes Factor V Leiden and Prothrombin G20210A_ trait.
+
+<!-- TODO(deflaux): clean up the display of results for these next two queries and add content -->
+
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/allelic-frequency.sql")
+```
+
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
+
+
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/allelic-frequency-comparison.sql")
+```
+
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
