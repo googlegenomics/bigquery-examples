@@ -22,6 +22,8 @@ Personal Genomes Project
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Comparing PGP to 1000 Genomes](./data-stories/comparing-pgp-to-1000genomes)
+ * [Issues with the Variant-Centric Approach](./data-stories/issues-with-the-variant-centric-approach)
+
 
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)

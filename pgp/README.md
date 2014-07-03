@@ -22,6 +22,8 @@ Personal Genomes Project
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Comparing PGP to 1000 Genomes](./data-stories/comparing-pgp-to-1000genomes)
+ * [Issues with the Variant-Centric Approach](./data-stories/issues-with-the-variant-centric-approach)
+
 
 
 
@@ -57,12 +59,12 @@ GROUP BY
 
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed May 14 18:13:56 2014 -->
+<!-- Wed Jul  2 17:08:31 2014 -->
 <TABLE border=1>
 <TR> <TH> Sex_Gender </TH> <TH> cnt </TH>  </TR>
+  <TR> <TD> Male </TD> <TD align="right"> 112 </TD> </TR>
   <TR> <TD> Female </TD> <TD align="right">  53 </TD> </TR>
   <TR> <TD>  </TD> <TD align="right">   6 </TD> </TR>
-  <TR> <TD> Male </TD> <TD align="right"> 112 </TD> </TR>
    </TABLE>
 
 
