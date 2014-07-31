@@ -1,0 +1,179 @@
+<!-- R Markdown Documentation, DO NOT EDIT THE PLAIN MARKDOWN VERSION OF THIS FILE -->
+
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+
+<!--     http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
+A Comparison of Schemas and Data Encodings
+========================================
+
+Comparison
+-----------------
+
+TODO(deflaux) table here with links to Ti/TV and allelic frequency queries for each treatment.  Include metrics about number of lines in SQL, run time, and footprint of table.
+
+Motivation
+-----------------
+
+We wrote many, many [queries for 1,000 Genomes](../../../1000genomes/sql) and they were relatively straighforward since all the data for all samples for a particular variant could be found on a single row in the table.
+
+For subsequent work with data encoded as [gVCF](https://sites.google.com/site/gvcftools/home/about-gvcf/gvcf-conventions), the queries were much more challenging.  With gVCF data we have *reference-matching block records*, so our SQL statements need to determine which samples have reference-matching regions that overlap the variant(s) in which we are interested.
+
+This is pretty straightforward for individual variants.  For example for a particular variant in the [Klotho gene](http://www.snpedia.com/index.php/Rs9536314) discussed in [this data story](../issues-with-the-variant-centric-approach#thomas-confirms-amazing-intelligence-in-the-pgp-cohort) the `WHERE` clause
+```
+    WHERE
+      contig_name = '13'
+      AND start_pos == 33628138
+```
+becomes
+```
+    WHERE
+      contig_name = '13'
+      AND start_pos <= 33628138
+      AND (end_pos >= 33628139
+        OR END >= 33628139)
+```
+to capture not only that variant, but any other records that overlap that genomic position.  Suppose we want to calculate an aggregate for a particular variant, such as the number of samples with the variant on one or both alleles and of samples that match the reference.
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(ggplot2)
+require(dplyr)
+require(xtable)
+require(testthat)
+billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/missingness-klotho.sql")
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result, digits=6), type="html", include.rownames=F)
+```
+
+This works fine for a single variant, but what if we want to compute missingness for a gene, a chromosome, or our whole dataset?
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/missingness-brca1.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.
+
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
+```
+
+TODO(deflaux): more here about equi-JOINs in BigQuery and the cross product when we try to do this at a larger scale, UDF example, etc...
+
+Details
+--------------
+
+To determine how to improve the usability of the data and the schemas, we have the same data encoded four different ways, to compare and contrast querying each.
+ 1. [cgi_variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.cgi_variants?pli=1): a flat schema (one row per sample) with reference matching blocks
+ 1. [variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.variants?pli=1): a nested schema (per-sample data is nested) containing only variants
+ 1. [gvcf_variants](https://bigquery.cloud.google.com/table/google.com:biggene:test.pgp_gvcf_variants?pli=1): a nested schema (per-sample data is nested) with reference matching blocks
+ 1. [gvcf_variants_expanded](https://bigquery.cloud.google.com/table/google.com:biggene:test.pgp_gvcf_variants_expanded?pli=1): a nested schema (per-sample data is nested) with reference matching blocks BUT with reference-matching and no-call samples nested into variant rows (redundant data)
+
+For more detail about how the CGI genomes were transformed and loaded into BigQuery, see the [provenance](../../provenance) of the various tables.  Also note that while the [cgi_variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.cgi_variants?pli=1) has data is for 174 individuals, the tables created from the derived VCF/gVCF data only have data for 172 individuals because `cgatools mkvcf` did not successfully convert two of the genomes.
+
+Appendix
+==========================
+Some queries to help check that the four versions of the data were correctly transformed.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/call-counts.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.
+
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result, n=8)), type="html", include.rownames=F)
+```
+
+
+```{r call_cnt, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=8, fig.height=8}
+result <- filter(result, dataset != 'cgi_variants')
+result$chromosome <- factor(result$chromosome, levels=c(as.character(seq(1,22)), "X", "Y", "M"))
+
+ggplot(result, aes(x=chromosome, y=num_variants, fill=dataset)) + 
+  geom_bar(stat="identity", position="dodge") +
+  coord_flip() +
+  xlab("Chromosome") +
+  ylab("Count of Variants") 
+ggplot(result, aes(x=chromosome, y=num_records, fill=dataset)) + 
+  geom_bar(stat="identity", position="dodge") +
+  coord_flip() +
+  xlab("Chromosome") +
+  ylab("Count of Records (Variant-Calls, Ref-Calls, No-Calls)") 
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/sample-counts.sql")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/sample-call-counts.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.
+
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result, n=8)), type="html", include.rownames=F)
+```
+
+```{r sample_call_cnt, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=8, fig.height=8}
+result$dataset <- factor(result$dataset, levels=c("cgi_variants",
+                                                  "variants",
+                                                  "gvcf_variants",
+                                                  "gvcf_variants_expanded"))
+ggplot(result, aes(x=num_records)) + 
+  geom_histogram() +
+  facet_wrap(~ dataset) +
+  xlab("Count of Records per Sample (Variant-Calls, Ref-Calls, No-Calls)") 
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/klotho-gvcf.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.  We have one row for every indivudual in the CGI dataset.
+
+Examing the NULL rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result[is.na(result$gvcf_sample_id),]), type="html", include.rownames=F)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+# Leave out the columns expected to differ
+gvcf_result <- select(result, -start_pos, -end_pos, -END, -ref, -alt)
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/klotho-gvcf-expanded.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.  We have one row for every indivudual in the CGI dataset.
+
+Examing the NULL rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result[is.na(result$gvcf_sample_id),]), type="html", include.rownames=F)
+```
+
+```{r}
+# Leave out the columns expected to differ
+gvcf_result_expanded <- select(result, -start_pos, -end_pos, -END, -ref, -alt)
+print(expect_equal(gvcf_result, gvcf_result_expanded))
+```
