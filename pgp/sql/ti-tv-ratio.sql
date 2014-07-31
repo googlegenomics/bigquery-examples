@@ -47,7 +47,7 @@ FROM (
         CONCAT(STRING('->'),
           allele2Seq)) AS mutation2,
     FROM
-      [pgp.calls]
+      [google.com:biggene:pgp.cgi_variants]
     WHERE
       # WHERE varType = 'snp' not correct since a row with both an indel
       # and a snp will be varType 'complex'
