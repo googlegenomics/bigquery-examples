@@ -77,7 +77,7 @@ FROM (
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jul 31 18:11:48 2014 -->
+<!-- Fri Aug  1 10:30:40 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_called_for_position </TH> <TH> num_alleles_called_for_position </TH> <TH> missingness_rate </TH>  </TR>
   <TR> <TD align="right">     170 </TD> <TD align="right">     340 </TD> <TD align="right"> 0.011628 </TD> </TR>
@@ -179,7 +179,7 @@ Number of rows returned by this query: 540.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jul 31 18:11:53 2014 -->
+<!-- Fri Aug  1 10:30:46 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> reference_bases </TH> <TH> variant_called_count </TH> <TH> reference_called_count </TH> <TH> num_alleles_called_for_position </TH> <TH> missingness_rate </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41212423 </TD> <TD> T </TD> <TD align="right">       2 </TD> <TD align="right">     342 </TD> <TD align="right">     344 </TD> <TD align="right"> 0.000000 </TD> </TR>
@@ -273,7 +273,7 @@ Number of rows returned by this query: 100.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jul 31 18:11:57 2014 -->
+<!-- Fri Aug  1 10:30:51 2014 -->
 <TABLE border=1>
 <TR> <TH> chromosome </TH> <TH> num_records </TH> <TH> num_variants </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 238124699 </TD> <TD align="right"> 52490861 </TD> <TD> cgi_variants </TD> </TR>
@@ -361,7 +361,7 @@ print(expect_equal(variants$num_records, variants$num_variants, tolerance = 1e-0
 
 
 
-But the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records):
+Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).  TODO(deflaux): #11 the counts are equal for Y and M, fix the bug in cgi-ref-blocks-mapper.py and re-run it.
 
 ```r
 print(expect_that(unique(gvcf_variants$num_records >= variants$num_records), 
@@ -379,11 +379,6 @@ print(expect_that(unique(gvcf_variants_expanded$num_records >= variants$num_reco
 
 ```
 ## As expected: unique(gvcf_variants_expanded$num_records >= variants$num_records) is true
-```
-
-```r
-# TODO(deflaux): the counts are equal for Y and M, fix the bug in
-# cgi-ref-blocks-mapper.py and re-run it
 ```
 
 The gvcf_variants and gvcf_variants_expanded tables have the same number of records, the difference between the two is in the number of nested sample variant calls.
@@ -474,7 +469,7 @@ Number of rows returned by this query: 516.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jul 31 18:12:05 2014 -->
+<!-- Fri Aug  1 10:30:58 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> num_records </TH> <TH> num_variant_alleles </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> hu011C57 </TD> <TD align="right"> 17615409 </TD> <TD align="right"> 4744749 </TD> <TD> cgi_variants </TD> </TR>
@@ -540,7 +535,7 @@ print(expect_equal(gvcf_variants$num_variant_alleles, gvcf_variants_expanded$num
 ## As expected: gvcf_variants$num_variant_alleles equals gvcf_variants_expanded$num_variant_alleles
 ```
 
-The cgi_variants table actually has fewer variant alleles per sample.  `cgatools mkvcf` does not use only the masterVar files as an input source.  TODO(deflaux): dig more in to the reason for this difference and/or import the Var data.
+The cgi_variants table actually has fewer variant alleles per sample.  TODO(deflaux): #12 dig more in to the reason for this difference and/or import the Var data
 
 ```r
 print(expect_that(unique(cgi_variants$num_variant_alleles < gvcf_variants$num_variant_alleles), 
@@ -560,6 +555,28 @@ print(expect_equal(cgi_variants$num_variant_alleles, gvcf_variants$num_variant_a
 ## As expected: cgi_variants$num_variant_alleles equals gvcf_variants$num_variant_alleles
 ```
 
+
+And of course we should have no more than 172 samples per variant record:
+
+
+```
+# Confirm that we are correctly expanding reference-matching blocks into our variants.
+SELECT
+  MAX(num_sample_ids) as max_samples_per_record,
+FROM (
+  SELECT
+    COUNT(call.callset_name) WITHIN RECORD AS num_sample_ids,
+  FROM
+    [google.com:biggene:test.pgp_gvcf_variants_expanded2]
+    )
+```
+
+<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
+<!-- Fri Aug  1 10:31:04 2014 -->
+<TABLE border=1>
+<TR> <TH> max_samples_per_record </TH>  </TR>
+  <TR> <TD align="right"> 172 </TD> </TR>
+   </TABLE>
 
 
 Spot Check a Particular Variant
@@ -636,7 +653,7 @@ Number of rows returned by this query: 172.  We have one row for every indivudua
 
 Examing the NULL rows, we see that no-call records account for the difference, as we expect:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jul 31 18:12:11 2014 -->
+<!-- Fri Aug  1 10:31:08 2014 -->
 <TABLE border=1>
 <TR> <TH> cgi_sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> contig_name </TH> <TH> start_pos </TH> <TH> end_pos </TH> <TH> END </TH> <TH> ref </TH> <TH> alt </TH> <TH> gvcf_sample_id </TH> <TH> genotype </TH>  </TR>
   <TR> <TD> hu67EBB3 </TD> <TD> chr13 </TD> <TD align="right"> 33628132 </TD> <TD align="right"> 33628144 </TD> <TD> = </TD> <TD> ? </TD> <TD> ? </TD> <TD>  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
@@ -714,7 +731,7 @@ Number of rows returned by this query: 172.  We have one row for every indivudua
 
 Examing the NULL rows, we see that no-call records account for the difference, as we expect:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jul 31 18:12:16 2014 -->
+<!-- Fri Aug  1 10:31:13 2014 -->
 <TABLE border=1>
 <TR> <TH> cgi_sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> contig_name </TH> <TH> start_pos </TH> <TH> end_pos </TH> <TH> END </TH> <TH> ref </TH> <TH> alt </TH> <TH> gvcf_sample_id </TH> <TH> genotype </TH>  </TR>
   <TR> <TD> hu67EBB3 </TD> <TD> chr13 </TD> <TD align="right"> 33628132 </TD> <TD align="right"> 33628144 </TD> <TD> = </TD> <TD> ? </TD> <TD> ? </TD> <TD>  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>

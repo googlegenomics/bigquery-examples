@@ -166,11 +166,10 @@ LIMIT
   1000
 ```
 
-But the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records):
+Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).  TODO(deflaux): #11 the counts are equal for Y and M, fix the bug in cgi-ref-blocks-mapper.py and re-run it.
 ```{r}
 print(expect_that(unique(gvcf_variants$num_records >= variants$num_records), is_true()))
 print(expect_that(unique(gvcf_variants_expanded$num_records >= variants$num_records), is_true()))
-# TODO(deflaux): the counts are equal for Y and M, fix the bug in cgi-ref-blocks-mapper.py and re-run it
 ```
 The gvcf_variants and gvcf_variants_expanded tables have the same number of records, the difference between the two is in the number of nested sample variant calls.
 ```{r}
@@ -232,12 +231,20 @@ Make sure we correctly expanded the reference-matching calls into the variant re
 ```{r}
 print(expect_equal(gvcf_variants$num_variant_alleles, gvcf_variants_expanded$num_variant_alleles))
 ```
-The cgi_variants table actually has fewer variant alleles per sample.  `cgatools mkvcf` does not use only the masterVar files as an input source.  TODO(deflaux): dig more in to the reason for this difference and/or import the Var data.
+The cgi_variants table actually has fewer variant alleles per sample.  TODO(deflaux): #12 dig more in to the reason for this difference and/or import the Var data
 ```{r}
 print(expect_that(unique(cgi_variants$num_variant_alleles < gvcf_variants$num_variant_alleles), is_true()))
 print(expect_equal(cgi_variants$num_variant_alleles, gvcf_variants$num_variant_alleles, tolerance=.15))
 ```
 
+And of course we should have no more than 172 samples per variant record:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/record-sample-counts.sql")
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result), type="html", include.rownames=F)
+```
 
 Spot Check a Particular Variant
 -------------------------------
