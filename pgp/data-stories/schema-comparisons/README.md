@@ -77,7 +77,7 @@ FROM (
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul 30 19:23:41 2014 -->
+<!-- Thu Jul 31 18:11:48 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_called_for_position </TH> <TH> num_alleles_called_for_position </TH> <TH> missingness_rate </TH>  </TR>
   <TR> <TD align="right">     170 </TD> <TD align="right">     340 </TD> <TD align="right"> 0.011628 </TD> </TR>
@@ -179,7 +179,7 @@ Number of rows returned by this query: 540.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul 30 19:23:46 2014 -->
+<!-- Thu Jul 31 18:11:53 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> reference_bases </TH> <TH> variant_called_count </TH> <TH> reference_called_count </TH> <TH> num_alleles_called_for_position </TH> <TH> missingness_rate </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41212423 </TD> <TD> T </TD> <TD align="right">       2 </TD> <TD align="right">     342 </TD> <TD align="right">     344 </TD> <TD align="right"> 0.000000 </TD> </TR>
@@ -208,6 +208,9 @@ Appendix
 ==========================
 Some queries to help check that the four versions of the data were correctly transformed.
 
+Check Record Counts
+---------------------
+
 
 ```
 # Call counts for the PGP data encoded four different ways.
@@ -235,7 +238,7 @@ FROM
   SELECT
     contig_name AS chromosome,
     COUNT(1) AS num_records,
-    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    SUM(reference_bases != 'N') AS num_variants,
     'variants' AS dataset
   FROM
     [google.com:biggene:pgp.variants]
@@ -245,7 +248,7 @@ FROM
   SELECT
     contig_name AS chromosome,
     COUNT(1) AS num_records,
-    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    SUM(reference_bases != 'N') AS num_variants,
     'gvcf_variants' AS dataset
   FROM
     [google.com:biggene:test.pgp_gvcf_variants]
@@ -255,10 +258,10 @@ FROM
   SELECT
     contig_name AS chromosome,
     COUNT(1) AS num_records,
-    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    SUM(reference_bases != 'N') AS num_variants,
     'gvcf_variants_expanded' AS dataset
   FROM
-    [google.com:biggene:test.pgp_gvcf_variants_expanded]
+    [google.com:biggene:test.pgp_gvcf_variants_expanded2]
   GROUP BY
     chromosome)
 ORDER BY
@@ -270,132 +273,196 @@ Number of rows returned by this query: 100.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul 30 19:23:49 2014 -->
+<!-- Thu Jul 31 18:11:57 2014 -->
 <TABLE border=1>
 <TR> <TH> chromosome </TH> <TH> num_records </TH> <TH> num_variants </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 238124699 </TD> <TD align="right"> 52490861 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD> 1 </TD> <TD align="right"> 52200100 </TD> <TD align="right"> 3430240 </TD> <TD> gvcf_variants </TD> </TR>
-  <TR> <TD> 1 </TD> <TD align="right"> 52200100 </TD> <TD align="right"> 3430240 </TD> <TD> gvcf_variants_expanded </TD> </TR>
-  <TR> <TD> 1 </TD> <TD align="right"> 3349506 </TD> <TD align="right"> 3430240 </TD> <TD> variants </TD> </TR>
+  <TR> <TD> 1 </TD> <TD align="right"> 52200100 </TD> <TD align="right"> 3349506 </TD> <TD> gvcf_variants </TD> </TR>
+  <TR> <TD> 1 </TD> <TD align="right"> 52200100 </TD> <TD align="right"> 3349506 </TD> <TD> gvcf_variants_expanded </TD> </TR>
+  <TR> <TD> 1 </TD> <TD align="right"> 3349506 </TD> <TD align="right"> 3349506 </TD> <TD> variants </TD> </TR>
   <TR> <TD> 10 </TD> <TD align="right"> 139345544 </TD> <TD align="right"> 33649415 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD> 10 </TD> <TD align="right"> 29709727 </TD> <TD align="right"> 2145726 </TD> <TD> gvcf_variants </TD> </TR>
-  <TR> <TD> 10 </TD> <TD align="right"> 29709727 </TD> <TD align="right"> 2145726 </TD> <TD> gvcf_variants_expanded </TD> </TR>
-  <TR> <TD> 10 </TD> <TD align="right"> 2093521 </TD> <TD align="right"> 2145726 </TD> <TD> variants </TD> </TR>
+  <TR> <TD> 10 </TD> <TD align="right"> 29709727 </TD> <TD align="right"> 2093519 </TD> <TD> gvcf_variants </TD> </TR>
+  <TR> <TD> 10 </TD> <TD align="right"> 29709727 </TD> <TD align="right"> 2093519 </TD> <TD> gvcf_variants_expanded </TD> </TR>
+  <TR> <TD> 10 </TD> <TD align="right"> 2093521 </TD> <TD align="right"> 2093519 </TD> <TD> variants </TD> </TR>
    </TABLE>
 
 
+And visually:
+<img src="figure/variant_cnt.png" title="plot of chunk variant_cnt" alt="plot of chunk variant_cnt" style="display: block; margin: auto;" />
 
-<img src="figure/call_cnt1.png" title="plot of chunk call_cnt" alt="plot of chunk call_cnt" style="display: block; margin: auto;" /><img src="figure/call_cnt2.png" title="plot of chunk call_cnt" alt="plot of chunk call_cnt" style="display: block; margin: auto;" />
+<img src="figure/call_cnt.png" title="plot of chunk call_cnt" alt="plot of chunk call_cnt" style="display: block; margin: auto;" />
 
+
+Let's also confirm with a few tests:
+
+```r
+cgi_variants <- filter(result, dataset == "cgi_variants")
+variants <- filter(result, dataset == "variants")
+gvcf_variants <- filter(result, dataset == "gvcf_variants")
+gvcf_variants_expanded <- filter(result, dataset == "gvcf_variants_expanded")
+```
+
+cgi_variants will have many, many more rows than the other tables because it is completely flat (one row per sample):
+
+```r
+print(expect_that(unique(cgi_variants$num_records > variants$num_records), is_true()))
+```
+
+```
+## As expected: unique(cgi_variants$num_records > variants$num_records) is true
+```
+
+```r
+print(expect_that(unique(cgi_variants$num_records > gvcf_variants$num_records), 
+    is_true()))
+```
+
+```
+## As expected: unique(cgi_variants$num_records > gvcf_variants$num_records) is true
+```
+
+```r
+print(expect_that(unique(cgi_variants$num_records > gvcf_variants_expanded$num_records), 
+    is_true()))
+```
+
+```
+## As expected: unique(cgi_variants$num_records > gvcf_variants_expanded$num_records) is true
+```
+
+All tables derived from VCF/gVCF data will have the same number of variant records:
+
+```r
+print(expect_equal(variants$num_variants, gvcf_variants$num_variants))
+```
+
+```
+## As expected: variants$num_variants equals gvcf_variants$num_variants
+```
+
+```r
+print(expect_equal(variants$num_variants, gvcf_variants_expanded$num_variants))
+```
+
+```
+## As expected: variants$num_variants equals gvcf_variants_expanded$num_variants
+```
+
+The variants table has almost no additional records (just a handful of no-call records):
+
+```r
+print(expect_equal(variants$num_records, variants$num_variants, tolerance = 1e-06))
+```
+
+```
+## As expected: variants$num_records equals variants$num_variants
+```
+
+
+
+
+But the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records):
+
+```r
+print(expect_that(unique(gvcf_variants$num_records >= variants$num_records), 
+    is_true()))
+```
+
+```
+## As expected: unique(gvcf_variants$num_records >= variants$num_records) is true
+```
+
+```r
+print(expect_that(unique(gvcf_variants_expanded$num_records >= variants$num_records), 
+    is_true()))
+```
+
+```
+## As expected: unique(gvcf_variants_expanded$num_records >= variants$num_records) is true
+```
+
+```r
+# TODO(deflaux): the counts are equal for Y and M, fix the bug in
+# cgi-ref-blocks-mapper.py and re-run it
+```
+
+The gvcf_variants and gvcf_variants_expanded tables have the same number of records, the difference between the two is in the number of nested sample variant calls.
+
+```r
+print(expect_equal(gvcf_variants$num_records, gvcf_variants_expanded$num_records))
+```
+
+```
+## As expected: gvcf_variants$num_records equals gvcf_variants_expanded$num_records
+```
+
+
+
+Check Sample Counts
+---------------------
 
 
 ```
-# Sample counts for the PGP data encoded four different ways.
-SELECT
-  COUNT(DISTINCT sample_id) AS num_samples,
-  dataset
-FROM
-  (
-  SELECT
-    sample_id,
-    'cgi_variants' AS dataset
-  FROM
-    [google.com:biggene:pgp.cgi_variants]
-  # Skip the genomes we were unable to convert to VCF/gVCF
-  OMIT RECORD IF 
-    sample_id = 'huEDF7DA' OR sample_id = 'hu34D5B9'
-  GROUP BY
-    sample_id),
-  (
-  SELECT
-    call.callset_name AS sample_id,
-    'variants' AS dataset
-  FROM
-    [google.com:biggene:pgp.variants]
-  GROUP BY
-    sample_id),
-  (
-  SELECT
-    call.callset_name AS sample_id,
-    'gvcf_variants' AS dataset
-  FROM
-    [google.com:biggene:test.pgp_gvcf_variants]
-  GROUP BY
-    sample_id),
-  (
-  SELECT
-    call.callset_name AS sample_id,
-    'gvcf_variants_expanded' AS dataset
-  FROM
-    [google.com:biggene:test.pgp_gvcf_variants_expanded]
-  GROUP BY
-    sample_id)
-GROUP BY
-  dataset
-```
-
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul 30 19:23:55 2014 -->
-<TABLE border=1>
-<TR> <TH> num_samples </TH> <TH> dataset </TH>  </TR>
-  <TR> <TD align="right"> 172 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD align="right"> 172 </TD> <TD> variants </TD> </TR>
-  <TR> <TD align="right"> 172 </TD> <TD> gvcf_variants </TD> </TR>
-  <TR> <TD align="right"> 172 </TD> <TD> gvcf_variants_expanded </TD> </TR>
-   </TABLE>
-
-
-
-```
-# Sample call counts for the PGP data encoded four different ways.
+# Sample call counts for the PGP data encoded several different ways.  
+# NOTE: table pgp.variants was left out of this example since its more trouble
+# than its worth to parse the GT field into its components. 
 SELECT
   sample_id,
   num_records,
-  INTEGER(0) as num_variants,
+  num_variant_alleles,
   dataset
 FROM
   (
   SELECT
     sample_id,
-    COUNT(1) AS num_records,
-    SUM(reference != '=') AS num_variants,
+    COUNT(sample_id) AS num_records,
+    INTEGER(SUM(allele1_is_variant + allele2_is_variant)) AS num_variant_alleles,
     'cgi_variants' AS dataset
-  FROM
-    [google.com:biggene:pgp.cgi_variants]
-  # Skip the genomes we were unable to convert to VCF/gVCF
-  OMIT RECORD IF 
-    sample_id = 'huEDF7DA' OR sample_id = 'hu34D5B9'
+  FROM (
+    SELECT
+      sample_id,
+      allele1Seq != reference
+      AND allele1Seq != '='
+      AND allele1Seq != '?' AS allele1_is_variant,
+      allele2Seq != reference
+      AND allele2Seq != '='
+      AND allele2Seq != '?' AS allele2_is_variant,
+    FROM
+      [google.com:biggene:pgp.cgi_variants]
+      # Skip the genomes we were unable to convert to VCF/gVCF
+    OMIT
+      RECORD IF
+      sample_id = 'huEDF7DA'
+      OR sample_id = 'hu34D5B9')
   GROUP BY
     sample_id),
   (
   SELECT
-    call.callset_name AS sample_id,
-    COUNT(1) AS num_records,
-#    SUM(alternate_bases IS NOT NULL) AS num_variants,
-    'variants' AS dataset
-  FROM
-    [google.com:biggene:pgp.variants]
-  GROUP BY
-    sample_id),
-  (
-  SELECT
-    call.callset_name AS sample_id,
-    COUNT(1) AS num_records,
-#    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    sample_id,
+    COUNT(sample_id) AS num_records,
+    INTEGER(SUM(num_variant_alleles)) AS num_variant_alleles,
     'gvcf_variants' AS dataset
-  FROM
-    [google.com:biggene:test.pgp_gvcf_variants]
+  FROM (
+    SELECT
+      call.callset_name AS sample_id,
+      SUM(call.genotype > 0) WITHIN call AS num_variant_alleles,
+    FROM
+      [google.com:biggene:test.pgp_gvcf_variants])
   GROUP BY
     sample_id),
   (
   SELECT
-    call.callset_name AS sample_id,
-    COUNT(1) AS num_records,
-#    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    sample_id,
+    COUNT(sample_id) AS num_records,
+    INTEGER(SUM(num_variant_alleles)) AS num_variant_alleles,
     'gvcf_variants_expanded' AS dataset
   FROM
-    [google.com:biggene:test.pgp_gvcf_variants_expanded]
+    (
+    SELECT
+      call.callset_name AS sample_id,
+      SUM(call.genotype > 0) WITHIN call AS num_variant_alleles,
+    FROM
+      [google.com:biggene:test.pgp_gvcf_variants_expanded])
   GROUP BY
     sample_id)
 ORDER BY
@@ -403,28 +470,100 @@ ORDER BY
   dataset
 ```
 
-Number of rows returned by this query: 688.
+Number of rows returned by this query: 516.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul 30 19:23:58 2014 -->
+<!-- Thu Jul 31 18:12:05 2014 -->
 <TABLE border=1>
-<TR> <TH> sample_id </TH> <TH> num_records </TH> <TH> num_variants </TH> <TH> dataset </TH>  </TR>
-  <TR> <TD> hu011C57 </TD> <TD align="right"> 17615409 </TD> <TD align="right">   0 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD> hu011C57 </TD> <TD align="right"> 14123577 </TD> <TD align="right">   0 </TD> <TD> gvcf_variants </TD> </TR>
-  <TR> <TD> hu011C57 </TD> <TD align="right"> 43988119 </TD> <TD align="right">   0 </TD> <TD> gvcf_variants_expanded </TD> </TR>
-  <TR> <TD> hu011C57 </TD> <TD align="right"> 5524007 </TD> <TD align="right">   0 </TD> <TD> variants </TD> </TR>
-  <TR> <TD> hu016B28 </TD> <TD align="right"> 17585284 </TD> <TD align="right">   0 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD> hu016B28 </TD> <TD align="right"> 14134088 </TD> <TD align="right">   0 </TD> <TD> gvcf_variants </TD> </TR>
-  <TR> <TD> hu016B28 </TD> <TD align="right"> 43933062 </TD> <TD align="right">   0 </TD> <TD> gvcf_variants_expanded </TD> </TR>
-  <TR> <TD> hu016B28 </TD> <TD align="right"> 5550637 </TD> <TD align="right">   0 </TD> <TD> variants </TD> </TR>
+<TR> <TH> sample_id </TH> <TH> num_records </TH> <TH> num_variant_alleles </TH> <TH> dataset </TH>  </TR>
+  <TR> <TD> hu011C57 </TD> <TD align="right"> 17615409 </TD> <TD align="right"> 4744749 </TD> <TD> cgi_variants </TD> </TR>
+  <TR> <TD> hu011C57 </TD> <TD align="right"> 14123577 </TD> <TD align="right"> 5518279 </TD> <TD> gvcf_variants </TD> </TR>
+  <TR> <TD> hu011C57 </TD> <TD align="right"> 43988119 </TD> <TD align="right"> 5518279 </TD> <TD> gvcf_variants_expanded </TD> </TR>
+  <TR> <TD> hu016B28 </TD> <TD align="right"> 17585284 </TD> <TD align="right"> 4777466 </TD> <TD> cgi_variants </TD> </TR>
+  <TR> <TD> hu016B28 </TD> <TD align="right"> 14134088 </TD> <TD align="right"> 5556632 </TD> <TD> gvcf_variants </TD> </TR>
+  <TR> <TD> hu016B28 </TD> <TD align="right"> 43933062 </TD> <TD align="right"> 5556632 </TD> <TD> gvcf_variants_expanded </TD> </TR>
+  <TR> <TD> hu0211D6 </TD> <TD align="right"> 20148634 </TD> <TD align="right"> 4844626 </TD> <TD> cgi_variants </TD> </TR>
+  <TR> <TD> hu0211D6 </TD> <TD align="right"> 15668766 </TD> <TD align="right"> 5462930 </TD> <TD> gvcf_variants </TD> </TR>
    </TABLE>
+
+
+And visually:
+<img src="figure/sample_variant_cnt.png" title="plot of chunk sample_variant_cnt" alt="plot of chunk sample_variant_cnt" style="display: block; margin: auto;" />
 
 
 <img src="figure/sample_call_cnt.png" title="plot of chunk sample_call_cnt" alt="plot of chunk sample_call_cnt" style="display: block; margin: auto;" />
 
 
 
+Let's also confirm with a few tests:
+
+```r
+cgi_variants <- filter(result, dataset == "cgi_variants")
+gvcf_variants <- filter(result, dataset == "gvcf_variants")
+gvcf_variants_expanded <- filter(result, dataset == "gvcf_variants_expanded")
+```
+
+The tables have data for all the same samples:
+
+```r
+print(expect_equal(length(cgi_variants$sample_id), 172))
+```
+
+```
+## As expected: length(cgi_variants$sample_id) equals 172
+```
+
+```r
+print(expect_equal(cgi_variants$sample_id, gvcf_variants$sample_id))
+```
+
+```
+## As expected: cgi_variants$sample_id equals gvcf_variants$sample_id
+```
+
+```r
+print(expect_equal(cgi_variants$sample_id, gvcf_variants_expanded$sample_id))
+```
+
+```
+## As expected: cgi_variants$sample_id equals gvcf_variants_expanded$sample_id
+```
+
+Make sure we correctly expanded the reference-matching calls into the variant records:
+
+```r
+print(expect_equal(gvcf_variants$num_variant_alleles, gvcf_variants_expanded$num_variant_alleles))
+```
+
+```
+## As expected: gvcf_variants$num_variant_alleles equals gvcf_variants_expanded$num_variant_alleles
+```
+
+The cgi_variants table actually has fewer variant alleles per sample.  `cgatools mkvcf` does not use only the masterVar files as an input source.  TODO(deflaux): dig more in to the reason for this difference and/or import the Var data.
+
+```r
+print(expect_that(unique(cgi_variants$num_variant_alleles < gvcf_variants$num_variant_alleles), 
+    is_true()))
+```
+
+```
+## As expected: unique(cgi_variants$num_variant_alleles < gvcf_variants$num_variant_alleles) is true
+```
+
+```r
+print(expect_equal(cgi_variants$num_variant_alleles, gvcf_variants$num_variant_alleles, 
+    tolerance = 0.15))
+```
+
+```
+## As expected: cgi_variants$num_variant_alleles equals gvcf_variants$num_variant_alleles
+```
+
+
+
+Spot Check a Particular Variant
+-------------------------------
 
 ```
 # Sample level data for Klotho variant rs9536314 for use in the "amazing
@@ -495,9 +634,9 @@ ORDER BY
 
 Number of rows returned by this query: 172.  We have one row for every indivudual in the CGI dataset.
 
-Examing the NULL rows, we see:
+Examing the NULL rows, we see that no-call records account for the difference, as we expect:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul 30 19:24:03 2014 -->
+<!-- Thu Jul 31 18:12:11 2014 -->
 <TABLE border=1>
 <TR> <TH> cgi_sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> contig_name </TH> <TH> start_pos </TH> <TH> end_pos </TH> <TH> END </TH> <TH> ref </TH> <TH> alt </TH> <TH> gvcf_sample_id </TH> <TH> genotype </TH>  </TR>
   <TR> <TD> hu67EBB3 </TD> <TD> chr13 </TD> <TD align="right"> 33628132 </TD> <TD align="right"> 33628144 </TD> <TD> = </TD> <TD> ? </TD> <TD> ? </TD> <TD>  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
@@ -552,7 +691,7 @@ FROM
       GROUP_CONCAT(STRING(call.genotype),
         '/') WITHIN call AS genotype,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants_expanded]
+      [google.com:biggene:test.pgp_gvcf_variants_expanded2]
     WHERE
       contig_name = '13'
       AND start_pos == 33628138
@@ -573,9 +712,9 @@ ORDER BY
 
 Number of rows returned by this query: 172.  We have one row for every indivudual in the CGI dataset.
 
-Examing the NULL rows, we see:
+Examing the NULL rows, we see that no-call records account for the difference, as we expect:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul 30 19:24:08 2014 -->
+<!-- Thu Jul 31 18:12:16 2014 -->
 <TABLE border=1>
 <TR> <TH> cgi_sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> contig_name </TH> <TH> start_pos </TH> <TH> end_pos </TH> <TH> END </TH> <TH> ref </TH> <TH> alt </TH> <TH> gvcf_sample_id </TH> <TH> genotype </TH>  </TR>
   <TR> <TD> hu67EBB3 </TD> <TD> chr13 </TD> <TD align="right"> 33628132 </TD> <TD align="right"> 33628144 </TD> <TD> = </TD> <TD> ? </TD> <TD> ? </TD> <TD>  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
@@ -583,6 +722,7 @@ Examing the NULL rows, we see:
    </TABLE>
 
 
+And we get the same result from both the gvcf tables:
 
 ```r
 # Leave out the columns expected to differ

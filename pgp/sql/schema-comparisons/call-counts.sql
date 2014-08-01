@@ -23,7 +23,7 @@ FROM
   SELECT
     contig_name AS chromosome,
     COUNT(1) AS num_records,
-    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    SUM(reference_bases != 'N') AS num_variants,
     'variants' AS dataset
   FROM
     [google.com:biggene:pgp.variants]
@@ -33,7 +33,7 @@ FROM
   SELECT
     contig_name AS chromosome,
     COUNT(1) AS num_records,
-    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    SUM(reference_bases != 'N') AS num_variants,
     'gvcf_variants' AS dataset
   FROM
     [google.com:biggene:test.pgp_gvcf_variants]
@@ -43,10 +43,10 @@ FROM
   SELECT
     contig_name AS chromosome,
     COUNT(1) AS num_records,
-    SUM(alternate_bases IS NOT NULL) AS num_variants,
+    SUM(reference_bases != 'N') AS num_variants,
     'gvcf_variants_expanded' AS dataset
   FROM
-    [google.com:biggene:test.pgp_gvcf_variants_expanded]
+    [google.com:biggene:test.pgp_gvcf_variants_expanded2]
   GROUP BY
     chromosome)
 ORDER BY
