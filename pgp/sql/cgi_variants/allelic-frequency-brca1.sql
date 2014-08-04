@@ -27,7 +27,7 @@ FROM (
     SELECT
       chromosome,
       reference,
-      INTEGER(FLOOR(locusBegin / 10000)) AS bin,
+      INTEGER(FLOOR(locusBegin / 5000)) AS bin,
       locusBegin,
       locusEnd,
       allele,
@@ -115,7 +115,7 @@ FROM (
         {name: 'locusBegin', type: 'integer'},
         {name: 'locusEnd', type: 'integer'}]",
        "function(r, emit) {
-          var binSize = 10000
+          var binSize = 5000
           if (r.chromosome == 'chr17') { 
             var startBin = Math.floor(r.locusBegin / binSize);
             var endBin = Math.floor(r.locusEnd / binSize);

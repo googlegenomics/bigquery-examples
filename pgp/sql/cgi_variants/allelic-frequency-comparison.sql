@@ -1,4 +1,4 @@
-# PGP vs. 1,000 Genomes allelic frequency comparison
+# PGP vs. 1,000 Genomes allelic frequency comparison for BRCA1 variants.
 SELECT
   chromosome,
   reference,
@@ -13,7 +13,7 @@ SELECT
   amr_af
 FROM
   [google.com:biggene:1000genomes.variants1kG] AS kg
-JOIN (
+JOIN EACH (
   SELECT
     chromosome,
     REGEXP_EXTRACT(chromosome,
@@ -25,7 +25,7 @@ JOIN (
     allele,
     freq AS pgp_freq
   FROM
-    [google.com:biggene:pgp.brca1_freq]
+    [google.com:biggene:test.cgi_allelic_frequency]
     ) AS pgp
 ON
   pgp.contig = kg.contig
@@ -34,3 +34,5 @@ ON
   AND pgp.allele = kg.alternate_bases_str
 WHERE
   kg.contig = '17'
+  AND kg.position BETWEEN 41196312
+  AND 41277500

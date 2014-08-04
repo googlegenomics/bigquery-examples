@@ -22,7 +22,7 @@ FROM (
     SUM(num_alleles_called) AS num_alleles_called,
   FROM (
     # The left hand side of our JOIN is are all the calls, including
-    # reference calls and no-calls
+    # reference calls (but not no-calls)
     SELECT
         SUM(num_alleles_called) AS num_alleles_called,
         chromosome,

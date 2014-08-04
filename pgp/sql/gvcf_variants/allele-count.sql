@@ -4,6 +4,7 @@
 SELECT
   contig_name,
   start_pos,
+  # This 'bin' can be use in subsequent interval JOINs
   INTEGER(FLOOR(start_pos / 5000)) AS bin,
   reference_bases,
   alternate_bases,

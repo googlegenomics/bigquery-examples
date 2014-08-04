@@ -4,6 +4,7 @@
 SELECT
   chromosome,
   reference,
+  # This 'bin' can be use in subsequent interval JOINs
   INTEGER(FLOOR(locusBegin / 5000)) AS bin,
   locusBegin,
   locusEnd,
