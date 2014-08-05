@@ -20,3 +20,5 @@ ON
   chromosome = 'chr1'
   AND locusBegin <= 169519048
   AND locusEnd >= 169519049
+ORDER BY
+  sample_id
