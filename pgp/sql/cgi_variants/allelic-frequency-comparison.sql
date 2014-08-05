@@ -25,7 +25,7 @@ JOIN EACH (
     allele,
     freq AS pgp_freq
   FROM
-    [google.com:biggene:test.cgi_allelic_frequency]
+    [google.com:biggene:pgp_analysis_results.cgi_variants_allelic_frequency]
     ) AS pgp
 ON
   pgp.contig = kg.contig

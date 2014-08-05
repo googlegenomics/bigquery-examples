@@ -1,6 +1,8 @@
-# Compute allelic frequency by counting the number of called alleles (reference-calls
-# and variant-calls, but leave out no-calls) that overlap each variant allele for
-# which we previously counted its occurence in this dataset.
+# Compute allelic frequency for chromosome 1 by counting the number of called
+# alleles (reference-calls and variant-calls, but leave out no-calls) that 
+# overlap each variant allele for which we previously counted its occurence
+# in this dataset.  This returns a large result which should be materialized to 
+# a table.
 SELECT
   vars.contig_name AS contig_name,
   vars.reference_bases AS reference_bases,
@@ -76,7 +78,7 @@ FROM (
     EACH 
     # The right hand side of our JOIN are counts of alternate allele values at 
     # a particular locus
-    [google.com:biggene:results.gvcf_allele_counts] AS vars
+    [google.com:biggene:pgp_analysis_results.gvcf_variants_allele_counts] AS vars
   ON
     vars.contig_name = all.contig_name
     AND vars.bin = all.bin
