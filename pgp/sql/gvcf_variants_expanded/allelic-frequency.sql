@@ -61,7 +61,7 @@ FROM (
              });
            }
          }"))
-  GROUP BY
+  GROUP EACH BY
     contig_name,
     start_pos,
     reference_bases,

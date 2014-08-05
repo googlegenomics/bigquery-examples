@@ -42,16 +42,16 @@ FROM (
         {name: 'start_pos', type: 'integer'},
         {name: 'the_end', type: 'integer'}]",
        "function(r, emit) {
-          var num_alleles_called = 0;
-          for(var c in r.call) {
-            for(var g in r.call[c].genotype) {
-              if(0 <= r.call[c].genotype[g]) {
-                num_alleles_called++;
+          if (r.contig_name == '1') { 
+            var num_alleles_called = 0;
+            for(var c in r.call) {
+              for(var g in r.call[c].genotype) {
+                if(0 <= r.call[c].genotype[g]) {
+                  num_alleles_called++;
+                }
               }
             }
-          }
-          var binSize = 5000
-          if (r.contig_name == '1') { 
+            var binSize = 5000
             var startBin = Math.floor(r.start_pos / binSize);
             var theEnd = (r.END === null) ? r.end_pos : r.END;
             var endBin = Math.floor(theEnd / binSize);

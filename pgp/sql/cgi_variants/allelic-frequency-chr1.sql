@@ -44,11 +44,11 @@ FROM (
         {name: 'locusBegin', type: 'integer'},
         {name: 'locusEnd', type: 'integer'}]",
        "function(r, emit) {
-          var num_alleles_called = 0;
-          if('?' != r.allele1Seq) { num_alleles_called++; }
-          if('?' != r.allele2Seq) { num_alleles_called++; }
-          var binSize = 5000
           if (r.chromosome == 'chr1') { 
+            var num_alleles_called = 0;
+            if('?' != r.allele1Seq) { num_alleles_called++; }
+            if('?' != r.allele2Seq) { num_alleles_called++; }
+            var binSize = 5000
             var startBin = Math.floor(r.locusBegin / binSize);
             var endBin = Math.floor(r.locusEnd / binSize);
             for(var bin = startBin; bin <= endBin; bin++) {
