@@ -33,7 +33,9 @@ FROM (
       # This User-defined function helps us reduce the size of the cross product
       # considered by this JOIN thereby greatly speeding up the query
       FROM js(
-      [google.com:biggene:test.pgp_gvcf_variants],
+      (SELECT contig_name, reference_bases, start_pos, end_pos, END, call.genotype,
+       FROM [google.com:biggene:test.pgp_gvcf_variants]
+       WHERE contig_name = '1'),
       contig_name, reference_bases, start_pos, end_pos, END, call.genotype,
       "[{name: 'num_alleles_called', type: 'integer'},
         {name: 'contig_name', type: 'string'},
@@ -42,7 +44,6 @@ FROM (
         {name: 'start_pos', type: 'integer'},
         {name: 'the_end', type: 'integer'}]",
        "function(r, emit) {
-          if (r.contig_name == '1') { 
             var num_alleles_called = 0;
             for(var c in r.call) {
               for(var g in r.call[c].genotype) {
@@ -65,7 +66,6 @@ FROM (
                 the_end: theEnd
               });
             }
-          }
         }")
         GROUP EACH BY
         contig_name,

@@ -25,7 +25,7 @@ with open ("./allelic-frequency-chr1.sql", "r") as myfile:
   query=myfile.read().replace('"', '\\"')
 
 for chrom in chromosomes:
-  q = string.replace(query, "r.contig_name == '1'", "r.contig_name == '" + str(chrom) + "'")
+  q = string.replace(query, "WHERE contig_name = '1'", "WHERE contig_name = '%s'" % chrom)
   cmd = [
         'bq', 
         '--project_id', 'google.com:biggene',

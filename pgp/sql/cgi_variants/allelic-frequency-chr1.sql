@@ -35,7 +35,9 @@ FROM (
       # This User-defined function helps us reduce the size of the cross product
       # considered by this JOIN thereby greatly speeding up the query
       FROM js(
-      [google.com:biggene:pgp.cgi_variants],
+      (SELECT chromosome, reference, locusBegin, locusEnd, allele1Seq, allele2Seq,
+       FROM [google.com:biggene:pgp.cgi_variants]
+       WHERE chromosome = 'chr1'),
       chromosome, reference, locusBegin, locusEnd, allele1Seq, allele2Seq,
       "[{name: 'num_alleles_called', type: 'integer'},
         {name: 'chromosome', type: 'string'},
@@ -44,7 +46,6 @@ FROM (
         {name: 'locusBegin', type: 'integer'},
         {name: 'locusEnd', type: 'integer'}]",
        "function(r, emit) {
-          if (r.chromosome == 'chr1') { 
             var num_alleles_called = 0;
             if('?' != r.allele1Seq) { num_alleles_called++; }
             if('?' != r.allele2Seq) { num_alleles_called++; }
@@ -61,7 +62,6 @@ FROM (
                 locusEnd: r.locusEnd,
               });
             }
-          }
         }")
         GROUP EACH BY
         chromosome,
