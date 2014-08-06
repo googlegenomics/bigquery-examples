@@ -8,7 +8,7 @@ SELECT
   variant_called_count + SUM(refs.called_count) AS num_alleles_called_for_position,
   1 - ((variant_called_count + SUM(refs.called_count))/(172*2)) AS missingness_rate
 FROM (
-    # _JOIN our variant sample counts with the corresponding reference-matching blocks
+  # _JOIN our variant sample counts with the corresponding reference-matching blocks
   SELECT
     vars.contig_name,
     vars.start_pos,
@@ -19,7 +19,7 @@ FROM (
     variant_called_count,
     refs.called_count
   FROM (
-      # Constrain the left hand side of the _JOIN to reference-matching blocks
+    # Constrain the left hand side of the _JOIN to reference-matching blocks
     SELECT
       contig_name,
       start_pos,
@@ -35,9 +35,9 @@ FROM (
     HAVING
       is_variant_call = FALSE) AS refs
   JOIN (
-      # Constrain the right hand side of the _JOIN to variants
-      # _GROUP our variant sample counts together since a single SNP may be IN more than
-      # one row due 1 / 2 genotypes
+    # Constrain the right hand side of the _JOIN to variants
+    # _GROUP our variant sample counts together since a single SNP may be IN more than
+    # one row due 1 / 2 genotypes
     SELECT
       contig_name,
       start_pos,
@@ -72,7 +72,7 @@ FROM (
       start_pos,
       end_pos,
       reference_bases) AS vars
-    # The _JOIN criteria IS complicated since we are trying to see if a SNP overlaps an interval
+  # The _JOIN criteria IS complicated since we are trying to see if a SNP overlaps an interval
   ON
     vars.contig_name = refs.contig_name
   WHERE
