@@ -27,8 +27,8 @@ Or via the debugger:
 
 To have the sample id correctly parsed when input is from stdin, set the 
 environment variable that Hadoop would set:
-   export map_input_file=hu34D5B9/masterVarBeta-GS000015891-ASM.tsv.bz2
-   bzcat hu34D5B9/masterVarBeta-GS000015891-ASM.tsv.bz2 | ./cgi-mapper.py
+   export map_input_file=./hu34D5B9/masterVarBeta-GS000015891-ASM.tsv.bz2
+   bzcat ./hu34D5B9/masterVarBeta-GS000015891-ASM.tsv.bz2 | ./cgi-mapper.py
 
 To have the sample id correctly parsed when input is from a file, ensure that it
 is in the file path:
