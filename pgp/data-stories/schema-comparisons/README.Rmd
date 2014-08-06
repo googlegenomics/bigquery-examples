@@ -15,15 +15,136 @@
 A Comparison of Schemas and Data Encodings
 ========================================
 
-Comparison
------------------
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+require(bigrquery)
+require(ggplot2)
+require(dplyr)
+require(xtable)
+require(testthat)
+billing_project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(project="google.com:biggene", dataset="1000genomes",
+                    query=sql, billing=billing_project)  
+}
+```
 
-TODO(deflaux) table here with links to Ti/TV and allelic frequency queries for each treatment.  Include metrics about number of lines in SQL, run time, and footprint of table.
+To determine how to improve the usability of the data and the schemas, we have the same data encoded several different ways, to compare and contrast querying each.
+
+Table      | Table Size | Description 
+:------------- |:---------------:|:---------------
+[cgi_variants](../../provenance#cgi_variants-table)  |433GB | data from 174 CGI masterVar files in a flat schema (one row per sample) with reference matching blocks
+[gvcf_variants](../../provenance#gvcf_variants-table)  | 231GB | CGI data for 172 individuals converted to gVCF in a nested schema (per-sample data is nested) with reference matching blocks
+[gvcf_variants_expanded](../../provenance#gvcf_variants_expanded-table)  |506GB| CGI data for 172 individuals converted to gVCF in a nested schema (per-sample data is nested) with reference matching blocks further transformed to have all data for a particular variant within one record (added 0/0 genotypes for samples that match the reference at the variant position)
+
+```{r echo=FALSE}
+library(dplyr)
+
+count_lines <- function(path) { 
+    if(!is.na(path)) { 
+      length(readLines(path))
+      }
+    else {
+      path
+    }
+  }
+
+observations <- read.csv('schema-comparison-observations.csv')
+obs <- mutate(observations,
+              table_link = paste(sep="", '<a href="../../provenance#', tables, '-table">', tables, '</a>'),
+              path = ifelse(is.na(code),
+                            NA,
+                            file.path('../../sql', tables, code)),
+              code_link = ifelse(is.na(code),
+                            NA,
+                            paste(sep="", '<a href="', path, '">', code, '</a>')),
+              line_count = unlist(lapply(path, count_lines)))
+```
+
+### Sample-level data for a particular variant
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(obs %.%
+               filter(code == 'klotho.sql') %.%
+               select(table_link, code_link, runtime, data_processed, line_count, notes),
+             digits=6), 
+      type="html",
+      include.rownames=F,
+      sanitize.text.function=force)
+```
+
+### Per-sample Ti/Tv Ratio
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(obs %.%
+               filter(code == 'ti-tv-ratio.sql') %.%
+               select(table_link, code_link, runtime, data_processed, line_count, notes),
+             digits=6), 
+      type="html",
+      include.rownames=F,
+      sanitize.text.function=force)
+```
+
+### Allelic Frequency for a small region
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(obs %.%
+               filter(code == 'allelic-frequency-brca1.sql') %.%
+               select(table_link, code_link, runtime, data_processed, line_count, notes),
+             digits=6), 
+      type="html",
+      include.rownames=F,
+      sanitize.text.function=force)
+```
+
+### Allele counts for the full dataset
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(obs %.%
+               filter(code == 'allele-count.sql') %.%
+               select(table_link, code_link, runtime, data_processed, line_count, notes),
+             digits=6), 
+      type="html",
+      include.rownames=F,
+      sanitize.text.function=force)
+```
+
+### Allelic Frequency for a large region
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(obs %.%
+               filter(code == 'allelic-frequency-chr1.sql') %.%
+               select(table_link, code_link, runtime, data_processed, line_count, notes),
+             digits=6), 
+      type="html",
+      include.rownames=F,
+      sanitize.text.function=force)
+```
+
+### Allelic Frequency for the full dataset
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(obs %.%
+               filter(code == 'allelic-frequency.sql') %.%
+               select(table_link, code_link, runtime, data_processed, line_count, notes),
+             digits=6), 
+      type="html",
+      include.rownames=F,
+      sanitize.text.function=force)
+```
+
+### Allelic Frequency compared to that of 1,000 Genomes
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(obs %.%
+               filter(code == 'allelic-frequency-comparison.sql') %.%
+               select(table_link, code_link, runtime, data_processed, line_count, notes),
+             digits=6), 
+      type="html",
+      include.rownames=F,
+      sanitize.text.function=force)
+```
+
+_The sizes and timings represent an arbitrary point in time.  More data may be added to these tables over time and the timings are expected to be noticeably variable.  See also [#11](https://github.com/googlegenomics/bigquery-examples/issues/11), [#12](https://github.com/googlegenomics/bigquery-examples/issues/12), and [#15](https://github.com/googlegenomics/bigquery-examples/issues/15)_
 
 Motivation
 -----------------
 
-We wrote many, many [queries for 1,000 Genomes](../../../1000genomes/sql) and they were relatively straighforward since all the data for all samples for a particular variant could be found on a single row in the table.
+We wrote many, many [queries for 1,000 Genomes](../../../1000genomes/sql) and they were relatively straightforward since all the data for all samples for a particular variant could be found on a single row in the table.
 
 For subsequent work with data encoded as [gVCF](https://sites.google.com/site/gvcftools/home/about-gvcf/gvcf-conventions), the queries were much more challenging.  With gVCF data we have *reference-matching block records*, so our SQL statements need to determine which samples have reference-matching regions that overlap the variant(s) in which we are interested.
 
@@ -43,21 +164,6 @@ becomes
 ```
 to capture not only that variant, but any other records that overlap that genomic position.  Suppose we want to calculate an aggregate for a particular variant, such as the number of samples with the variant on one or both alleles and of samples that match the reference.
 
-```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-require(bigrquery)
-require(ggplot2)
-require(dplyr)
-require(xtable)
-require(testthat)
-billing_project <- "google.com:biggene" # put your projectID here
-DisplayAndDispatchQuery <- function(queryUri) {
-  sql <- readChar(queryUri, nchars=1e6)
-  cat(sql)
-  query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing=billing_project)  
-}
-```
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/missingness-klotho.sql")
 ```
@@ -76,18 +182,19 @@ Examing the first few rows, we see:
 print(xtable(head(result), digits=6), type="html", include.rownames=F)
 ```
 
-TODO(deflaux): more here about equi-JOINs in BigQuery and the cross product when we try to do this at a larger scale, UDF example, etc...
+The query above works fine for a small region of the genome, but it becomes prohibitive when running it against a larger region due to the size of the cross product found in the ON clause (checking for equality on chromosome) subsequently whitled down via the WHERE clause (confirming that the records overlap).
 
-Details
---------------
+To further reduce the size of the cross product, we can make use of the new User-Defined Function feature of BigQuery to dynamically add additional criteria for use in the ON clause, namely the genome "bin(s)" in which the reference-matching blocks reside.
 
-To determine how to improve the usability of the data and the schemas, we have the same data encoded four different ways, to compare and contrast querying each.
- 1. [cgi_variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.cgi_variants?pli=1): a flat schema (one row per sample) with reference matching blocks
- 1. [variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.variants?pli=1): a nested schema (per-sample data is nested) containing only variants
- 1. [gvcf_variants](https://bigquery.cloud.google.com/table/google.com:biggene:test.pgp_gvcf_variants?pli=1): a nested schema (per-sample data is nested) with reference matching blocks
- 1. [gvcf_variants_expanded](https://bigquery.cloud.google.com/table/google.com:biggene:test.pgp_gvcf_variants_expanded?pli=1): a nested schema (per-sample data is nested) with reference matching blocks BUT with reference-matching and no-call samples nested into variant rows (redundant data)
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
+result <- DisplayAndDispatchQuery("../../sql/schema-comparisons/missingness-udf.sql")
+```
+Number of rows returned by this query: `r nrow(result)`.
 
-For more detail about how the CGI genomes were transformed and loaded into BigQuery, see the [provenance](../../provenance) of the various tables.  Also note that while the [cgi_variants](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.cgi_variants?pli=1) has data is for 174 individuals, the tables created from the derived VCF/gVCF data only have data for 172 individuals because `cgatools mkvcf` did not successfully convert two of the genomes.
+Examing the first few rows, we see:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
+```
 
 Appendix
 ==========================
@@ -166,7 +273,7 @@ LIMIT
   1000
 ```
 
-Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).  TODO(deflaux): #11 the counts are equal for Y and M, fix the bug in cgi-ref-blocks-mapper.py and re-run it.
+Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).  TODO(deflaux): [#11](https://github.com/googlegenomics/bigquery-examples/issues/11) the counts are equal for Y and M, fix the bug in cgi-ref-blocks-mapper.py and re-run it.
 ```{r}
 print(expect_that(unique(gvcf_variants$num_records >= variants$num_records), is_true()))
 print(expect_that(unique(gvcf_variants_expanded$num_records >= variants$num_records), is_true()))
@@ -231,7 +338,7 @@ Make sure we correctly expanded the reference-matching calls into the variant re
 ```{r}
 print(expect_equal(gvcf_variants$num_variant_alleles, gvcf_variants_expanded$num_variant_alleles))
 ```
-The cgi_variants table actually has fewer variant alleles per sample.  TODO(deflaux): #12 dig more in to the reason for this difference and/or import the Var data
+The cgi_variants table actually has fewer variant alleles per sample.  TODO(deflaux): [#12](https://github.com/googlegenomics/bigquery-examples/issues/12) dig more in to the reason for this difference and/or import the Var data
 ```{r}
 print(expect_that(unique(cgi_variants$num_variant_alleles < gvcf_variants$num_variant_alleles), is_true()))
 print(expect_equal(cgi_variants$num_variant_alleles, gvcf_variants$num_variant_alleles, tolerance=.15))
