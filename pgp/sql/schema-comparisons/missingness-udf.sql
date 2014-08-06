@@ -1,5 +1,9 @@
 # Missingness rate summarized per chromosome.  To see it per variant, materialize 
 # the large result from the inner query to a table.
+#
+# Note that the new BigQuery feature of user-defined javascript
+# functions is in limited preview.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   contig_name,
   MIN(missingness_rate) AS min_missingness,

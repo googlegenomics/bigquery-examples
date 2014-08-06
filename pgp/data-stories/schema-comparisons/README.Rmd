@@ -139,7 +139,7 @@ print(xtable(obs %.%
       sanitize.text.function=force)
 ```
 
-_The sizes and timings represent an arbitrary point in time.  More data may be added to these tables over time and the timings are expected to be noticeably variable.  See also [#11](https://github.com/googlegenomics/bigquery-examples/issues/11), [#12](https://github.com/googlegenomics/bigquery-examples/issues/12), and [#15](https://github.com/googlegenomics/bigquery-examples/issues/15)_
+_The sizes and timings represent an arbitrary point in time.  More data may be added to these tables over time and the timings are expected to be noticeably variable.  See also [#11](https://github.com/googlegenomics/bigquery-examples/issues/11), [#12](https://github.com/googlegenomics/bigquery-examples/issues/12), and [#15](https://github.com/googlegenomics/bigquery-examples/issues/15)_.
 
 Motivation
 -----------------

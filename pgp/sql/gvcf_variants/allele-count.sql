@@ -1,6 +1,10 @@
 # Count the occurence of each variant allele across all participants in the
 # dataset.  This returns a large result so be sure to materialize it into a
 # table for subsequent use. 
+#
+# Note that the new BigQuery feature of user-defined javascript
+# functions is in limited preview.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   contig_name,
   start_pos,

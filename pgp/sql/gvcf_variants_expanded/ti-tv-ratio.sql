@@ -1,6 +1,10 @@
 # Compute the Ti/Tv ratio for each participant in the PGP dataset.  A user-defined
 # function is used here since its difficult in SQL to join the genotype array in
 # each call with alternate_bases at the variant level.
+#
+# Note that the new BigQuery feature of user-defined javascript
+# functions is in limited preview.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   sample_id,
   transitions,

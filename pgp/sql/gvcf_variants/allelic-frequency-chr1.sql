@@ -3,6 +3,10 @@
 # overlap each variant allele for which we previously counted its occurence
 # in this dataset.  This returns a large result which should be materialized to 
 # a table.
+#
+# Note that the new BigQuery feature of user-defined javascript
+# functions is in limited preview.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   vars.contig_name AS contig_name,
   vars.reference_bases AS reference_bases,

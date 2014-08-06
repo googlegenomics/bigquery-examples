@@ -1,6 +1,10 @@
 # This is busted.  It over counts ref calls due in the GROUP BY operation.  It
 # would work if we grouped all of the same variant into the same row prior to
 # loading to BigQuery because then we would not need the GROUP BY operation.
+#
+# Note that the new BigQuery feature of user-defined javascript
+# functions is in limited preview.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   contig_name,
   start_pos,
