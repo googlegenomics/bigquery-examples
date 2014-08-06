@@ -29,6 +29,7 @@ for chrom in chromosomes:
   cmd = [
         'bq', 
         '--project_id', 'google.com:biggene',
+        '--nosync',
         'query',
         '--allow_large_results',
         '--append_table',
