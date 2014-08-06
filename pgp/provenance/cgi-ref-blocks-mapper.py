@@ -19,11 +19,21 @@
 Assumptions:
 - one sample per input file
 
+
 This script can be run standalone:
-   cat hu34D5B9/masterVarBeta-GS000010426-ASM.tsv | ./cgi-ref-blocks-mapper.py
+   cat masterVarBeta-GS000016446-ASM.tsv | ./cgi-ref-blocks-mapper.py
 
 Or via the debugger:
-   python -mpdb ./cgi-ref-blocks-mapper.py hu34D5B9/masterVarBeta-GS000010426-ASM.tsv
+   python -mpdb ./cgi-ref-blocks-mapper.py masterVarBeta-GS000016446-ASM.tsv
+
+To have the sample id correctly parsed when input is from stdin, set the 
+environment variable that Hadoop would set:
+   export map_input_file=./huDBF9DD/masterVarBeta-GS000016446-ASM.tsv.bz2
+   bzcat ./huDBF9DD/masterVarBeta-GS000016446-ASM.tsv.bz2 | ./cgi-ref-blocks-mapper.py
+
+To have the sample id correctly parsed when input is from a file, ensure that it
+is in the file path:
+   python -mpdb ./cgi-mapper.py ./huDBF9DD/masterVarBeta-GS000016446-ASM.tsv
 
 It should be run as a mapper-only Hadoop Streaming job:
   hadoop jar /path/to/your/hadoop-streaming-*.jar \
@@ -69,16 +79,19 @@ def main():
 
   # Basic parsing of command line arguments to allow a filename
   # to be passed when running this code in the debugger.
+  path = None
   file_handle = sys.stdin
   if 2 <= len(sys.argv):
     path = sys.argv[1]
     file_handle = open(path, "r")
-  else:
+  elif INPUT_FILE_KEY in os.environ:
     path = os.environ[INPUT_FILE_KEY]
     print >> sys.stderr, path
 
-  match = sample_id_re.search(path)
-  sample_id = match.group(1)
+  if path is not None:
+    match = sample_id_re.search(path)
+    if match:
+      sample_id = match.group(1)
 
   line = file_handle.readline()
   while line:
@@ -103,7 +116,7 @@ def main():
     else:
       fields = line.split("\t")
       if ("=" == fields[REFERENCE] and "=" == fields[ALLELE1SEQ]
-          and "=" == fields[ALLELE2SEQ]):
+          and ("=" == fields[ALLELE2SEQ] or "" == fields[ALLELE2SEQ])):
         # This is a reference-matching record, emit it
         contig = fields[CHROMOSOME].replace("chr", "", 1)
         start_pos = int(fields[LOCUS_BEGIN]) + 1
