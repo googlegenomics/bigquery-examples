@@ -17,7 +17,7 @@ FROM (
       '/') WITHIN call AS genotype,
     SUM(call.genotype >= 0) WITHIN RECORD as called_count,
   FROM
-    [google.com:biggene:test.pgp_gvcf_variants]
+    [google.com:biggene:pgp.gvcf_variants]
   WHERE
     contig_name = '13'
     AND start_pos <= 33628138

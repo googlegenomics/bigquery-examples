@@ -32,7 +32,7 @@ FROM (
   FROM (
     SELECT sample_id, mutation
       FROM js(
-      [google.com:biggene:test.pgp_gvcf_variants],
+      [google.com:biggene:pgp.gvcf_variants],
       reference_bases, alternate_bases, call.callset_name, call.genotype,
         "[{name: 'sample_id', type: 'string'},
           {name: 'mutation', type: 'string'}]",

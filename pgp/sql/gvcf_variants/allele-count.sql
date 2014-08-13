@@ -16,7 +16,7 @@ SELECT
 FROM (
   SELECT contig_name, start_pos, reference_bases, alternate_bases, alt_count
   FROM js(
-    [google.com:biggene:test.pgp_gvcf_variants],
+    [google.com:biggene:pgp.gvcf_variants],
     contig_name, start_pos, reference_bases, alternate_bases, call.genotype,
       "[{name: 'contig_name', type: 'string'},
         {name: 'start_pos', type: 'integer'},

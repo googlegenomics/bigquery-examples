@@ -41,7 +41,7 @@ FROM (
            TRUE) AS is_variant_call,
          SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
        FROM
-         [google.com:biggene:test.pgp_gvcf_variants]
+         [google.com:biggene:pgp.gvcf_variants]
        HAVING
          is_variant_call = FALSE),
       contig_name, start_pos, END, called_count,
@@ -93,7 +93,7 @@ FROM (
             TRUE) AS is_variant_call,
           SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
         FROM
-          [google.com:biggene:test.pgp_gvcf_variants]
+          [google.com:biggene:pgp.gvcf_variants]
         HAVING
           ref_len = 1
           AND alt_len = 1

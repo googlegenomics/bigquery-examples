@@ -36,7 +36,7 @@ FROM
     SUM(reference_bases != 'N') AS num_variants,
     'gvcf_variants' AS dataset
   FROM
-    [google.com:biggene:test.pgp_gvcf_variants]
+    [google.com:biggene:pgp.gvcf_variants]
   GROUP BY
     chromosome),
   (

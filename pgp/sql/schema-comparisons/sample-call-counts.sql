@@ -42,7 +42,7 @@ FROM
       call.callset_name AS sample_id,
       SUM(call.genotype > 0) WITHIN call AS num_variant_alleles,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants])
+      [google.com:biggene:pgp.gvcf_variants])
   GROUP BY
     sample_id),
   (
@@ -57,7 +57,7 @@ FROM
       call.callset_name AS sample_id,
       SUM(call.genotype > 0) WITHIN call AS num_variant_alleles,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants_expanded])
+      [google.com:biggene:test.pgp_gvcf_variants_expanded2])
   GROUP BY
     sample_id)
 ORDER BY

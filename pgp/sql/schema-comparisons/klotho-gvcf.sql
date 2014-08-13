@@ -43,7 +43,7 @@ FROM
       GROUP_CONCAT(STRING(call.genotype),
         '/') WITHIN call AS genotype,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants]
+      [google.com:biggene:pgp.gvcf_variants]
     WHERE
       contig_name = '13'
       AND start_pos <= 33628138

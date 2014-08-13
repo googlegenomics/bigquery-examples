@@ -29,7 +29,7 @@ FROM (
         TRUE) AS is_variant_call,
       SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants]
+      [google.com:biggene:pgp.gvcf_variants]
     WHERE
       contig_name = '17'
     HAVING
@@ -58,7 +58,7 @@ FROM (
           TRUE) AS is_variant_call,
         SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
       FROM
-        [google.com:biggene:test.pgp_gvcf_variants]
+        [google.com:biggene:pgp.gvcf_variants]
       WHERE
         contig_name = '17'
         AND start_pos BETWEEN 41196312

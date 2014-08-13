@@ -35,7 +35,7 @@ FROM (
       # considered by this JOIN thereby greatly speeding up the query
       FROM js(
       (SELECT contig_name, reference_bases, start_pos, end_pos, END, call.genotype,
-       FROM [google.com:biggene:test.pgp_gvcf_variants]
+       FROM [google.com:biggene:pgp.gvcf_variants]
        WHERE contig_name = '17'),
       contig_name, reference_bases, start_pos, end_pos, END, call.genotype,
       "[{name: 'num_alleles_called', type: 'integer'},
@@ -91,7 +91,7 @@ FROM (
   SELECT contig_name, start_pos, reference_bases, alternate_bases, alt_count
   FROM js(
     (SELECT contig_name, start_pos, reference_bases, alternate_bases, call.genotype,
-     FROM [google.com:biggene:test.pgp_gvcf_variants]
+     FROM [google.com:biggene:pgp.gvcf_variants]
      WHERE contig_name = '17'),
     contig_name, start_pos, reference_bases, alternate_bases, call.genotype,
       "[{name: 'contig_name', type: 'string'},
