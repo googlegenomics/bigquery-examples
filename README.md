@@ -36,6 +36,10 @@ Getting Started
   * pick _‘Switch to project’_ in the menu, and _‘Display project...’_ in the submenu <img src="figure/display.png" title="Display project" alt="Display Project" style="display: block; margin: auto;" />
   * enter _google.com:biggene_ in the _‘Add Project’_ dialog <img src="figure/add.png" title="Add Project" alt="Add Project" style="display: block; margin: auto;" />
 
+ 1. What next?
+   * New to BigQuery?  See the [query reference](https://developers.google.com/bigquery/query-reference).
+   * New to working with variants?  See an overview of the [VCF data format](http://vcftools.sourceforge.net/VCF-poster.pdf).
+
 Datasets
 --------------
 
