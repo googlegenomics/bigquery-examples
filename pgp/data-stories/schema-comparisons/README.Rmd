@@ -139,7 +139,7 @@ print(xtable(obs %.%
       sanitize.text.function=force)
 ```
 
-_The sizes and timings represent an arbitrary point in time.  More data may be added to these tables over time and the timings are expected to be noticeably variable.  See also [#11](https://github.com/googlegenomics/bigquery-examples/issues/11), [#12](https://github.com/googlegenomics/bigquery-examples/issues/12), and [#15](https://github.com/googlegenomics/bigquery-examples/issues/15)_.
+_The sizes and timings represent an arbitrary point in time.  More data may be added to these tables over time and the timings are expected to be noticeably variable.  See also [#12](https://github.com/googlegenomics/bigquery-examples/issues/12) and [#15](https://github.com/googlegenomics/bigquery-examples/issues/15)_.
 
 Motivation
 -----------------
@@ -273,13 +273,15 @@ LIMIT
   1000
 ```
 
-Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).  TODO(deflaux): [#11](https://github.com/googlegenomics/bigquery-examples/issues/11) the counts are equal for Y and M, fix the bug in cgi-ref-blocks-mapper.py and re-run it.
+Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).
 ```{r}
-print(expect_that(unique(gvcf_variants$num_records >= variants$num_records), is_true()))
+print(expect_that(unique(gvcf_variants$num_records > variants$num_records), is_true()))
+# TODO(deflaux): update this from '>=' to '>' after the fix for #11 has propagated to this table.
 print(expect_that(unique(gvcf_variants_expanded$num_records >= variants$num_records), is_true()))
 ```
 The gvcf_variants and gvcf_variants_expanded tables have the same number of records, the difference between the two is in the number of nested sample variant calls.
 ```{r}
+# TODO(deflaux): this test will pass after the fix for #11 has propagated to this table.
 print(expect_equal(gvcf_variants$num_records, gvcf_variants_expanded$num_records))
 ```
 

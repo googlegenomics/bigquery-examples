@@ -31,62 +31,62 @@ Table      | Table Size | Description
 
 ### Sample-level data for a particular variant
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:41 2014 -->
+<!-- Mon Aug 18 15:45:40 2014 -->
 <TABLE border=1>
 <TR> <TH> table_link </TH> <TH> code_link </TH> <TH> runtime </TH> <TH> data_processed </TH> <TH> line_count </TH> <TH> notes </TH>  </TR>
   <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/klotho.sql">klotho.sql</a> </TD> <TD> 4.1s elapsed </TD> <TD> 117 GB processed </TD> <TD> 18 </TD> <TD>  </TD> </TR>
-  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/klotho.sql">klotho.sql</a> </TD> <TD> 5.3s elapsed </TD> <TD> 76.0 GB processed </TD> <TD> 35 </TD> <TD>  </TD> </TR>
+  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/klotho.sql">klotho.sql</a> </TD> <TD> 6.9s elapsed </TD> <TD> 76.8 GB processed </TD> <TD> 35 </TD> <TD>  </TD> </TR>
   <TR> <TD> <a href="../../provenance#gvcf_variants_expanded-table">gvcf_variants_expanded</a> </TD> <TD> <a href="../../sql/gvcf_variants_expanded/klotho.sql">klotho.sql</a> </TD> <TD> 7.7s elapsed </TD> <TD> 196 GB processed </TD> <TD> 32 </TD> <TD>  </TD> </TR>
    </TABLE>
 
 
 ### Per-sample Ti/Tv Ratio
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:41 2014 -->
+<!-- Mon Aug 18 15:45:40 2014 -->
 <TABLE border=1>
 <TR> <TH> table_link </TH> <TH> code_link </TH> <TH> runtime </TH> <TH> data_processed </TH> <TH> line_count </TH> <TH> notes </TH>  </TR>
   <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/ti-tv-ratio.sql">ti-tv-ratio.sql</a> </TD> <TD> 3.8s elapsed </TD> <TD> 53.7 GB processed </TD> <TD> 60 </TD> <TD>  </TD> </TR>
-  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/ti-tv-ratio.sql">ti-tv-ratio.sql</a> </TD> <TD> 29.3s elapsed </TD> <TD> 59.2 GB processed </TD> <TD> 67 </TD> <TD>  </TD> </TR>
+  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/ti-tv-ratio.sql">ti-tv-ratio.sql</a> </TD> <TD> 29.4s elapsed </TD> <TD> 59.8 GB processed </TD> <TD> 67 </TD> <TD>  </TD> </TR>
   <TR> <TD> <a href="../../provenance#gvcf_variants_expanded-table">gvcf_variants_expanded</a> </TD> <TD> <a href="../../sql/gvcf_variants_expanded/ti-tv-ratio.sql">ti-tv-ratio.sql</a> </TD> <TD> 83.5s elapsed </TD> <TD> 185 GB processed </TD> <TD> 68 </TD> <TD>  </TD> </TR>
    </TABLE>
 
 
 ### Allelic Frequency for a small region
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:41 2014 -->
+<!-- Mon Aug 18 15:45:40 2014 -->
 <TABLE border=1>
 <TR> <TH> table_link </TH> <TH> code_link </TH> <TH> runtime </TH> <TH> data_processed </TH> <TH> line_count </TH> <TH> notes </TH>  </TR>
-  <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/allelic-frequency-brca1.sql">allelic-frequency-brca1.sql</a> </TD> <TD> 83.4s elapsed </TD> <TD> 117 GB processed </TD> <TD> 161 </TD> <TD>  </TD> </TR>
-  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allelic-frequency-brca1.sql">allelic-frequency-brca1.sql</a> </TD> <TD> 171.8s elapsed </TD> <TD> 53.3 GB processed </TD> <TD> 147 </TD> <TD>  </TD> </TR>
+  <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/allelic-frequency-brca1.sql">allelic-frequency-brca1.sql</a> </TD> <TD> 50.3s elapsed </TD> <TD> 117 GB processed </TD> <TD> 161 </TD> <TD>  </TD> </TR>
+  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allelic-frequency-brca1.sql">allelic-frequency-brca1.sql</a> </TD> <TD> 15.7s elapsed </TD> <TD> 53.9 GB processed </TD> <TD> 147 </TD> <TD>  </TD> </TR>
    </TABLE>
 
 
 ### Allele counts for the full dataset
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:41 2014 -->
+<!-- Mon Aug 18 15:45:40 2014 -->
 <TABLE border=1>
 <TR> <TH> table_link </TH> <TH> code_link </TH> <TH> runtime </TH> <TH> data_processed </TH> <TH> line_count </TH> <TH> notes </TH>  </TR>
   <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/allele-count.sql">allele-count.sql</a> </TD> <TD> 70.2s elapsed
  </TD> <TD> 88.8 GB processed
 
  </TD> <TD> 59 </TD> <TD> result materialized to table google.com:biggene:pgp_analysis_results.cgi_variants_allele_counts </TD> </TR>
-  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allele-count.sql">allele-count.sql</a> </TD> <TD> 146.1s elapsed </TD> <TD> 43.6 GB processed </TD> <TD> 52 </TD> <TD> result materialized to table google.com:biggene:pgp_analysis_results.gvcf_variants_allele_counts </TD> </TR>
+  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allele-count.sql">allele-count.sql</a> </TD> <TD> 51.6s elapsed </TD> <TD> 44.1 GB processed </TD> <TD> 52 </TD> <TD> result materialized to table google.com:biggene:pgp_analysis_results.gvcf_variants_allele_counts </TD> </TR>
    </TABLE>
 
 
 ### Allelic Frequency for a large region
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:41 2014 -->
+<!-- Mon Aug 18 15:45:40 2014 -->
 <TABLE border=1>
 <TR> <TH> table_link </TH> <TH> code_link </TH> <TH> runtime </TH> <TH> data_processed </TH> <TH> line_count </TH> <TH> notes </TH>  </TR>
-  <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/allelic-frequency-chr1.sql">allelic-frequency-chr1.sql</a> </TD> <TD> 85.3s elapsed </TD> <TD> 90.4 GB processed </TD> <TD> 97 </TD> <TD> results for all chromosomes materialized to table google.com:biggene:pgp_analysis_results.cgi_variants_allelic_frequency </TD> </TR>
-  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allelic-frequency-chr1.sql">allelic-frequency-chr1.sql</a> </TD> <TD> 196.2s elapsed </TD> <TD> 54.6 GB processed </TD> <TD> 100 </TD> <TD> results for all chromosomes materialized to table google.com:biggene:pgp_analysis_results.gvcf_variants_allelic_frequency </TD> </TR>
+  <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/allelic-frequency-chr1.sql">allelic-frequency-chr1.sql</a> </TD> <TD> 118.4s elapsed </TD> <TD> 90.4 GB processed </TD> <TD> 97 </TD> <TD> results for all chromosomes materialized to table google.com:biggene:pgp_analysis_results.cgi_variants_allelic_frequency </TD> </TR>
+  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allelic-frequency-chr1.sql">allelic-frequency-chr1.sql</a> </TD> <TD> 96.4s elapsed </TD> <TD> 55.2 GB processed </TD> <TD> 100 </TD> <TD> results for all chromosomes materialized to table google.com:biggene:pgp_analysis_results.gvcf_variants_allelic_frequency </TD> </TR>
    </TABLE>
 
 
 ### Allelic Frequency for the full dataset
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:41 2014 -->
+<!-- Mon Aug 18 15:45:40 2014 -->
 <TABLE border=1>
 <TR> <TH> table_link </TH> <TH> code_link </TH> <TH> runtime </TH> <TH> data_processed </TH> <TH> line_count </TH> <TH> notes </TH>  </TR>
   <TR> <TD> <a href="../../provenance#gvcf_variants_expanded-table">gvcf_variants_expanded</a> </TD> <TD> <a href="../../sql/gvcf_variants_expanded/allelic-frequency.sql">allelic-frequency.sql</a> </TD> <TD> 318.7s elapsed </TD> <TD> 121 GB processed </TD> <TD> 72 </TD> <TD> the pattern is correct but the result will be wrong until records for "the same" variant are merged together </TD> </TR>
@@ -95,15 +95,15 @@ Table      | Table Size | Description
 
 ### Allelic Frequency compared to that of 1,000 Genomes
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:41 2014 -->
+<!-- Mon Aug 18 15:45:40 2014 -->
 <TABLE border=1>
 <TR> <TH> table_link </TH> <TH> code_link </TH> <TH> runtime </TH> <TH> data_processed </TH> <TH> line_count </TH> <TH> notes </TH>  </TR>
-  <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/allelic-frequency-comparison.sql">allelic-frequency-comparison.sql</a> </TD> <TD> 69.3s elapsed </TD> <TD> 2.83 GB processed </TD> <TD> 38 </TD> <TD>  </TD> </TR>
-  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allelic-frequency-comparison.sql">allelic-frequency-comparison.sql</a> </TD> <TD> 47.2s elapsed </TD> <TD> 2.71 GB processed </TD> <TD> 33 </TD> <TD>  </TD> </TR>
+  <TR> <TD> <a href="../../provenance#cgi_variants-table">cgi_variants</a> </TD> <TD> <a href="../../sql/cgi_variants/allelic-frequency-comparison.sql">allelic-frequency-comparison.sql</a> </TD> <TD> 20.7s elapsed </TD> <TD> 2.93 GB processed </TD> <TD> 38 </TD> <TD>  </TD> </TR>
+  <TR> <TD> <a href="../../provenance#gvcf_variants-table">gvcf_variants</a> </TD> <TD> <a href="../../sql/gvcf_variants/allelic-frequency-comparison.sql">allelic-frequency-comparison.sql</a> </TD> <TD> 12.5s elapsed </TD> <TD> 2.72 GB processed </TD> <TD> 33 </TD> <TD>  </TD> </TR>
    </TABLE>
 
 
-_The sizes and timings represent an arbitrary point in time.  More data may be added to these tables over time and the timings are expected to be noticeably variable.  See also [#11](https://github.com/googlegenomics/bigquery-examples/issues/11), [#12](https://github.com/googlegenomics/bigquery-examples/issues/12), and [#15](https://github.com/googlegenomics/bigquery-examples/issues/15)_.
+_The sizes and timings represent an arbitrary point in time.  More data may be added to these tables over time and the timings are expected to be noticeably variable.  See also [#12](https://github.com/googlegenomics/bigquery-examples/issues/12) and [#15](https://github.com/googlegenomics/bigquery-examples/issues/15)_.
 
 Motivation
 -----------------
@@ -149,7 +149,7 @@ FROM (
       '/') WITHIN call AS genotype,
     SUM(call.genotype >= 0) WITHIN RECORD as called_count,
   FROM
-    [google.com:biggene:test.pgp_gvcf_variants]
+    [google.com:biggene:pgp.gvcf_variants]
   WHERE
     contig_name = '13'
     AND start_pos <= 33628138
@@ -159,7 +159,7 @@ FROM (
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:45 2014 -->
+<!-- Mon Aug 18 15:45:45 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_called_for_position </TH> <TH> num_alleles_called_for_position </TH> <TH> missingness_rate </TH>  </TR>
   <TR> <TD align="right">     170 </TD> <TD align="right">     340 </TD> <TD align="right"> 0.011628 </TD> </TR>
@@ -200,7 +200,7 @@ FROM (
         TRUE) AS is_variant_call,
       SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants]
+      [google.com:biggene:pgp.gvcf_variants]
     WHERE
       contig_name = '17'
     HAVING
@@ -229,7 +229,7 @@ FROM (
           TRUE) AS is_variant_call,
         SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
       FROM
-        [google.com:biggene:test.pgp_gvcf_variants]
+        [google.com:biggene:pgp.gvcf_variants]
       WHERE
         contig_name = '17'
         AND start_pos BETWEEN 41196312
@@ -261,15 +261,15 @@ Number of rows returned by this query: 540.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:08:50 2014 -->
+<!-- Mon Aug 18 15:45:51 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> reference_bases </TH> <TH> variant_called_count </TH> <TH> reference_called_count </TH> <TH> num_alleles_called_for_position </TH> <TH> missingness_rate </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41211927 </TD> <TD> T </TD> <TD align="right">       2 </TD> <TD align="right">     302 </TD> <TD align="right">     304 </TD> <TD align="right"> 0.116279 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41212649 </TD> <TD> A </TD> <TD align="right">       2 </TD> <TD align="right">     340 </TD> <TD align="right">     342 </TD> <TD align="right"> 0.005814 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41211681 </TD> <TD> A </TD> <TD align="right">       2 </TD> <TD align="right">     342 </TD> <TD align="right">     344 </TD> <TD align="right"> 0.000000 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41212547 </TD> <TD> C </TD> <TD align="right">     202 </TD> <TD align="right">     142 </TD> <TD align="right">     344 </TD> <TD align="right"> 0.000000 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41211653 </TD> <TD> A </TD> <TD align="right">     202 </TD> <TD align="right">     142 </TD> <TD align="right">     344 </TD> <TD align="right"> 0.000000 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41213626 </TD> <TD> G </TD> <TD align="right">     192 </TD> <TD align="right">     142 </TD> <TD align="right">     334 </TD> <TD align="right"> 0.029070 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41224347 </TD> <TD> G </TD> <TD align="right">       2 </TD> <TD align="right">     324 </TD> <TD align="right">     326 </TD> <TD align="right"> 0.052326 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41224296 </TD> <TD> C </TD> <TD align="right">       2 </TD> <TD align="right">     316 </TD> <TD align="right">     318 </TD> <TD align="right"> 0.075581 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41224293 </TD> <TD> C </TD> <TD align="right">       2 </TD> <TD align="right">     324 </TD> <TD align="right">     326 </TD> <TD align="right"> 0.052326 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41206639 </TD> <TD> G </TD> <TD align="right">       4 </TD> <TD align="right">     340 </TD> <TD align="right">     344 </TD> <TD align="right"> 0.000000 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41205772 </TD> <TD> G </TD> <TD align="right">     202 </TD> <TD align="right">     142 </TD> <TD align="right">     344 </TD> <TD align="right"> 0.000000 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41206056 </TD> <TD> T </TD> <TD align="right">     200 </TD> <TD align="right">     142 </TD> <TD align="right">     342 </TD> <TD align="right"> 0.005814 </TD> </TR>
    </TABLE>
 
 
@@ -322,7 +322,7 @@ FROM (
            TRUE) AS is_variant_call,
          SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
        FROM
-         [google.com:biggene:test.pgp_gvcf_variants]
+         [google.com:biggene:pgp.gvcf_variants]
        HAVING
          is_variant_call = FALSE),
       contig_name, start_pos, END, called_count,
@@ -374,7 +374,7 @@ FROM (
             TRUE) AS is_variant_call,
           SUM(call.genotype >= 0) WITHIN RECORD AS called_count,
         FROM
-          [google.com:biggene:test.pgp_gvcf_variants]
+          [google.com:biggene:pgp.gvcf_variants]
         HAVING
           ref_len = 1
           AND alt_len = 1
@@ -402,14 +402,14 @@ FROM (
 GROUP BY
   contig_name
 ORDER BY
-  contig_nameRunning query:   RUNNING  2.9sRunning query:   RUNNING  3.8sRunning query:   RUNNING  4.6sRunning query:   RUNNING  5.8sRunning query:   RUNNING  6.7sRunning query:   RUNNING  8.0sRunning query:   RUNNING  8.6sRunning query:   RUNNING  9.3sRunning query:   RUNNING  9.9sRunning query:   RUNNING 10.5sRunning query:   RUNNING 13.6sRunning query:   RUNNING 14.2sRunning query:   RUNNING 15.4sRunning query:   RUNNING 16.3sRunning query:   RUNNING 17.8sRunning query:   RUNNING 18.5sRunning query:   RUNNING 19.1sRunning query:   RUNNING 19.7sRunning query:   RUNNING 20.7sRunning query:   RUNNING 21.7sRunning query:   RUNNING 22.9sRunning query:   RUNNING 23.7sRunning query:   RUNNING 24.3sRunning query:   RUNNING 25.6sRunning query:   RUNNING 26.5sRunning query:   RUNNING 27.2sRunning query:   RUNNING 28.2sRunning query:   RUNNING 29.0sRunning query:   RUNNING 29.6sRunning query:   RUNNING 30.8sRunning query:   RUNNING 31.4sRunning query:   RUNNING 32.4sRunning query:   RUNNING 33.1sRunning query:   RUNNING 34.0sRunning query:   RUNNING 34.8sRunning query:   RUNNING 35.5sRunning query:   RUNNING 36.3s
+  contig_nameRunning query:   RUNNING  2.4sRunning query:   RUNNING  3.0sRunning query:   RUNNING  3.9sRunning query:   RUNNING  4.5sRunning query:   RUNNING  5.4sRunning query:   RUNNING  6.1sRunning query:   RUNNING  6.8sRunning query:   RUNNING  7.7sRunning query:   RUNNING  8.6sRunning query:   RUNNING  9.3sRunning query:   RUNNING  9.9sRunning query:   RUNNING 10.5sRunning query:   RUNNING 11.5sRunning query:   RUNNING 12.3sRunning query:   RUNNING 13.2sRunning query:   RUNNING 14.2sRunning query:   RUNNING 15.0sRunning query:   RUNNING 16.2sRunning query:   RUNNING 17.1sRunning query:   RUNNING 18.1sRunning query:   RUNNING 18.7sRunning query:   RUNNING 19.6sRunning query:   RUNNING 20.6sRunning query:   RUNNING 21.3sRunning query:   RUNNING 22.0sRunning query:   RUNNING 22.8sRunning query:   RUNNING 23.7sRunning query:   RUNNING 24.6sRunning query:   RUNNING 25.4sRunning query:   RUNNING 26.4sRunning query:   RUNNING 27.3sRunning query:   RUNNING 27.9sRunning query:   RUNNING 28.5sRunning query:   RUNNING 29.3sRunning query:   RUNNING 30.1sRunning query:   RUNNING 31.0sRunning query:   RUNNING 32.0sRunning query:   RUNNING 33.1sRunning query:   RUNNING 33.7sRunning query:   RUNNING 34.5sRunning query:   RUNNING 35.6sRunning query:   RUNNING 36.3sRunning query:   RUNNING 37.4sRunning query:   RUNNING 38.0sRunning query:   RUNNING 38.9sRunning query:   RUNNING 39.9sRunning query:   RUNNING 40.5sRunning query:   RUNNING 41.5sRunning query:   RUNNING 43.0sRunning query:   RUNNING 43.6sRunning query:   RUNNING 44.5sRunning query:   RUNNING 45.5sRunning query:   RUNNING 46.5sRunning query:   RUNNING 47.3sRunning query:   RUNNING 48.0sRunning query:   RUNNING 49.0sRunning query:   RUNNING 49.7sRunning query:   RUNNING 50.5sRunning query:   RUNNING 51.4sRunning query:   RUNNING 52.1sRunning query:   RUNNING 52.7sRunning query:   RUNNING 53.5sRunning query:   RUNNING 54.6sRunning query:   RUNNING 55.7sRunning query:   RUNNING 56.4sRunning query:   RUNNING 57.2sRunning query:   RUNNING 57.9sRunning query:   RUNNING 58.5sRunning query:   RUNNING 59.5sRunning query:   RUNNING 60.2sRunning query:   RUNNING 61.3sRunning query:   RUNNING 62.3sRunning query:   RUNNING 63.1sRunning query:   RUNNING 64.3sRunning query:   RUNNING 65.0sRunning query:   RUNNING 65.8s
 ```
 
-Number of rows returned by this query: 23.
+Number of rows returned by this query: 25.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:09:31 2014 -->
+<!-- Mon Aug 18 15:47:01 2014 -->
 <TABLE border=1>
 <TR> <TH> contig_name </TH> <TH> min_missingness </TH> <TH> avg_missingness </TH> <TH> max_missingness </TH> <TH> stddev_missingness </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 0.000000 </TD> <TD align="right"> 0.068160 </TD> <TD align="right"> 0.991279 </TD> <TD align="right"> 0.178460 </TD> </TR>
@@ -468,7 +468,7 @@ FROM
     SUM(reference_bases != 'N') AS num_variants,
     'gvcf_variants' AS dataset
   FROM
-    [google.com:biggene:test.pgp_gvcf_variants]
+    [google.com:biggene:pgp.gvcf_variants]
   GROUP BY
     chromosome),
   (
@@ -490,7 +490,7 @@ Number of rows returned by this query: 100.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:09:36 2014 -->
+<!-- Mon Aug 18 15:47:06 2014 -->
 <TABLE border=1>
 <TR> <TH> chromosome </TH> <TH> num_records </TH> <TH> num_variants </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 238124699 </TD> <TD align="right"> 52490861 </TD> <TD> cgi_variants </TD> </TR>
@@ -578,18 +578,20 @@ print(expect_equal(variants$num_records, variants$num_variants, tolerance = 1e-0
 
 
 
-Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).  TODO(deflaux): [#11](https://github.com/googlegenomics/bigquery-examples/issues/11) the counts are equal for Y and M, fix the bug in cgi-ref-blocks-mapper.py and re-run it.
+Both the gvcf_variants and gvcf_variants_expanded tables have additional records (reference-matching block records).
 
 ```r
-print(expect_that(unique(gvcf_variants$num_records >= variants$num_records), 
+print(expect_that(unique(gvcf_variants$num_records > variants$num_records), 
     is_true()))
 ```
 
 ```
-## As expected: unique(gvcf_variants$num_records >= variants$num_records) is true
+## As expected: unique(gvcf_variants$num_records > variants$num_records) is true
 ```
 
 ```r
+# TODO(deflaux): update this from '>=' to '>' after the fix for #11 has
+# propagated to this table.
 print(expect_that(unique(gvcf_variants_expanded$num_records >= variants$num_records), 
     is_true()))
 ```
@@ -601,11 +603,14 @@ print(expect_that(unique(gvcf_variants_expanded$num_records >= variants$num_reco
 The gvcf_variants and gvcf_variants_expanded tables have the same number of records, the difference between the two is in the number of nested sample variant calls.
 
 ```r
+# TODO(deflaux): this test will pass after the fix for #11 has propagated to
+# this table.
 print(expect_equal(gvcf_variants$num_records, gvcf_variants_expanded$num_records))
 ```
 
 ```
-## As expected: gvcf_variants$num_records equals gvcf_variants_expanded$num_records
+## Error: gvcf_variants$num_records not equal to gvcf_variants_expanded$num_records
+## Mean relative difference: 0.6253
 ```
 
 
@@ -659,7 +664,7 @@ FROM
       call.callset_name AS sample_id,
       SUM(call.genotype > 0) WITHIN call AS num_variant_alleles,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants])
+      [google.com:biggene:pgp.gvcf_variants])
   GROUP BY
     sample_id),
   (
@@ -674,7 +679,7 @@ FROM
       call.callset_name AS sample_id,
       SUM(call.genotype > 0) WITHIN call AS num_variant_alleles,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants_expanded])
+      [google.com:biggene:test.pgp_gvcf_variants_expanded2])
   GROUP BY
     sample_id)
 ORDER BY
@@ -686,17 +691,17 @@ Number of rows returned by this query: 516.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:09:42 2014 -->
+<!-- Mon Aug 18 15:47:12 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> num_records </TH> <TH> num_variant_alleles </TH> <TH> dataset </TH>  </TR>
   <TR> <TD> hu011C57 </TD> <TD align="right"> 17615409 </TD> <TD align="right"> 4744749 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD> hu011C57 </TD> <TD align="right"> 14123577 </TD> <TD align="right"> 5518279 </TD> <TD> gvcf_variants </TD> </TR>
-  <TR> <TD> hu011C57 </TD> <TD align="right"> 43988119 </TD> <TD align="right"> 5518279 </TD> <TD> gvcf_variants_expanded </TD> </TR>
+  <TR> <TD> hu011C57 </TD> <TD align="right"> 14328368 </TD> <TD align="right"> 5518279 </TD> <TD> gvcf_variants </TD> </TR>
+  <TR> <TD> hu011C57 </TD> <TD align="right"> 42678170 </TD> <TD align="right"> 5518279 </TD> <TD> gvcf_variants_expanded </TD> </TR>
   <TR> <TD> hu016B28 </TD> <TD align="right"> 17585284 </TD> <TD align="right"> 4777466 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD> hu016B28 </TD> <TD align="right"> 14134088 </TD> <TD align="right"> 5556632 </TD> <TD> gvcf_variants </TD> </TR>
-  <TR> <TD> hu016B28 </TD> <TD align="right"> 43933062 </TD> <TD align="right"> 5556632 </TD> <TD> gvcf_variants_expanded </TD> </TR>
+  <TR> <TD> hu016B28 </TD> <TD align="right"> 14339805 </TD> <TD align="right"> 5556632 </TD> <TD> gvcf_variants </TD> </TR>
+  <TR> <TD> hu016B28 </TD> <TD align="right"> 42622024 </TD> <TD align="right"> 5556632 </TD> <TD> gvcf_variants_expanded </TD> </TR>
   <TR> <TD> hu0211D6 </TD> <TD align="right"> 20148634 </TD> <TD align="right"> 4844626 </TD> <TD> cgi_variants </TD> </TR>
-  <TR> <TD> hu0211D6 </TD> <TD align="right"> 15668766 </TD> <TD align="right"> 5462930 </TD> <TD> gvcf_variants </TD> </TR>
+  <TR> <TD> hu0211D6 </TD> <TD align="right"> 15668800 </TD> <TD align="right"> 5462930 </TD> <TD> gvcf_variants </TD> </TR>
    </TABLE>
 
 
@@ -789,7 +794,7 @@ FROM (
 ```
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:09:47 2014 -->
+<!-- Mon Aug 18 15:47:18 2014 -->
 <TABLE border=1>
 <TR> <TH> max_samples_per_record </TH>  </TR>
   <TR> <TD align="right"> 172 </TD> </TR>
@@ -845,7 +850,7 @@ FROM
       GROUP_CONCAT(STRING(call.genotype),
         '/') WITHIN call AS genotype,
     FROM
-      [google.com:biggene:test.pgp_gvcf_variants]
+      [google.com:biggene:pgp.gvcf_variants]
     WHERE
       contig_name = '13'
       AND start_pos <= 33628138
@@ -870,7 +875,7 @@ Number of rows returned by this query: 172.  We have one row for every indivudua
 
 Examing the NULL rows, we see that no-call records account for the difference, as we expect:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:09:52 2014 -->
+<!-- Mon Aug 18 15:47:22 2014 -->
 <TABLE border=1>
 <TR> <TH> cgi_sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> contig_name </TH> <TH> start_pos </TH> <TH> end_pos </TH> <TH> END </TH> <TH> ref </TH> <TH> alt </TH> <TH> gvcf_sample_id </TH> <TH> genotype </TH>  </TR>
   <TR> <TD> hu67EBB3 </TD> <TD> chr13 </TD> <TD align="right"> 33628132 </TD> <TD align="right"> 33628144 </TD> <TD> = </TD> <TD> ? </TD> <TD> ? </TD> <TD>  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
@@ -948,7 +953,7 @@ Number of rows returned by this query: 172.  We have one row for every indivudua
 
 Examing the NULL rows, we see that no-call records account for the difference, as we expect:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Aug  6 12:09:57 2014 -->
+<!-- Mon Aug 18 15:47:26 2014 -->
 <TABLE border=1>
 <TR> <TH> cgi_sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> contig_name </TH> <TH> start_pos </TH> <TH> end_pos </TH> <TH> END </TH> <TH> ref </TH> <TH> alt </TH> <TH> gvcf_sample_id </TH> <TH> genotype </TH>  </TR>
   <TR> <TD> hu67EBB3 </TD> <TD> chr13 </TD> <TD align="right"> 33628132 </TD> <TD align="right"> 33628144 </TD> <TD> = </TD> <TD> ? </TD> <TD> ? </TD> <TD>  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD align="right">  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> <TD>  </TD> </TR>
