@@ -14,3 +14,5 @@ WHERE
   chromosome = "chr13"
   AND locusBegin <= 33628137
   AND locusEnd >= 33628138
+ORDER BY
+  sample_id

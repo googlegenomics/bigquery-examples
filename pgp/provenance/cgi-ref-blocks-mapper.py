@@ -14,37 +14,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Add sample id as column to CGI data.
+"""Add extract reference-matching records from CGI data and conver to VCF.
 
 Assumptions:
 - one sample per input file
 
+
 This script can be run standalone:
-   cat masterVarBeta-GS000010426-ASM.tsv | ./cgi-mapper.py
+   cat masterVarBeta-GS000016446-ASM.tsv | ./cgi-ref-blocks-mapper.py
 
 Or via the debugger:
-   python -mpdb ./cgi-mapper.py masterVarBeta-GS000010426-ASM.tsv
+   python -mpdb ./cgi-ref-blocks-mapper.py masterVarBeta-GS000016446-ASM.tsv
 
 To have the sample id correctly parsed when input is from stdin, set the 
 environment variable that Hadoop would set:
-   export map_input_file=./hu34D5B9/masterVarBeta-GS000015891-ASM.tsv.bz2
-   bzcat ./hu34D5B9/masterVarBeta-GS000015891-ASM.tsv.bz2 | ./cgi-mapper.py
+   export map_input_file=./huDBF9DD/masterVarBeta-GS000016446-ASM.tsv.bz2
+   bzcat ./huDBF9DD/masterVarBeta-GS000016446-ASM.tsv.bz2 | ./cgi-ref-blocks-mapper.py
 
 To have the sample id correctly parsed when input is from a file, ensure that it
 is in the file path:
-   python -mpdb ./cgi-mapper.py hu34D5B9/masterVarBeta-GS000015891-ASM.tsv
+   python -mpdb ./cgi-mapper.py ./huDBF9DD/masterVarBeta-GS000016446-ASM.tsv
 
-It can also be run as a mapper-only Hadoop Streaming job:
-  hadoop jar /path/to/your/hadoop-streaming-*.jar -input inputpath \
-  -mapper cgi-mapper.py -file cgi-mapper.py --numReduceTasks 0 \
-  -output outputpath
-See also https://developers.google.com/hadoop/
+It should be run as a mapper-only Hadoop Streaming job:
+  hadoop jar /path/to/your/hadoop-streaming-*.jar \
+  -libjars /home/deflaux/custom.jar \
+  -outputformat com.custom.CustomMultiOutputFormat \
+  -mapper cgi-ref-blocks-mapper.py -file cgi-ref-blocks-mapper.py \
+  --numReduceTasks 0 -input inputpath -output outputpath
 
-TODO(deflaux):
- - field relativeCoverageDiploid contains some values that are 'N', consider
-   converting those values to null
- - consider converting zero-based positions to one-based positions if we
-   find that most annotations are one-based
+Notice that there is a special output format to put the VCF header
+back into the output files including the specific sample id.
+
+See also https://developers.google.com/hadoop/ and
+http://stackoverflow.com/questions/18541503/multiple-output-files-for-hadoop-streaming-with-python-mapper
 
 """
 
@@ -52,10 +54,21 @@ import os
 import re
 import sys
 
-# Constants
+### Constants
 INPUT_FILE_KEY = "map_input_file"
 SAMPLE_ID_PATTERN = "/(hu[A-F0-9]{6})/"
+# This genome was sequenced twice, this is the path of the older of the two
 DUPLICATE_GENOME = "gs://pgp-harvard-data-public/hu34D5B9/GS000012763-DID/GS000010327-ASM/GS01173-DNA_C07/ASM/masterVarBeta-GS000010327-ASM.tsv.bz2"
+# These genomes did not successfully get converted to VCF by cgatools mkvcf
+MKVCF_FAILED_GENOMES = ["huEDF7DA", "hu34D5B9"]
+
+# CGI masterVar field indices
+CHROMOSOME = 2
+LOCUS_BEGIN = 3
+LOCUS_END = 4
+REFERENCE = 7
+ALLELE1SEQ = 8
+ALLELE2SEQ = 9
 
 
 def main():
@@ -74,8 +87,7 @@ def main():
   elif INPUT_FILE_KEY in os.environ:
     path = os.environ[INPUT_FILE_KEY]
     print >> sys.stderr, path
-    print >> sys.stderr, str(os.environ)
-  
+
   if path is not None:
     match = sample_id_re.search(path)
     if match:
@@ -88,6 +100,10 @@ def main():
     if DUPLICATE_GENOME == path:
       # hu34D5B9 was sequenced twice, skip the older genome
       pass
+    elif sample_id in MKVCF_FAILED_GENOMES:
+      # Don't bother extracting ref-matching blocks for the genomes for which
+      # we were unable to run cgatools mkvcf
+      pass
     elif not line:
       # This is a blank line, skip it
       pass
@@ -99,7 +115,19 @@ def main():
       pass
     else:
       fields = line.split("\t")
-      print "%s\t%s" % (sample_id, "\t".join(fields))
+      if ("=" == fields[REFERENCE] and "=" == fields[ALLELE1SEQ]
+          and ("=" == fields[ALLELE2SEQ] or "" == fields[ALLELE2SEQ])):
+        # This is a reference-matching record, emit it
+        contig = fields[CHROMOSOME].replace("chr", "", 1)
+        start_pos = int(fields[LOCUS_BEGIN]) + 1
+        end = int(fields[LOCUS_END])
+        # The key is used by the custom output format to put the
+        # resulting files in a subdirectory specific to the sample
+        # and also as part of one of the VCF header lines.
+        key = sample_id
+        value = "%s\t%d\t.\tN\t.\t.\t.\tNS=1;AN=0;END=%d\tGT:PS\t0/0:." % (
+            contig, start_pos, end)
+        print "%s\t%s" % (key, value)
 
     line = file_handle.readline()
 

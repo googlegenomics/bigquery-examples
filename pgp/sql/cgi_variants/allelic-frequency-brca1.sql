@@ -1,7 +1,9 @@
 # The following query computes the allelic frequency for BRCA1 variants in the 
-# PGP dataset.  Note that the new BigQuery feature of user-defined javascript
-# functions is in limited preview.  The output of this query can be found in
-# table [google.com:biggene:pgp.brca1_freq].
+# PGP dataset.
+#
+# Note that the new BigQuery feature of user-defined javascript
+# functions is in limited preview.  For more info, see
+# https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   vars.chromosome AS chromosome,
   vars.reference AS reference,
@@ -27,7 +29,7 @@ FROM (
     SELECT
       chromosome,
       reference,
-      INTEGER(FLOOR(locusBegin / 10000)) AS bin,
+      INTEGER(FLOOR(locusBegin / 5000)) AS bin,
       locusBegin,
       locusEnd,
       allele,
@@ -106,7 +108,9 @@ FROM (
       # This User-defined function helps us reduce the size of the cross product
       # considered by this JOIN thereby greatly speeding up the query
       FROM js(
-      [google.com:biggene:pgp.cgi_variants],
+      (SELECT sample_id, chromosome, reference, locusBegin, locusEnd,
+       FROM [google.com:biggene:pgp.cgi_variants]
+       WHERE chromosome = 'chr17'),
       sample_id, chromosome, reference, locusBegin, locusEnd,
       "[{name: 'sample_id', type: 'string'},
         {name: 'chromosome', type: 'string'},
@@ -115,8 +119,7 @@ FROM (
         {name: 'locusBegin', type: 'integer'},
         {name: 'locusEnd', type: 'integer'}]",
        "function(r, emit) {
-          var binSize = 10000
-          if (r.chromosome == 'chr17') { 
+            var binSize = 5000
             var startBin = Math.floor(r.locusBegin / binSize);
             var endBin = Math.floor(r.locusEnd / binSize);
             for(var bin = startBin; bin <= endBin; bin++) {
@@ -129,7 +132,6 @@ FROM (
                 locusEnd: r.locusEnd,
               });
             }
-          }
         }")
         GROUP EACH BY
         chromosome,

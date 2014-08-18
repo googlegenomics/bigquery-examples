@@ -270,7 +270,7 @@ DisplayAndDispatchQuery <- function(queryUri) {
 
 First let's take a look at the data relevant to Klotho:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-result <- DisplayAndDispatchQuery("../../sql/issues-with-the-variant-centric-approach/klotho.sql")
+result <- DisplayAndDispatchQuery("../../sql/cgi_variants/klotho.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.  We have one row for every indivudual in this dataset.
 
@@ -309,22 +309,3 @@ result <- DisplayAndDispatchQuery("../../sql/issues-with-the-variant-centric-app
 print(xtable(result), type="html", include.rownames=F)
 ```
 We see that no individuals are homozygous reference and no one responded _true_ for the _Hereditary thrombophilia includes Factor V Leiden and Prothrombin G20210A_ trait.
-
-<!-- TODO(deflaux): clean up the display of results for these next two queries and add content -->
-
-```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-result <- DisplayAndDispatchQuery("../../sql/allelic-frequency.sql")
-```
-
-```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(result), type="html", include.rownames=F)
-```
-
-
-```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
-result <- DisplayAndDispatchQuery("../../sql/allelic-frequency-comparison.sql")
-```
-
-```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(result), type="html", include.rownames=F)
-```

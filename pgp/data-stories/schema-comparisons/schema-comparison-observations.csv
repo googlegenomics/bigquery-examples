@@ -1,0 +1,22 @@
+tables,table_size,description,code,runtime,data_processed,notes
+cgi_variants,433GB,sample-level data for a particular variant,klotho.sql,4.1s elapsed,117 GB processed,
+gvcf_variants,235GB,sample-level data for a particular variant,klotho.sql,6.9s elapsed,76.8 GB processed,
+gvcf_variants_expanded,506GB,sample-level data for a particular variant,klotho.sql,7.7s elapsed,196 GB processed,
+cgi_variants,433GB,per sample Ti/Tv ratio,ti-tv-ratio.sql,3.8s elapsed,53.7 GB processed,
+gvcf_variants,235GB,per sample Ti/Tv ratio,ti-tv-ratio.sql,29.4s elapsed,59.8 GB processed,
+gvcf_variants_expanded,506GB,per sample Ti/Tv ratio,ti-tv-ratio.sql,83.5s elapsed,185 GB processed,
+cgi_variants,433GB,allelic frequency on a small region of the genome,allelic-frequency-brca1.sql,50.3s elapsed,117 GB processed,
+gvcf_variants,235GB,allelic frequency on a small region of the genome,allelic-frequency-brca1.sql,15.7s elapsed,53.9 GB processed,
+gvcf_variants_expanded,506GB,allelic frequency on a small region of the genome,NA,NA,NA,"the pattern is correct but the result will be wrong until records for ""the same"" variant are merged together"
+cgi_variants,433GB,"allele counts for the full dataset, as step one out of two to compute allelic frequency for the full dataset",allele-count.sql,"70.2s elapsed
+","88.8 GB processed
+
+",result materialized to table google.com:biggene:pgp_analysis_results.cgi_variants_allele_counts
+gvcf_variants,235GB,"allele counts for the full dataset, as step one out of two to compute allelic frequency for the full dataset",allele-count.sql,51.6s elapsed,44.1 GB processed,result materialized to table google.com:biggene:pgp_analysis_results.gvcf_variants_allele_counts
+gvcf_variants_expanded,506GB,"allele counts for the full dataset, as step one out of two to compute allelic frequency for the full dataset",NA,NA,NA,"not necessary, the data encoding allows us to do allelic frequency in a single step"
+cgi_variants,433GB,allelic frequency as step two of two,allelic-frequency-chr1.sql,118.4s elapsed,90.4 GB processed,results for all chromosomes materialized to table google.com:biggene:pgp_analysis_results.cgi_variants_allelic_frequency
+gvcf_variants,235GB,allelic frequency as step two of two,allelic-frequency-chr1.sql,96.4s elapsed,55.2 GB processed,results for all chromosomes materialized to table google.com:biggene:pgp_analysis_results.gvcf_variants_allelic_frequency
+gvcf_variants_expanded,506GB,allelic frequency,allelic-frequency.sql,318.7s elapsed,121 GB processed,"the pattern is correct but the result will be wrong until records for ""the same"" variant are merged together"
+cgi_variants,433GB,"allelic frequency compared to 1,000 genomes",allelic-frequency-comparison.sql,20.7s elapsed,2.93 GB processed,
+gvcf_variants,235GB,"allelic frequency compared to 1,000 genomes",allelic-frequency-comparison.sql,12.5s elapsed,2.72 GB processed,
+gvcf_variants_expanded,506GB,"allelic frequency compared to 1,000 genomes",NA,NA,NA,"the pattern is correct but the result will be wrong until records for ""the same"" variant are merged together"

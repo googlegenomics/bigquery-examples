@@ -275,25 +275,27 @@ WHERE
   chromosome = "chr13"
   AND locusBegin <= 33628137
   AND locusEnd >= 33628138
+ORDER BY
+  sample_id
 ```
 
 Number of rows returned by this query: 174.  We have one row for every indivudual in this dataset.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul  2 17:04:28 2014 -->
+<!-- Mon Aug  4 18:28:37 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH>  </TR>
-  <TR> <TD> hu60180F </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628654 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
-  <TR> <TD> huB4D223 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33629508 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
-  <TR> <TD> hu26B551 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
-  <TR> <TD> huD10E53 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628571 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
-  <TR> <TD> hu0CF2EE </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
-  <TR> <TD> hu0D879F </TD> <TD> chr13 </TD> <TD align="right"> 33628137 </TD> <TD align="right"> 33628138 </TD> <TD> T </TD> <TD> G </TD> <TD> T </TD> </TR>
-  <TR> <TD> hu868880 </TD> <TD> chr13 </TD> <TD align="right"> 33628137 </TD> <TD align="right"> 33628138 </TD> <TD> T </TD> <TD> G </TD> <TD> G </TD> </TR>
-  <TR> <TD> huEDEA65 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33629725 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
-  <TR> <TD> hu57A769 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
-  <TR> <TD> hu241DEA </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu011C57 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628847 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu016B28 </TD> <TD> chr13 </TD> <TD align="right"> 33628137 </TD> <TD align="right"> 33628138 </TD> <TD> T </TD> <TD> G </TD> <TD> T </TD> </TR>
+  <TR> <TD> hu0211D6 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu025CEA </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33629513 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu032C04 </TD> <TD> chr13 </TD> <TD align="right"> 33628137 </TD> <TD align="right"> 33628138 </TD> <TD> T </TD> <TD> G </TD> <TD> T </TD> </TR>
+  <TR> <TD> hu034DB1 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu040C0A </TD> <TD> chr13 </TD> <TD align="right"> 33628137 </TD> <TD align="right"> 33628138 </TD> <TD> T </TD> <TD> G </TD> <TD> G </TD> </TR>
+  <TR> <TD> hu04DF3C </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu04F220 </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628988 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
+  <TR> <TD> hu050E9C </TD> <TD> chr13 </TD> <TD align="right"> 33627829 </TD> <TD align="right"> 33628667 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
    </TABLE>
 
 
@@ -325,7 +327,7 @@ ORDER BY
 
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul  2 17:04:31 2014 -->
+<!-- Mon Aug  4 18:28:43 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_counts </TH> <TH> chromosome </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH>  </TR>
   <TR> <TD align="right"> 135 </TD> <TD> chr13 </TD> <TD> = </TD> <TD> = </TD> <TD> = </TD> </TR>
@@ -361,25 +363,27 @@ ON
   chromosome = 'chr1'
   AND locusBegin <= 169519048
   AND locusEnd >= 169519049
+ORDER BY
+  sample_id
 ```
 
 Number of rows returned by this query: 174.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul  2 17:04:35 2014 -->
+<!-- Mon Aug  4 18:28:48 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> chromosome </TH> <TH> locusBegin </TH> <TH> locusEnd </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> zygosity </TH> <TH> has_Hereditary_thrombophilia </TH>  </TR>
-  <TR> <TD> huEA4EE5 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
-  <TR> <TD> huDF04CC </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu011C57 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu016B28 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
   <TR> <TD> hu0211D6 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
-  <TR> <TD> huFFB09D </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
-  <TR> <TD> hu620F18 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
-  <TR> <TD> hu868880 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
-  <TR> <TD> hu4BE6F2 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu025CEA </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
   <TR> <TD> hu032C04 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
-  <TR> <TD> hu3073E3 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
-  <TR> <TD> hu448C4B </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu034DB1 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu040C0A </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu04DF3C </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu04F220 </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
+  <TR> <TD> hu050E9C </TD> <TD> chr1 </TD> <TD align="right"> 169519048 </TD> <TD align="right"> 169519049 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD> hom </TD> <TD>  </TD> </TR>
    </TABLE>
 
 
@@ -417,7 +421,7 @@ ORDER BY
 
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul  2 17:04:38 2014 -->
+<!-- Mon Aug  4 18:28:53 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_counts </TH> <TH> chromosome </TH> <TH> reference </TH> <TH> allele1Seq </TH> <TH> allele2Seq </TH> <TH> has_Hereditary_thrombophilia </TH>  </TR>
   <TR> <TD align="right"> 169 </TD> <TD> chr1 </TD> <TD> T </TD> <TD> C </TD> <TD> C </TD> <TD>  </TD> </TR>
@@ -425,18 +429,3 @@ ORDER BY
    </TABLE>
 
 We see that no individuals are homozygous reference and no one responded _true_ for the _Hereditary thrombophilia includes Factor V Leiden and Prothrombin G20210A_ trait.
-
-<!-- TODO(deflaux): clean up the display of results for these next two queries and add content -->
-
-
-
-
-
-
-
-
-
-
-
-
-
