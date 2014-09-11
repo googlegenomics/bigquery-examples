@@ -8,8 +8,10 @@ SELECT
   contig_name,
   start_pos,
   reference_bases,
-  alt,
-  alt_allele_count / (174 * 2) AS alt_allele_frequency,
+  alt AS allele,
+  (174 * 2) AS num_alleles_called,
+  ROUND(alt_allele_count / (174 * 2),
+    4) AS freq,
 FROM (
   SELECT
     contig_name,
