@@ -65,10 +65,10 @@ Producing output files:
  * [shared](./vcfstats-output/stats.shared)
  * [snps](./vcfstats-output/stats.snps)
  * [tstv](./vcfstats-output/stats.tstv)
- 
+
 Reproducing the result via BigQuery
 ------------------------------------
-[BRCA1](http://www.genecards.org/cgi-bin/carddisp.pl?gene=BRCA1) resides on chromosome 17 from position 41196312 to 41277500.  
+[BRCA1](http://www.genecards.org/cgi-bin/carddisp.pl?gene=BRCA1) resides on chromosome 17 from position 41196312 to 41277500.
 
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
@@ -76,12 +76,11 @@ require(ggplot2)
 require(dplyr)
 require(xtable)
 require(testthat)
-billing_project <- "google.com:biggene" # put your projectID here
+project <- "google.com:biggene" # put your projectID here
 DisplayAndDispatchQuery <- function(queryUri) {
   sql <- readChar(queryUri, nchars=1e6)
   cat(sql)
-  query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing=billing_project)  
+  query_exec(sql, project)
 }
 ```
 
@@ -92,7 +91,7 @@ result <- DisplayAndDispatchQuery("../../sql/reproducing-vcfstats/variant-count-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
 ```
-We see that there are 879 variants on the BRCA1 gene in this dataset (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>count). 
+We see that there are 879 variants on the BRCA1 gene in this dataset (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>count).
 
 Let’s characterize the variants further by type.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
@@ -103,7 +102,7 @@ print(xtable(result), type="html", include.rownames=F)
 ```
 The majority are SNPs but some are INDELs (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entries all=>snp_count and all=>indel_count).
 
-Next lets see how the variation is shared across the samples. 
+Next lets see how the variation is shared across the samples.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/reproducing-vcfstats/shared-variant-counts-brca1.sql")
 ```
@@ -138,7 +137,7 @@ result <- DisplayAndDispatchQuery("../../sql/reproducing-vcfstats/snp-variant-co
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
 ```
-We can see that some variants such as C->T are much more common than others such as T->G (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>snp).  
+We can see that some variants such as C->T are much more common than others such as T->G (equivalent to vcf-stats [dump-all](./vcfstats-output/stats.dump-all) entry all=>snp).
 
 Note that in this data we have variants that are not present in any of the samples.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
@@ -185,7 +184,7 @@ print(xtable(head(result)), type="html", include.rownames=F)
 ```
 We can see that some samples differ from the reference quite a bit in this region while others are quite similar (equivalent to vcf-stats [indels](./vcfstats-output/stats.indels))
 
-Another important statistic for quality control is the ratio of transitions vs. transversions in SNPs. 
+Another important statistic for quality control is the ratio of transitions vs. transversions in SNPs.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/reproducing-vcfstats/ti-tv-ratio-brca1.sql")
 ```
