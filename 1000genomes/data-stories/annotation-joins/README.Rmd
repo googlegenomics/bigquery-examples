@@ -24,18 +24,16 @@ require(bigrquery)
 require(ggplot2)
 require(xtable)
 require(testthat)
-billing_project <- "google.com:biggene" # put your projectID here
+project <- "google.com:biggene" # put your projectID here
 ```
 
 Let us start by getting an idea of the number of rows in each of our tables.
 ```{r cache=TRUE}
 tables <- c("variants1kG", "pedigree", "sample_info", "clinvar", "clinvar_disease_names", "known_genes", "known_genes_aliases")
 lapply(tables, function(table) {
-  result <- query_exec(project="google.com:biggene", 
-                      dataset="1000genomes", 
-                      query=paste("SELECT count(*) AS cnt FROM [google.com:biggene:1000genomes.", 
-                                  table, "]", sep=""),
-                      billing=billing_project)
+  sql <- paste0("SELECT count(*) AS cnt FROM [google.com:biggene:1000genomes.",
+                table, "]")
+  result <- query_exec(sql, project)
   paste(table, result, sep=": ")
 })
 ```
@@ -43,8 +41,8 @@ We can see that all the annotation databases are dwarfed in size by the data in 
 
 Let us also examine the types of variants within ClinVar.
 ```{r cache=TRUE}
-result <- query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query="SELECT type, count(1) cnt FROM [1000genomes.clinvar] group by type", billing=billing_project)
+result <- query_exec("SELECT type, count(1) cnt FROM [google.com:biggene:1000genomes.clinvar] group by type",
+                     project)
 dim(result)
 ```
 Display the rows of our result
@@ -61,7 +59,7 @@ We can see that the vast majority of variants within ClinVar are SNPs.
 sql <- readChar("../../sql/individual-clinically-concerning-variants.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- query_exec(sql, project)
 dim(result)
 ```
 Display the first few rows of our result
@@ -75,7 +73,7 @@ We can see that this indivudual has 53 clinically concerning variants.
 sql <- readChar("../../sql/familial-shared-clinically-concerning-variants.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- query_exec(sql, project)
 dim(result)
 ```
 Display the first few rows of our result
@@ -88,9 +86,8 @@ We can see that some variants are shared by as many as four family members.
 
 First, let us see what the INDEL data looks like in ClinVar:
 ```{r cache=TRUE}
-result <- query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query="SELECT * FROM [1000genomes.clinvar] where type="indel"", 
-                    billing=billing_project)
+sql <- 'SELECT * FROM [google.com:biggene:1000genomes.clinvar] where type="indel"'
+result <- query_exec(sql, project)
 dim(result)
 ```
 Display the firs few rows of our result
@@ -108,7 +105,7 @@ Next we will JOIN our variants with gene names.  Note that the JOIN criteria is 
 sql <- readChar("../../sql/gene-variant-counts.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- query_exec(sql, project)
 dim(result)
 ```
 Display the first few rows of our result
@@ -133,7 +130,7 @@ Now let us look at these sample variants for a particular sample
 sql <- readChar("../../sql/sample-gene-variant-counts.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- query_exec(sql, project)
 dim(result)
 ```
 Display the first few rows of our result
@@ -156,8 +153,8 @@ brca1_all$name == brca1_one$name
 expect_that(brca1_all$name, equals(brca1_one$name))
 brca1_all$cnt - brca1_one$cnt
 mean(brca1_all$cnt - brca1_one$cnt)
-qplot(brca1_all$cnt, brca1_one$cnt, 
-      xlim=c(0, max(brca1_all$cnt)), 
+qplot(brca1_all$cnt, brca1_one$cnt,
+      xlim=c(0, max(brca1_all$cnt)),
       ylim=c(0, max(brca1_all$cnt)),
       xlab="count of variants per gene for the full dataset",
       ylab="count of variants per gene for one sample",
@@ -171,7 +168,7 @@ Let us go bigger now and run this on the entire 1,000 Genomes dataset.
 sql <- readChar("../../sql/specific-gene-variant-counts.sql",
                nchars=1e6)
 cat(sql)
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+result <- query_exec(sql, project)
 dim(result)
 ```
 Display the rows of our result

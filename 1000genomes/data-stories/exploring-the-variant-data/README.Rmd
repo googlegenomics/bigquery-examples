@@ -29,12 +29,10 @@ pallette_fill = scale_fill_manual(values=cbPalette)
 pallette_colour = scale_colour_manual(values=cbPalette)
 
 # Run a query against BigQuery 1k genomes table
+project <- "google.com:biggene" # put your projectID here
 RunQuery <- function(sql) {
   cat(sql)
-  return(query_exec("google.com:biggene",
-                    "1000genomes",
-                    sql,
-                    billing="google.com:biggene"))
+  return(query_exec(sql, project))
 }
 
 # Examines the quality score distibution of each variant type.
@@ -303,7 +301,7 @@ plots <- MakePositionsPlot()
 CreateGriddedPlot(plots)
 ```
  * A basic sanity check
- 
+
  * Chromosomes 13,14,15,21,22 have abnormally high min positions.
  * Chromosome 7 has low min position.
  * Hard to sequence regions?
@@ -330,9 +328,9 @@ CreateGriddedPlot(plots)
 ```
  * Total count is #genomes * #SNPs.
  * Same data - two views
- 
+
  * Red bars denote no mutation - both alleles equal reference.
- 
+
  * Why are A -> C,C and A-> G,G likely, but not A -> C,G or A -> G,C?
 
  * Note that A & T rows are reverses of each other, as are C & G rows.
@@ -347,10 +345,10 @@ CreateGriddedPlot(plots)
 ```
  * +/-51 are over/under flow bins
  * -> Large tail of deletions
- 
+
  * Positive length = Insertion
  * Negative length = Deletion
- 
+
  * Drops off quickly.
 
 Quality score of calls (at least, of INDELs)
@@ -362,7 +360,7 @@ plots <- MakeQualityPlot()
 CreateGriddedPlot(plots)
 ```
 From the 1k genome docs:
-> phred-scaled quality score for the assertion made in ALT. i.e. -10log_10 prob(call in ALT is wrong). If ALT is ”.” (no variant) then this is -10log_10 p(variant), and if ALT is not ”.” this is -10log_10 p(no variant). High QUAL scores indicate high confidence calls. 
+> phred-scaled quality score for the assertion made in ALT. i.e. -10log_10 prob(call in ALT is wrong). If ALT is ”.” (no variant) then this is -10log_10 p(variant), and if ALT is not ”.” this is -10log_10 p(no variant). High QUAL scores indicate high confidence calls.
 
 From Broad Institute:
 > The Phred scaled probability that a REF/ALT polymorphism exists at this site given sequencing data. Because the Phred scale is -10 * log(1-p), a value of 10 indicates a 1 in 10 chance of error, while a 100 indicates a 1 in 10^10 chance. These values can grow very large when a large amount of NGS data is used for variant calling.
