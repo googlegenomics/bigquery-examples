@@ -2,7 +2,7 @@
 # within the BRCA1 and APOE genes
 SELECT
   gene_variants.name AS name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -12,7 +12,7 @@ SELECT
 FROM (
   SELECT
     name,
-    var.contig AS contig,
+    var.contig_name AS contig_name,
     MIN(variant_start) AS min_variant_start,
     MAX(variant_end) AS max_variant_start,
     gene_start,
@@ -20,7 +20,7 @@ FROM (
     COUNT(*) AS cnt
   FROM (
     SELECT
-      contig,
+      contig_name,
       position AS variant_start,
       IF(vt != 'SV',
         position + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
@@ -31,13 +31,13 @@ FROM (
     SELECT
       name,
       REGEXP_EXTRACT(chrom,
-        r'chr(\d+)') AS contig,
+        r'chr(\d+)') AS contig_name,
       txStart AS gene_start,
       txEnd AS gene_end,
     FROM
       [google.com:biggene:annotations.known_genes] ) AS genes
   ON
-    var.contig = genes.contig
+    var.contig_name = genes.contig_name
   WHERE
     (( var.variant_start <= var.variant_end
         AND NOT (
@@ -47,7 +47,7 @@ FROM (
           var.variant_end > genes.gene_end || var.variant_start < genes.gene_start)))
   GROUP BY
     name,
-    contig,
+    contig_name,
     gene_start,
     gene_end) AS gene_variants
 JOIN
@@ -56,7 +56,7 @@ ON
   gene_variants.name = gene_aliases.name
 GROUP BY
   name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,

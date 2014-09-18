@@ -31,8 +31,8 @@ WHERE
   samples.vt = 'SNP'
   AND (samples.call.first_allele > 0
     OR samples.call.second_allele > 0)
-  AND contig != 'X'
-  AND contig != 'Y'
+  AND contig_name != 'X'
+  AND contig_name != 'Y'
 GROUP BY
   sample_id,
   gender,

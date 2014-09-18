@@ -1,7 +1,7 @@
 # The following query computes the allelic frequency for BRCA1 variants in the 
 # 1,000 Genomes dataset further classified by gender from the phenotypic data.
 SELECT
-  contig,
+  contig_name,
   position,
   gender,
   reference_bases,
@@ -14,7 +14,7 @@ SELECT
   SUM(alt_count)/(SUM(ref_count)+SUM(alt_count)) AS alt_freq,
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     gender,
     reference_bases,
@@ -32,7 +32,7 @@ FROM (
         0)) AS alt_count
   FROM (
     SELECT
-      g.contig AS contig,
+      g.contig_name AS contig_name,
       g.position AS position,
       p.gender AS gender,
       g.reference_bases AS reference_bases,
@@ -48,27 +48,27 @@ FROM (
     ON
       g.call.callset_name = p.sample
     WHERE
-      g.contig = '17'
+      g.contig_name = '17'
       AND g.position BETWEEN 41196312
       AND 41277500
       AND g.vt='SNP'
       )
   GROUP BY
-    contig,
+    contig_name,
     position,
     gender,
     reference_bases,
     alternate_bases,
     alt)
 GROUP BY
-  contig,
+  contig_name,
   position,
   gender,
   reference_bases,
   alternate_bases,
   alt
 ORDER BY
-  contig,
+  contig_name,
   position,
   gender,
   reference_bases,

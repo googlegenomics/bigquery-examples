@@ -4,7 +4,7 @@
 SELECT
   sample_id,
   gender,
-  contig,
+  contig_name,
   (hom_AA_count + het_RA_count + hom_RR_count) AS all_callable_sites,
   hom_AA_count,
   het_RA_count,
@@ -16,7 +16,7 @@ FROM
   (
   SELECT
     call.callset_name AS sample_id,
-    contig,
+    contig_name,
     SUM(IF(0 = call.first_allele
         AND 0 = call.second_allele,
         1,
@@ -33,7 +33,7 @@ FROM
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
-    contig = 'X'
+    contig_name = 'X'
     AND vt = 'SNP'
     AND position NOT BETWEEN 60000
     AND 2699520
@@ -41,7 +41,7 @@ FROM
     AND 155260560
   GROUP BY
     sample_id,
-    contig
+    contig_name
     ) AS g
 JOIN
   [google.com:biggene:1000genomes.sample_info] p
@@ -50,7 +50,7 @@ ON
 GROUP BY
   sample_id,
   gender,
-  contig,
+  contig_name,
   all_callable_sites,
   hom_AA_count,
   het_RA_count,

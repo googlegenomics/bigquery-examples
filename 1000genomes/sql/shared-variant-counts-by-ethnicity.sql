@@ -11,7 +11,7 @@ SELECT
 FROM
   (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     alt,
@@ -24,7 +24,7 @@ FROM
     SUM(has_variant) AS num_samples_in_pop_with_variant_in_category
   FROM (
     SELECT
-      contig,
+      contig_name,
       position,
       reference_bases,
       GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
@@ -46,7 +46,7 @@ FROM
     ON
       samples.call.callset_name = p.sample)
     GROUP EACH BY
-    contig,
+    contig_name,
     position,
     reference_bases,
     alt,

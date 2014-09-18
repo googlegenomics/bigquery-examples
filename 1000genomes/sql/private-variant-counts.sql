@@ -6,7 +6,7 @@ SELECT
 FROM
   (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     IF(call.first_allele > 0

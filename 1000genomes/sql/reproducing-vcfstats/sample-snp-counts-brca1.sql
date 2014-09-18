@@ -4,14 +4,14 @@ SELECT
   sample_id
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     call.callset_name AS sample_id
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
-    contig = '17'
+    contig_name = '17'
     AND position BETWEEN 41196312
     AND 41277500
     AND vt ='SNP'

@@ -1,7 +1,7 @@
 # Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the 
 # number of family members sharing the SNP
 SELECT
-  contig,
+  contig_name,
   position,
   ref,
   alt,
@@ -11,7 +11,7 @@ SELECT
   num_family_members_with_variant,
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     ref,
     alt,
@@ -23,7 +23,7 @@ FROM (
     (FLATTEN(
         (
         SELECT
-          contig,
+          contig_name,
           position,
           ref,
           alt,
@@ -53,7 +53,7 @@ FROM (
               OR clinicalsignificance CONTAINS 'Pathogenic')
             ) AS clin
         ON
-          var.contig = clin.chromosome
+          var.contig_name = clin.chromosome
           AND var.position = clin.start
           AND reference_bases = ref
           AND alternate_bases = alt
@@ -67,7 +67,7 @@ FROM (
   ON
     sig.sample_id = ped.individual_id
   GROUP BY
-    contig,
+    contig_name,
     position,
     ref,
     alt,
@@ -79,7 +79,7 @@ JOIN
 ON
   names.conceptid = families.disease_id
 GROUP BY
-  contig,
+  contig_name,
   position,
   ref,
   alt,
@@ -90,5 +90,5 @@ GROUP BY
 ORDER BY
   num_family_members_with_variant DESC,
   clinicalsignificance,
-  contig,
+  contig_name,
   position;

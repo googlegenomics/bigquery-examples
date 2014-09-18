@@ -1,6 +1,6 @@
 # Get data sufficient to make a judgment upon this particular sample's call.
 SELECT
-  contig,
+  contig_name,
   position,
   GROUP_CONCAT(id) WITHIN RECORD AS ids,
   reference_bases AS ref,
@@ -20,7 +20,7 @@ SELECT
 FROM
   [google.com:biggene:1000genomes.phase1_variants]
 WHERE
-  contig = '17'
+  contig_name = '17'
   AND position = 48515943
 HAVING
   sample_id = 'HG00100';

@@ -1,7 +1,7 @@
 # This query demonstrates that an additional field, 'end', is needed to  
 # comprise a unique key for the rows in the table.
 SELECT
-  contig,
+  contig_name,
   position,
   reference_bases,
   alt,
@@ -10,7 +10,7 @@ SELECT
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
@@ -19,7 +19,7 @@ FROM (
   FROM
     [google.com:biggene:1000genomes.phase1_variants])
   GROUP EACH BY
-  contig,
+  contig_name,
   position,
   reference_bases,
   alt,

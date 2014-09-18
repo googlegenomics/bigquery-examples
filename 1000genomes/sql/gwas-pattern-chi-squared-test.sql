@@ -19,7 +19,7 @@
 # For example, see alcohol flush reaction at position 112241766 
 
 SELECT
-  contig,
+  contig_name,
   position,
   end,
   reference_bases,
@@ -47,7 +47,7 @@ SELECT
   AS chi_squared_score
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     end,
     reference_bases,
@@ -76,7 +76,7 @@ FROM (
         0)) AS control_alt_count,
   FROM (
     SELECT
-      contig,
+      contig_name,
       position,
       IF('ASN' = super_population,
         TRUE,
@@ -96,12 +96,12 @@ FROM (
     ON
       g.call.callset_name = p.sample
     WHERE
-      contig = '12'
+      contig_name = '12'
       # Exclude calls where one or both alleles were not called (-1)
       AND 0 <= call.first_allele AND 0 <= call.second_allele
       )
   GROUP BY
-    contig,
+    contig_name,
     position,
     end,
     reference_bases,

@@ -9,7 +9,7 @@
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.p.htm
 
 SELECT
-  contig,
+  contig_name,
   position,
   end,
   reference_bases,
@@ -37,7 +37,7 @@ SELECT
   af,
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     end,
     reference_bases,
@@ -62,7 +62,7 @@ FROM (
     af,
   FROM (
     SELECT
-      contig,
+      contig_name,
       position,
       end,
       reference_bases,
@@ -104,9 +104,9 @@ FROM (
     FROM
       [google.com:biggene:1000genomes.phase1_variants]
     WHERE
-      contig = '17'
+      contig_name = '17'
       AND position BETWEEN 41196312 AND 41277500
 ))
 ORDER BY
-  contig,
+  contig_name,
   position

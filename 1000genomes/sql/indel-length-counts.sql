@@ -4,7 +4,7 @@ SELECT
   COUNT(length_difference) AS count_of_indels_with_length_difference,
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     LENGTH(reference_bases) AS ref_length,

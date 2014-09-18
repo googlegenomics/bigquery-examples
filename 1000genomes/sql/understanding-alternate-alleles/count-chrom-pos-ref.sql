@@ -5,16 +5,16 @@ SELECT
   COUNT(num_alternates) AS num_records
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     COUNT(position) AS num_alternates,
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
-    contig = '17'
+    contig_name = '17'
   GROUP BY
-    contig,
+    contig_name,
     position,
     reference_bases)
 GROUP BY

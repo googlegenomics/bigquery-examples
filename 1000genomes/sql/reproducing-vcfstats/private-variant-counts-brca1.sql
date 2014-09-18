@@ -6,7 +6,7 @@ SELECT
 FROM
   (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     IF(0 < call.first_allele
@@ -20,7 +20,7 @@ FROM
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
-    contig = '17'
+    contig_name = '17'
     AND position BETWEEN 41196312
     AND 41277500
   HAVING

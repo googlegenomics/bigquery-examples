@@ -2,7 +2,7 @@
 # 1,000 Genomes dataset further classified by ethnicity from the phenotypic data 
 # and also includes the pre-computed value from the dataset.
 SELECT
-  contig,
+  contig_name,
   position,
   super_population,
   reference_bases,
@@ -15,7 +15,7 @@ SELECT
   alt_freq_from_1KG
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     super_population,
     reference_bases,
@@ -34,7 +34,7 @@ FROM (
     alt_freq_from_1KG
   FROM (
     SELECT
-      g.contig AS contig,
+      g.contig_name AS contig_name,
       g.position AS position,
       p.super_population AS super_population,
       g.reference_bases AS reference_bases,
@@ -60,13 +60,13 @@ FROM (
     ON
       g.call.callset_name = p.sample
     WHERE
-      g.contig = '17'
+      g.contig_name = '17'
       AND g.position BETWEEN 41196312
       AND 41277500
       AND g.vt='SNP'
       )
   GROUP BY
-    contig,
+    contig_name,
     position,
     super_population,
     reference_bases,
@@ -74,13 +74,13 @@ FROM (
     alt,
     alt_freq_from_1KG)
 GROUP BY
-  contig,
+  contig_name,
   position,
   super_population,
   reference_bases,
   alternate_bases,
   alt_freq_from_1KG
 ORDER BY
-  contig,
+  contig_name,
   position,
   super_population;

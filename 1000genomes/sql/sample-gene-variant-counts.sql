@@ -2,7 +2,7 @@
 SELECT
   sample_id,
   gene_variants.name AS name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -13,7 +13,7 @@ FROM (
   SELECT
     sample_id,
     name,
-    var.contig AS contig,
+    var.contig_name AS contig_name,
     MIN(variant_start) AS min_variant_start,
     MAX(variant_end) AS max_variant_start,
     gene_start,
@@ -22,7 +22,7 @@ FROM (
   FROM (
     SELECT
       call.callset_name AS sample_id,
-      contig,
+      contig_name,
       position AS variant_start,
       IF(vt != 'SV',
         position + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
@@ -31,7 +31,7 @@ FROM (
       FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         alternate_bases)
     WHERE
-      contig = '17'
+      contig_name = '17'
       AND call.callset_name = 'NA19764'
       AND (call.first_allele > 0
         OR call.second_allele > 0)
@@ -40,13 +40,13 @@ FROM (
     SELECT
       name,
       REGEXP_EXTRACT(chrom,
-        r'chr(\d+)') AS contig,
+        r'chr(\d+)') AS contig_name,
       txStart AS gene_start,
       txEnd AS gene_end,
     FROM
       [google.com:biggene:annotations.known_genes] ) AS genes
   ON
-    var.contig = genes.contig
+    var.contig_name = genes.contig_name
   WHERE
     ( var.variant_start <= var.variant_end
       AND NOT (
@@ -57,7 +57,7 @@ FROM (
   GROUP BY
     sample_id,
     name,
-    contig,
+    contig_name,
     gene_start,
     gene_end) AS gene_variants
 JOIN
@@ -67,7 +67,7 @@ ON
 GROUP BY
   sample_id,
   name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,

@@ -1,6 +1,6 @@
 # Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample
 SELECT
-  contig,
+  contig_name,
   position,
   ref,
   alt,
@@ -9,7 +9,7 @@ SELECT
   sample_id,
 FROM (
   SELECT
-    contig,
+    contig_name,
     position,
     ref,
     alt,
@@ -39,7 +39,7 @@ FROM (
         OR clinicalsignificance CONTAINS 'Pathogenic')
       ) AS clin
   ON
-    var.contig = clin.chromosome
+    var.contig_name = clin.chromosome
     AND var.position = clin.start
     AND reference_bases = ref
     AND alternate_bases = alt
@@ -53,7 +53,7 @@ JOIN
 ON
   names.conceptid = sig.disease_id
 GROUP BY
-  contig,
+  contig_name,
   position,
   ref,
   alt,
@@ -62,5 +62,5 @@ GROUP BY
   sample_id,
 ORDER BY
   clinicalsignificance,
-  contig,
+  contig_name,
   position;

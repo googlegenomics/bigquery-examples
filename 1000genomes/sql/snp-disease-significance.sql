@@ -28,7 +28,7 @@ FROM (
       type='single nucleotide variant'
       ) AS clin
   ON
-    var.contig = clin.chromosome
+    var.contig_name = clin.chromosome
     AND var.position = clin.start
     AND reference_bases = ref
     AND alternate_bases = alt

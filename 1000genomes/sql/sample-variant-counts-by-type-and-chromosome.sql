@@ -3,7 +3,7 @@
 SELECT
   COUNT(call.callset_name) AS variant_count,
   call.callset_name,
-  contig,
+  contig_name,
   vt,
 FROM 
   [google.com:biggene:1000genomes.phase1_variants]
@@ -12,7 +12,7 @@ WHERE
   OR call.second_allele > 0
 GROUP BY
   call.callset_name,
-  contig,
+  contig_name,
   vt
 ORDER BY
   variant_count;

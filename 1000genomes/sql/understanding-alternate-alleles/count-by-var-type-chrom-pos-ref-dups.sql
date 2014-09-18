@@ -7,25 +7,25 @@ FROM
   [google.com:biggene:1000genomes.phase1_variants] AS variants
 JOIN (
   SELECT
-    contig,
+    contig_name,
     position,
     reference_bases,
     COUNT(position) AS num_alternates,
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
-    contig = '17'
+    contig_name = '17'
   GROUP EACH BY
-    contig,
+    contig_name,
     position,
     reference_bases
   HAVING
     num_alternates > 1) AS dups
 ON
-  variants.contig = dups.contig
+  variants.contig_name = dups.contig_name
   AND variants.position = dups.position
   AND variants.reference_bases = dups.reference_bases
 WHERE
-  variants.contig = '17'
+  variants.contig_name = '17'
 GROUP EACH BY
   vt;

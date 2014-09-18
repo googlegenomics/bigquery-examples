@@ -3,7 +3,7 @@
 # across more than two alternates.  For more info, see
 # https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
-  contig,
+  contig_name,
   position,
   ids,
   reference_bases,
@@ -18,7 +18,7 @@ SELECT
   WHEN 2 = allele2 THEN alt2 END AS allele2,
 FROM(
   SELECT
-    contig,
+    contig_name,
     position,
     GROUP_CONCAT(id) WITHIN RECORD AS ids,
     reference_bases,
@@ -32,7 +32,7 @@ FROM(
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
-    contig = '17'
+    contig_name = '17'
     AND position = 48515943
   HAVING
     sample_id = 'HG00100' OR sample_id = 'HG00101');
