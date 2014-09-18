@@ -12,7 +12,7 @@ SELECT
   asn_af,
   amr_af
 FROM
-  [google.com:biggene:1000genomes.variants1kG] AS kg
+  [google.com:biggene:1000genomes.phase1_variants] AS kg
 JOIN EACH (
   SELECT
     chromosome,

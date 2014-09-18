@@ -94,7 +94,7 @@ FROM (
       (0 = genotype.first_allele) + (0 = genotype.second_allele) AS ref_count,
       (1 = genotype.first_allele) + (1 = genotype.second_allele) AS alt_count,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         genotype) AS g
     JOIN
       [google.com:biggene:1000genomes.sample_info] p

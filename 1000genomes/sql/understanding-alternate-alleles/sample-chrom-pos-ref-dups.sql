@@ -30,7 +30,7 @@ FROM(
     genotype.first_allele AS allele1,
     genotype.second_allele AS allele2
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     contig = '17'
     AND position = 48515943

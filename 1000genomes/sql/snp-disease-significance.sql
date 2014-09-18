@@ -9,7 +9,7 @@ FROM (
     clinicalsignificance,
     disease_id
   FROM
-    FLATTEN([google.com:biggene:1000genomes.variants1kG],
+    FLATTEN([google.com:biggene:1000genomes.phase1_variants],
       alternate_bases) AS var
   JOIN (
     SELECT
@@ -23,7 +23,7 @@ FROM (
       REGEXP_EXTRACT(phenotypeids,
         r'MedGen:(\w+)') AS disease_id,
     FROM
-      [google.com:biggene:1000genomes.clinvar]
+      [google.com:biggene:annotations.clinvar]
     WHERE
       type='single nucleotide variant'
       ) AS clin
@@ -35,7 +35,7 @@ FROM (
   WHERE
     var.vt='SNP') AS sig
 JOIN
-  [google.com:biggene:1000genomes.clinvar_disease_names] AS names
+  [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON
   names.conceptid = sig.disease_id
 GROUP BY

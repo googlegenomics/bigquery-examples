@@ -3,7 +3,7 @@ SELECT
   clinicalsignificance,
   COUNT(1) AS num_variants
 FROM
-  FLATTEN([google.com:biggene:1000genomes.variants1kG],
+  FLATTEN([google.com:biggene:1000genomes.phase1_variants],
     alternate_bases) AS var
 JOIN (
   SELECT
@@ -17,7 +17,7 @@ JOIN (
     REGEXP_EXTRACT(phenotypeids,
       r'MedGen:(\w+)') AS disease_id,
   FROM
-    [google.com:biggene:1000genomes.clinvar]
+    [google.com:biggene:annotations.clinvar]
   WHERE
     type='single nucleotide variant'
     ) AS clin

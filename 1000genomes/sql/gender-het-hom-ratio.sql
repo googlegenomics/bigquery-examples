@@ -31,7 +31,7 @@ FROM
         1,
         0)) AS het_RA_count
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     contig = 'X'
     AND vt = 'SNP'

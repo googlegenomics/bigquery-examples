@@ -13,7 +13,7 @@ FROM (
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     end,
   FROM
-    [google.com:biggene:1000genomes.variants1kG])
+    [google.com:biggene:1000genomes.phase1_variants])
   GROUP EACH BY
   contig,
   position,

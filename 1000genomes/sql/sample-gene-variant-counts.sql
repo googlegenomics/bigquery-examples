@@ -28,7 +28,7 @@ FROM (
         position + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
         END) AS variant_end,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         alternate_bases)
     WHERE
       contig = '17'
@@ -44,7 +44,7 @@ FROM (
       txStart AS gene_start,
       txEnd AS gene_end,
     FROM
-      [google.com:biggene:1000genomes.known_genes] ) AS genes
+      [google.com:biggene:annotations.known_genes] ) AS genes
   ON
     var.contig = genes.contig
   WHERE
@@ -61,7 +61,7 @@ FROM (
     gene_start,
     gene_end) AS gene_variants
 JOIN
-  [google.com:biggene:1000genomes.known_genes_aliases] AS gene_aliases
+  [google.com:biggene:annotations.known_genes_aliases] AS gene_aliases
 ON
   gene_variants.name = gene_aliases.name
 GROUP BY

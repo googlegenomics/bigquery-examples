@@ -10,7 +10,7 @@ FROM (
     contig,
     COUNT(*) num_variants
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     id IS NOT NULL
   GROUP BY
@@ -20,7 +20,7 @@ JOIN (
     contig,
     COUNT(*) num_variants
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   GROUP BY
     contig
     ) all_variants

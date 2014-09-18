@@ -4,7 +4,7 @@ SELECT
   alternate_bases AS allele,
   COUNT(alternate_bases) AS num_snps
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [google.com:biggene:1000genomes.phase1_variants]
 WHERE
   vt ='SNP'
 GROUP BY

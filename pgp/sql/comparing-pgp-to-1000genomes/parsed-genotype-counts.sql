@@ -13,7 +13,7 @@ FROM (
     COUNT(1) AS cnt,
     '1000Genomes' AS dataset
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   GROUP BY
     first_allele,
     phased,

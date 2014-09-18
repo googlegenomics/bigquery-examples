@@ -39,7 +39,7 @@ FROM
         1,
         0) AS has_variant
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         genotype) AS samples
     JOIN
       [google.com:biggene:1000genomes.sample_info] p

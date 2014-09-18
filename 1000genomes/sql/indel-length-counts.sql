@@ -12,7 +12,7 @@ FROM (
     LENGTH(alternate_bases) AS allele_length,
     (LENGTH(alternate_bases) - LENGTH(reference_bases)) AS length_difference,
     FROM
-      [google.com:biggene:1000genomes.variants1kG]
+      [google.com:biggene:1000genomes.phase1_variants]
     WHERE
       vt ='INDEL'
     )

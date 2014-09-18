@@ -5,7 +5,7 @@ SELECT
   vt,
   COUNT(vt) AS cnt,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [google.com:biggene:1000genomes.phase1_variants]
 GROUP BY
   contig,
   vt

@@ -15,7 +15,7 @@ FROM (
     INTEGER(FLOOR(position / 10000)) AS window,
     genotype.sample_id AS sample_id,
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     genotype.first_allele > 0
       OR genotype.second_allele > 0)

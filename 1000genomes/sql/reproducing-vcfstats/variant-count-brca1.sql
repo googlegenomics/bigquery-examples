@@ -2,7 +2,7 @@
 SELECT
   count(contig) as num_variants,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [google.com:biggene:1000genomes.phase1_variants]
 WHERE
   contig = '17'
   AND position BETWEEN 41196312

@@ -7,7 +7,7 @@ SELECT
   GROUP_CONCAT(id) WITHIN RECORD AS ids,
   vt,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [google.com:biggene:1000genomes.phase1_variants]
 WHERE
   contig = '17'
   AND (position = 48515943

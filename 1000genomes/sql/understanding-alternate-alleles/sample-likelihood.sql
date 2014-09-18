@@ -18,7 +18,7 @@ SELECT
   genotype.ds AS ds,
   GROUP_CONCAT(STRING(genotype.gl)) WITHIN genotype AS likelihoods,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [google.com:biggene:1000genomes.phase1_variants]
 WHERE
   contig = '17'
   AND position = 48515943

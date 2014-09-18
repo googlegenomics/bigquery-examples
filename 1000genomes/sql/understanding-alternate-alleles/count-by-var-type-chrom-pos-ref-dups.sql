@@ -4,7 +4,7 @@ SELECT
   vt,
   COUNT(vt) AS num_variant_type
 FROM
-  [google.com:biggene:1000genomes.variants1kG] AS variants
+  [google.com:biggene:1000genomes.phase1_variants] AS variants
 JOIN (
   SELECT
     contig,
@@ -12,7 +12,7 @@ JOIN (
     reference_bases,
     COUNT(position) AS num_alternates,
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     contig = '17'
   GROUP EACH BY

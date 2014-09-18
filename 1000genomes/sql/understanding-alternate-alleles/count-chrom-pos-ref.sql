@@ -10,7 +10,7 @@ FROM (
     reference_bases,
     COUNT(position) AS num_alternates,
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     contig = '17'
   GROUP BY

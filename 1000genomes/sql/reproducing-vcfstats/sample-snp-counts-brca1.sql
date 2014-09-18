@@ -9,7 +9,7 @@ FROM (
     reference_bases,
     genotype.sample_id AS sample_id
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     contig = '17'
     AND position BETWEEN 41196312

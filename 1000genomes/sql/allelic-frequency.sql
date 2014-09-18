@@ -38,7 +38,7 @@ FROM (
       genotype.first_allele,
       genotype.second_allele
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         genotype)
     WHERE
       contig = '17'

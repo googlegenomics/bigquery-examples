@@ -21,7 +21,7 @@ SELECT
       INTEGER(1),
       INTEGER(0))) AS very_rare_variant,
 FROM
-  FLATTEN([google.com:biggene:1000genomes.variants1kG],
+  FLATTEN([google.com:biggene:1000genomes.phase1_variants],
     genotype) AS samples
 JOIN
   [google.com:biggene:1000genomes.sample_info] p

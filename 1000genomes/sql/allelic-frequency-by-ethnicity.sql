@@ -41,7 +41,7 @@ FROM (
       g.genotype.first_allele AS allele1,
       g.genotype.second_allele AS allele2,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         genotype) AS g
     JOIN
       [google.com:biggene:1000genomes.sample_info] p

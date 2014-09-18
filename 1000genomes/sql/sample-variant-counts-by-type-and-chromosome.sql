@@ -6,7 +6,7 @@ SELECT
   contig,
   vt,
 FROM 
-  [google.com:biggene:1000genomes.variants1kG]
+  [google.com:biggene:1000genomes.phase1_variants]
 WHERE
   genotype.first_allele > 0
   OR genotype.second_allele > 0

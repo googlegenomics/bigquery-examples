@@ -18,7 +18,7 @@ FROM
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [google.com:biggene:1000genomes.phase1_variants]
   HAVING
     num_samples_with_variant = 1
     AND sample_id IS NOT NULL)

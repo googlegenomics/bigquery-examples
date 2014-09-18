@@ -53,7 +53,7 @@ FROM (
       THEN  g.amr_af
       END AS alt_freq_from_1KG
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         genotype) AS g
     JOIN
       [google.com:biggene:1000genomes.sample_info] p
