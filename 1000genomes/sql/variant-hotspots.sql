@@ -26,4 +26,4 @@ GROUP BY
   window_end,
 ORDER BY
   num_variants_in_window DESC,
-  window;
+  window

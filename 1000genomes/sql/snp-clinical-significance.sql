@@ -31,4 +31,4 @@ WHERE
 GROUP BY
   clinicalsignificance,
 ORDER BY
-  num_variants DESC;
+  num_variants DESC

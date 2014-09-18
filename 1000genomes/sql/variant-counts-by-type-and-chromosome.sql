@@ -11,4 +11,4 @@ GROUP BY
   vt
 ORDER BY
   contig_name,
-  vt;
+  vt

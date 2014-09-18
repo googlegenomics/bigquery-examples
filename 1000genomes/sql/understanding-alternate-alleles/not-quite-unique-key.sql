@@ -23,4 +23,4 @@ FROM (
   alt,
   vt
 HAVING
-  cnt > 1;
+  cnt > 1

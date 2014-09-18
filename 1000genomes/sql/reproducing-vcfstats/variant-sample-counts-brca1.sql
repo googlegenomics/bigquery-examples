@@ -15,4 +15,4 @@ WHERE
   AND 41277500
   AND vt ='SNP'
 ORDER BY
-  num_samples_with_variant;
+  num_samples_with_variant

@@ -22,4 +22,4 @@ WHERE
   AND start_pos BETWEEN 41196312
       AND 41277500
 HAVING
-  sample_id = 'HG00100';
+  sample_id = 'HG00100'

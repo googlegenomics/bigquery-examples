@@ -28,4 +28,4 @@ ON
 WHERE
   variants.contig_name = '17'
 GROUP EACH BY
-  vt;
+  vt

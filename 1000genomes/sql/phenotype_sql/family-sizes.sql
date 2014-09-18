@@ -13,4 +13,4 @@ FROM (
   GROUP BY
   family_id)
 GROUP BY
-family_size;
+family_size

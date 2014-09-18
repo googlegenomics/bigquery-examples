@@ -16,4 +16,4 @@ FROM (
   WHERE
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY
-    gender);
+    gender)

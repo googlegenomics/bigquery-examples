@@ -25,4 +25,4 @@ FROM
 GROUP EACH BY
   sample_id
 ORDER BY
-  private_variants_count DESC;
+  private_variants_count DESC

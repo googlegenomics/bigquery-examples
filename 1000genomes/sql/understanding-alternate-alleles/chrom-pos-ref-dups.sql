@@ -17,4 +17,4 @@ HAVING
 ORDER BY
   contig_name,
   start_pos,
-  reference_bases;
+  reference_bases

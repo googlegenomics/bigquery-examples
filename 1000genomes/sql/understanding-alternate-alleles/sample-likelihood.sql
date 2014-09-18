@@ -23,4 +23,4 @@ WHERE
   contig_name = '17'
   AND start_pos = 48515943
 HAVING
-  sample_id = 'HG00100';
+  sample_id = 'HG00100'

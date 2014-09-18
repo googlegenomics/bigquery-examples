@@ -14,4 +14,4 @@ WHERE
 GROUP BY
   sample_id
 ORDER BY
-  sample_id;
+  sample_id

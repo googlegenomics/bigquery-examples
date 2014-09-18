@@ -25,4 +25,4 @@ from(
     population,
     population_description,
     super_population,
-    super_population_description);
+    super_population_description)

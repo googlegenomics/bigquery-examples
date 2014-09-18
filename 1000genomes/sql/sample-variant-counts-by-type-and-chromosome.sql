@@ -15,4 +15,4 @@ GROUP BY
   contig_name,
   vt
 ORDER BY
-  variant_count;
+  variant_count

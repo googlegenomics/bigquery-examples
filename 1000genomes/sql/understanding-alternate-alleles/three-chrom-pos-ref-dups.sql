@@ -12,4 +12,4 @@ WHERE
   contig_name = '17'
   AND (start_pos = 48515943
     OR start_pos = 48570614
-    OR start_pos = 48659343);
+    OR start_pos = 48659343)

@@ -18,4 +18,4 @@ FROM (
 GROUP BY
   num_shared_variants
 ORDER BY
-  num_shared_variants;
+  num_shared_variants

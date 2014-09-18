@@ -13,4 +13,4 @@ FROM (
 GROUP BY
   num_samples_with_variant
 ORDER BY
-  num_samples_with_variant;
+  num_samples_with_variant

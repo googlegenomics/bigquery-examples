@@ -19,4 +19,4 @@ from(
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY
     super_population,
-    super_population_description);
+    super_population_description)

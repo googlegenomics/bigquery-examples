@@ -37,4 +37,4 @@ FROM (
     GROUP BY
       mutation
     ORDER BY
-      mutation));
+      mutation))

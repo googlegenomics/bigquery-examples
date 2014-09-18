@@ -62,4 +62,4 @@ ORDER BY
   start_pos,
   reference_bases,
   alt,
-  alternate_bases;
+  alternate_bases

@@ -73,4 +73,4 @@ ORDER BY
   gender,
   reference_bases,
   alt,
-  alternate_bases;
+  alternate_bases

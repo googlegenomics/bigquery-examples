@@ -63,4 +63,4 @@ GROUP BY
   alt_freq_from_1KG
 ORDER BY
   contig_name,
-  start_pos;
+  start_pos

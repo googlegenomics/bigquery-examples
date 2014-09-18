@@ -39,4 +39,4 @@ GROUP BY
   population,
   super_population
 ORDER BY
-  sample_id;
+  sample_id

@@ -64,4 +64,4 @@ GROUP BY
   cnt
 HAVING
   gene_aliases CONTAINS 'BRCA1'
-  OR gene_aliases CONTAINS 'APOE';
+  OR gene_aliases CONTAINS 'APOE'

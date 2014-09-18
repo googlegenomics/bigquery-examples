@@ -9,4 +9,4 @@ WHERE
   AND start_pos BETWEEN 41196312
   AND 41277500
 GROUP BY
-  variant_type;
+  variant_type

@@ -29,4 +29,4 @@ GROUP BY
   sample_id
 ORDER BY
   num_variants_in_window DESC,
-  window;
+  window

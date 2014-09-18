@@ -42,4 +42,4 @@ GROUP BY
   clinicalsignificance,
   diseasename,
 ORDER BY
-  num_variants DESC;
+  num_variants DESC

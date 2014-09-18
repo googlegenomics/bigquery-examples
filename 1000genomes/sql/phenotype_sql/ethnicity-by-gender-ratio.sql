@@ -20,4 +20,4 @@ from(
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY
     gender,
-    population);
+    population)

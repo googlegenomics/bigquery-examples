@@ -73,4 +73,4 @@ ON
   num_samples_in_pop_with_variant_in_category,
   percent_samples_in_pop_with_variant_in_category
 ORDER BY
-  num_samples_in_pop_with_variant_in_category;
+  num_samples_in_pop_with_variant_in_category

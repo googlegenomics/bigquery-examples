@@ -15,4 +15,4 @@ GROUP BY
   allele
 ORDER BY
   reference_bases,
-  allele;
+  allele

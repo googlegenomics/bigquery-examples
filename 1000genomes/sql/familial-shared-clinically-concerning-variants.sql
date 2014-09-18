@@ -91,4 +91,4 @@ ORDER BY
   num_family_members_with_variant DESC,
   clinicalsignificance,
   contig_name,
-  start_pos;
+  start_pos

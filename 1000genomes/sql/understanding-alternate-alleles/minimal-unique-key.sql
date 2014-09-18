@@ -20,4 +20,4 @@ FROM (
   alt,
   end
 HAVING
-  cnt > 1;
+  cnt > 1

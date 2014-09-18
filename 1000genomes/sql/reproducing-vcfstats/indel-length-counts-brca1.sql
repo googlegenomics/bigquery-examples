@@ -23,4 +23,4 @@ FROM (
 GROUP BY
   length_difference
 ORDER BY
-  length_difference;
+  length_difference

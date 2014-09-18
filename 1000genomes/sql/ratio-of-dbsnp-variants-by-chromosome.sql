@@ -26,4 +26,4 @@ JOIN (
     ) all_variants
   ON dbsnp_variants.contig_name = all_variants.contig_name
 ORDER BY
-  all_variants.num_variants DESC;
+  all_variants.num_variants DESC

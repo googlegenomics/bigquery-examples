@@ -7,4 +7,4 @@ FROM
 GROUP BY
   vt
 ORDER BY
-  vt;
+  vt

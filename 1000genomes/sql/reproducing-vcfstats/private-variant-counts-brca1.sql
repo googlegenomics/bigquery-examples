@@ -29,4 +29,4 @@ FROM
 GROUP EACH BY
   sample_id
 ORDER BY
-  sample_id;
+  sample_id

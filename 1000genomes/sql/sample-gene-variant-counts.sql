@@ -72,4 +72,4 @@ GROUP BY
   max_variant_start,
   gene_start,
   gene_end,
-  cnt;
+  cnt

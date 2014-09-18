@@ -60,4 +60,4 @@ GROUP BY
   perct_hom_alt_in_snvs
 ORDER BY
 perct_het_alt_in_snvs desc,
-  sample_id;
+  sample_id

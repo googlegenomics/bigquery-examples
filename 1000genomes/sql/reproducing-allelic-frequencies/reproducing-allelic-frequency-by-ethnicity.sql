@@ -83,4 +83,4 @@ GROUP BY
 ORDER BY
   contig_name,
   start_pos,
-  super_population;
+  super_population

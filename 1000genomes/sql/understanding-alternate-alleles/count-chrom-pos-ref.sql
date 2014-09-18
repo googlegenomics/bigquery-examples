@@ -18,4 +18,4 @@ FROM (
     start_pos,
     reference_bases)
 GROUP BY
-  num_alternates;
+  num_alternates

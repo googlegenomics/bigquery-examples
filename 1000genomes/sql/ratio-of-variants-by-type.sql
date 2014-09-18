@@ -21,4 +21,4 @@ FROM (
     vt
   ORDER BY
     contig_name,
-    vt);
+    vt)

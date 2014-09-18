@@ -63,4 +63,4 @@ GROUP BY
 ORDER BY
   clinicalsignificance,
   contig_name,
-  start_pos;
+  start_pos
