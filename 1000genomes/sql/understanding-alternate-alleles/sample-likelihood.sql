@@ -1,4 +1,4 @@
-# Get data sufficient to make a judgment upon this particular sample's genotype.
+# Get data sufficient to make a judgment upon this particular sample's call.
 SELECT
   contig,
   position,
@@ -10,13 +10,13 @@ SELECT
   avgpost,
   rsq
   vt,
-  genotype.sample_id AS sample_id,
-  genotype.ploidy AS ploidy,
-  genotype.phased AS phased,
-  genotype.first_allele AS allele1,
-  genotype.second_allele AS allele2,
-  genotype.ds AS ds,
-  GROUP_CONCAT(STRING(genotype.gl)) WITHIN genotype AS likelihoods,
+  call.callset_name AS sample_id,
+  call.ploidy AS ploidy,
+  call.phased AS phased,
+  call.first_allele AS allele1,
+  call.second_allele AS allele2,
+  call.ds AS ds,
+  GROUP_CONCAT(STRING(call.gl)) WITHIN call AS likelihoods,
 FROM
   [google.com:biggene:1000genomes.phase1_variants]
 WHERE

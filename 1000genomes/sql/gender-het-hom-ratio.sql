@@ -15,19 +15,19 @@ SELECT
 FROM
   (
   SELECT
-    genotype.sample_id AS sample_id,
+    call.callset_name AS sample_id,
     contig,
-    SUM(IF(0 = genotype.first_allele
-        AND 0 = genotype.second_allele,
+    SUM(IF(0 = call.first_allele
+        AND 0 = call.second_allele,
         1,
         0)) AS hom_RR_count,
-    SUM(IF(genotype.first_allele = genotype.second_allele
-        AND genotype.first_allele > 0,
+    SUM(IF(call.first_allele = call.second_allele
+        AND call.first_allele > 0,
         1,
         0)) AS hom_AA_count,
-    SUM(IF(genotype.first_allele != genotype.second_allele
-        AND (genotype.first_allele > 0
-          OR genotype.second_allele > 0),
+    SUM(IF(call.first_allele != call.second_allele
+        AND (call.first_allele > 0
+          OR call.second_allele > 0),
         1,
         0)) AS het_RA_count
   FROM

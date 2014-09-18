@@ -13,12 +13,12 @@ FROM (
     contig,
     position,
     INTEGER(FLOOR(position / 10000)) AS window,
-    genotype.sample_id AS sample_id,
+    call.callset_name AS sample_id,
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
-    genotype.first_allele > 0
-      OR genotype.second_allele > 0)
+    call.first_allele > 0
+      OR call.second_allele > 0)
 GROUP BY
   contig,
   window,

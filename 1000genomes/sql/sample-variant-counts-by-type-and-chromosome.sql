@@ -1,17 +1,17 @@
 # Count the number of variants for each sample across the entirety of the 1,000 
 # Genomes dataset by variant type and chromosome.
 SELECT
-  COUNT(genotype.sample_id) AS variant_count,
-  genotype.sample_id,
+  COUNT(call.callset_name) AS variant_count,
+  call.callset_name,
   contig,
   vt,
 FROM 
   [google.com:biggene:1000genomes.phase1_variants]
 WHERE
-  genotype.first_allele > 0
-  OR genotype.second_allele > 0
+  call.first_allele > 0
+  OR call.second_allele > 0
 GROUP BY
-  genotype.sample_id,
+  call.callset_name,
   contig,
   vt
 ORDER BY

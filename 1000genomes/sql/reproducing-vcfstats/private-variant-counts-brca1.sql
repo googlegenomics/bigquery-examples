@@ -9,12 +9,12 @@ FROM
     contig,
     position,
     reference_bases,
-    IF(0 < genotype.first_allele
-      OR 0 < genotype.second_allele,
-      genotype.sample_id,
+    IF(0 < call.first_allele
+      OR 0 < call.second_allele,
+      call.callset_name,
       NULL) AS sample_id,
-    SUM(IF(0 < genotype.first_allele
-        OR 0 < genotype.second_allele,
+    SUM(IF(0 < call.first_allele
+        OR 0 < call.second_allele,
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM

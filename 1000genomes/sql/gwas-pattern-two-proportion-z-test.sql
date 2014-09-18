@@ -91,19 +91,19 @@ FROM (
       end,
       vt,
       # 1,000 genomes data is bi-allelic so there is only ever a single alt
-      (0 = genotype.first_allele) + (0 = genotype.second_allele) AS ref_count,
-      (1 = genotype.first_allele) + (1 = genotype.second_allele) AS alt_count,
+      (0 = call.first_allele) + (0 = call.second_allele) AS ref_count,
+      (1 = call.first_allele) + (1 = call.second_allele) AS alt_count,
     FROM
       FLATTEN([google.com:biggene:1000genomes.phase1_variants],
-        genotype) AS g
+        call) AS g
     JOIN
       [google.com:biggene:1000genomes.sample_info] p
     ON
-      g.genotype.sample_id = p.sample
+      g.call.callset_name = p.sample
     WHERE
       contig = '12'
-      # Exclude genotypes where one or both alleles were not called (-1)
-      AND 0 <= genotype.first_allele AND 0 <= genotype.second_allele
+      # Exclude calls where one or both alleles were not called (-1)
+      AND 0 <= call.first_allele AND 0 <= call.second_allele
       )
   GROUP BY
     contig,

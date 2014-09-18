@@ -18,14 +18,14 @@ FROM (
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = genotype.first_allele,
+    SUM(IF(0 = call.first_allele,
         1,
-        0) + IF(0 = genotype.second_allele,
+        0) + IF(0 = call.second_allele,
         1,
         0)) AS ref_count,
-    SUM(IF(alt = genotype.first_allele,
+    SUM(IF(alt = call.first_allele,
         1,
-        0) + IF(alt = genotype.second_allele,
+        0) + IF(alt = call.second_allele,
         1,
         0)) AS alt_count,
     alt_freq_from_1KG
@@ -37,11 +37,11 @@ FROM (
       alternate_bases,
       af AS alt_freq_from_1KG,
       POSITION(alternate_bases) AS alt,
-      genotype.first_allele,
-      genotype.second_allele,
+      call.first_allele,
+      call.second_allele,
     FROM
       FLATTEN([google.com:biggene:1000genomes.phase1_variants],
-        genotype)
+        call)
     WHERE
       contig = '17'
       AND position BETWEEN 41196312

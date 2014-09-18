@@ -21,7 +21,7 @@ FROM (
     COUNT(*) AS cnt
   FROM (
     SELECT
-      genotype.sample_id AS sample_id,
+      call.callset_name AS sample_id,
       contig,
       position AS variant_start,
       IF(vt != 'SV',
@@ -32,9 +32,9 @@ FROM (
         alternate_bases)
     WHERE
       contig = '17'
-      AND genotype.sample_id = 'NA19764'
-      AND (genotype.first_allele > 0
-        OR genotype.second_allele > 0)
+      AND call.callset_name = 'NA19764'
+      AND (call.first_allele > 0
+        OR call.second_allele > 0)
       ) AS var
   JOIN (
     SELECT

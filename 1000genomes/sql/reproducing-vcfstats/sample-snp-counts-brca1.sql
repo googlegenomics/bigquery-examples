@@ -7,7 +7,7 @@ FROM (
     contig,
     position,
     reference_bases,
-    genotype.sample_id AS sample_id
+    call.callset_name AS sample_id
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
@@ -15,8 +15,8 @@ FROM (
     AND position BETWEEN 41196312
     AND 41277500
     AND vt ='SNP'
-    AND (0 < genotype.first_allele
-      OR 0 < genotype.second_allele)
+    AND (0 < call.first_allele
+      OR 0 < call.second_allele)
     )
 GROUP BY
   sample_id

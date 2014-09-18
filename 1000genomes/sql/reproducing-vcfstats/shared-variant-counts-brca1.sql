@@ -5,8 +5,8 @@ SELECT
   COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM (
   SELECT
-    SUM(IF(0 < genotype.first_allele
-        OR 0 < genotype.second_allele,
+    SUM(IF(0 < call.first_allele
+        OR 0 < call.second_allele,
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM

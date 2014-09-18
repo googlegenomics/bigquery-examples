@@ -22,13 +22,13 @@ FROM(
     position,
     GROUP_CONCAT(id) WITHIN RECORD AS ids,
     reference_bases,
-    genotype.sample_id AS sample_id,
+    call.callset_name AS sample_id,
     NTH(1,
       alternate_bases) WITHIN RECORD AS alt1,
     NTH(2,
       alternate_bases) WITHIN RECORD AS alt2,
-    genotype.first_allele AS allele1,
-    genotype.second_allele AS allele2
+    call.first_allele AS allele1,
+    call.second_allele AS allele2
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE

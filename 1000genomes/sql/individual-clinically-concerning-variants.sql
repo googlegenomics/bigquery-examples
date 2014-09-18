@@ -13,7 +13,7 @@ FROM (
     position,
     ref,
     alt,
-    genotype.sample_id AS sample_id,
+    call.callset_name AS sample_id,
     clinicalsignificance,
     disease_id,
   FROM
@@ -44,10 +44,10 @@ FROM (
     AND reference_bases = ref
     AND alternate_bases = alt
   WHERE
-    genotype.sample_id = 'NA19764'
+    call.callset_name = 'NA19764'
     AND var.vt='SNP'
-    AND (var.genotype.first_allele > 0
-      OR var.genotype.second_allele > 0)) AS sig
+    AND (var.call.first_allele > 0
+      OR var.call.second_allele > 0)) AS sig
 JOIN
   [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON

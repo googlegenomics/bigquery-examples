@@ -2,7 +2,7 @@
 # queries upon 1,000 Genomes variants.  It is specifically computing
 # the Hardy-Weinberg Equilibrium for the variants found in BRCA1 and
 # then computing the chi-squared score for the observed versus
-# expected counts for the genotypes.
+# expected counts for the calls.
 
 # http://scienceprimer.com/hardy-weinberg-equilibrium-calculator
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.htm
@@ -69,36 +69,36 @@ FROM (
       GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
       vt,
       # 1,000 genomes data is bi-allelic so there is only ever a single alt
-      # We also exclude genotypes where one or both alleles were not called (-1)
-      SUM((0 = genotype.first_allele
-          OR 1 = genotype.first_allele)
-        AND (0 = genotype.second_allele
-          OR 1 = genotype.second_allele)) WITHIN RECORD AS total_count,
-      SUM(0 = genotype.first_allele
-        AND 0 = genotype.second_allele) WITHIN RECORD AS hom_ref_count,
-      SUM((0 = genotype.first_allele
-          AND 1 = genotype.second_allele)
-        OR (1 = genotype.first_allele
-          AND 0 = genotype.second_allele)) WITHIN RECORD AS het_count,
-      SUM(1 = genotype.first_allele
-        AND 1 = genotype.second_allele) WITHIN RECORD AS hom_alt_count,
-      SUM(0 = genotype.first_allele
-        AND 0 = genotype.second_allele) / SUM((0 = genotype.first_allele
-          OR 1 = genotype.first_allele)
-        AND (0 = genotype.second_allele
-          OR 1 = genotype.second_allele)) WITHIN RECORD AS hom_ref_freq,
-      SUM((0 = genotype.first_allele
-          AND 1 = genotype.second_allele)
-        OR (1 = genotype.first_allele
-          AND 0 = genotype.second_allele)) / SUM((0 = genotype.first_allele
-          OR 1 = genotype.first_allele)
-        AND (0 = genotype.second_allele
-          OR 1 = genotype.second_allele)) WITHIN RECORD AS het_freq,
-      SUM(1 = genotype.first_allele
-        AND 1 = genotype.second_allele) / SUM((0 = genotype.first_allele
-          OR 1 = genotype.first_allele)
-        AND (0 = genotype.second_allele
-          OR 1 = genotype.second_allele)) WITHIN RECORD AS hom_alt_freq,
+      # We also exclude calls where one or both alleles were not called (-1)
+      SUM((0 = call.first_allele
+          OR 1 = call.first_allele)
+        AND (0 = call.second_allele
+          OR 1 = call.second_allele)) WITHIN RECORD AS total_count,
+      SUM(0 = call.first_allele
+        AND 0 = call.second_allele) WITHIN RECORD AS hom_ref_count,
+      SUM((0 = call.first_allele
+          AND 1 = call.second_allele)
+        OR (1 = call.first_allele
+          AND 0 = call.second_allele)) WITHIN RECORD AS het_count,
+      SUM(1 = call.first_allele
+        AND 1 = call.second_allele) WITHIN RECORD AS hom_alt_count,
+      SUM(0 = call.first_allele
+        AND 0 = call.second_allele) / SUM((0 = call.first_allele
+          OR 1 = call.first_allele)
+        AND (0 = call.second_allele
+          OR 1 = call.second_allele)) WITHIN RECORD AS hom_ref_freq,
+      SUM((0 = call.first_allele
+          AND 1 = call.second_allele)
+        OR (1 = call.first_allele
+          AND 0 = call.second_allele)) / SUM((0 = call.first_allele
+          OR 1 = call.first_allele)
+        AND (0 = call.second_allele
+          OR 1 = call.second_allele)) WITHIN RECORD AS het_freq,
+      SUM(1 = call.first_allele
+        AND 1 = call.second_allele) / SUM((0 = call.first_allele
+          OR 1 = call.first_allele)
+        AND (0 = call.second_allele
+          OR 1 = call.second_allele)) WITHIN RECORD AS hom_alt_freq,
       # Also return the pre-computed allelic frequency to help us check our work
       af,
     FROM

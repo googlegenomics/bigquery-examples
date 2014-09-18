@@ -38,15 +38,15 @@ FROM (
       g.reference_bases AS reference_bases,
       g.alternate_bases AS alternate_bases,
       POSITION(g.alternate_bases) AS alt,
-      g.genotype.first_allele AS allele1,
-      g.genotype.second_allele AS allele2,
+      g.call.first_allele AS allele1,
+      g.call.second_allele AS allele2,
     FROM
       FLATTEN([google.com:biggene:1000genomes.phase1_variants],
-        genotype) AS g
+        call) AS g
     JOIN
       [google.com:biggene:1000genomes.sample_info] p
     ON
-      g.genotype.sample_id = p.sample
+      g.call.callset_name = p.sample
     WHERE
       g.contig = '17'
       AND g.position BETWEEN 41196312

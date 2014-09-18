@@ -34,17 +34,17 @@ FROM
       IF(af >= 0.05,
         TRUE,
         FALSE) AS is_common_variant,
-      IF(genotype.first_allele > 0
-        OR genotype.second_allele > 0,
+      IF(call.first_allele > 0
+        OR call.second_allele > 0,
         1,
         0) AS has_variant
     FROM
       FLATTEN([google.com:biggene:1000genomes.phase1_variants],
-        genotype) AS samples
+        call) AS samples
     JOIN
       [google.com:biggene:1000genomes.sample_info] p
     ON
-      samples.genotype.sample_id = p.sample)
+      samples.call.callset_name = p.sample)
     GROUP EACH BY
     contig,
     position,

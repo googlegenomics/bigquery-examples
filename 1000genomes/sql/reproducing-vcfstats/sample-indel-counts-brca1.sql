@@ -1,7 +1,7 @@
 # Sample INDEL counts for BRCA1.
 SELECT
-  COUNT(genotype.sample_id) AS variant_count,
-  genotype.sample_id AS sample_id,
+  COUNT(call.callset_name) AS variant_count,
+  call.callset_name AS sample_id,
 FROM
   [google.com:biggene:1000genomes.phase1_variants]
 WHERE
@@ -9,8 +9,8 @@ WHERE
   AND position BETWEEN 41196312
   AND 41277500
   AND vt ='INDEL'
-  AND (0 < genotype.first_allele
-    OR 0 < genotype.second_allele)
+  AND (0 < call.first_allele
+    OR 0 < call.second_allele)
 GROUP BY
   sample_id
 ORDER BY

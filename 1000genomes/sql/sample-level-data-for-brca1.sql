@@ -8,13 +8,13 @@ SELECT
   quality,
   GROUP_CONCAT(filter) WITHIN RECORD AS filters,
   vt,
-  genotype.sample_id AS sample_id,
-  genotype.ploidy AS ploidy,
-  genotype.phased AS phased,
-  genotype.first_allele AS first_allele,
-  genotype.second_allele AS second_allele,
-  genotype.ds,
-  GROUP_CONCAT(STRING(genotype.gl)) WITHIN genotype AS likelihoods,
+  call.callset_name AS sample_id,
+  call.ploidy AS ploidy,
+  call.phased AS phased,
+  call.first_allele AS first_allele,
+  call.second_allele AS second_allele,
+  call.ds,
+  GROUP_CONCAT(STRING(call.gl)) WITHIN call AS likelihoods,
 FROM
   [google.com:biggene:1000genomes.phase1_variants]
 WHERE

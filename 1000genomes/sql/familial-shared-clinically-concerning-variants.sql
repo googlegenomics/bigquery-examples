@@ -27,7 +27,7 @@ FROM (
           position,
           ref,
           alt,
-          genotype.sample_id AS sample_id,
+          call.callset_name AS sample_id,
           clinicalsignificance,
           disease_id,
         FROM
@@ -59,9 +59,9 @@ FROM (
           AND alternate_bases = alt
         WHERE
           var.vt='SNP'
-          AND (var.genotype.first_allele > 0
-            OR var.genotype.second_allele > 0)),
-        var.genotype)) AS sig
+          AND (var.call.first_allele > 0
+            OR var.call.second_allele > 0)),
+        var.call)) AS sig
   JOIN
     [google.com:biggene:1000genomes.pedigree] AS ped
   ON
