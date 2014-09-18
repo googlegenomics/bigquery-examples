@@ -31,12 +31,11 @@ require(ggplot2)
 require(dplyr)
 require(xtable)
 require(testthat)
-billing_project <- "google.com:biggene" # put your projectID here
+project <- "google.com:biggene" # put your projectID here
 DisplayAndDispatchQuery <- function(queryUri) {
   sql <- readChar(queryUri, nchars=1e6)
   cat(sql)
-  query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing=billing_project)  
+  query_exec(sql, project)
 }
 ```
 
