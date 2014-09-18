@@ -14,12 +14,6 @@
 <!-- See the License for the specific language governing permissions and -->
 <!-- limitations under the License. -->
 
----
-output:
-  md_document:
-    variant: markdown_github
----
-
 Literate Programming with R and BigQuery
 ========================================================
 
