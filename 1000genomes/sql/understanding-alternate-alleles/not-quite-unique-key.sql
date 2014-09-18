@@ -2,7 +2,7 @@
 # comprise a unique key for the rows in the table.
 SELECT
   contig_name,
-  position,
+  start_pos,
   reference_bases,
   alt,
   vt,
@@ -10,7 +10,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     vt,
@@ -18,7 +18,7 @@ FROM (
     [google.com:biggene:1000genomes.phase1_variants])
   GROUP EACH BY
   contig_name,
-  position,
+  start_pos,
   reference_bases,
   alt,
   vt

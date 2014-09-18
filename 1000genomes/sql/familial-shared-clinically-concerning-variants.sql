@@ -2,7 +2,7 @@
 # number of family members sharing the SNP
 SELECT
   contig_name,
-  position,
+  start_pos,
   ref,
   alt,
   clinicalsignificance,
@@ -12,7 +12,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     ref,
     alt,
     clinicalsignificance,
@@ -24,7 +24,7 @@ FROM (
         (
         SELECT
           contig_name,
-          position,
+          start_pos,
           ref,
           alt,
           call.callset_name AS sample_id,
@@ -54,7 +54,7 @@ FROM (
             ) AS clin
         ON
           var.contig_name = clin.chromosome
-          AND var.position = clin.start
+          AND var.start_pos = clin.start
           AND reference_bases = ref
           AND alternate_bases = alt
         WHERE
@@ -68,7 +68,7 @@ FROM (
     sig.sample_id = ped.individual_id
   GROUP BY
     contig_name,
-    position,
+    start_pos,
     ref,
     alt,
     clinicalsignificance,
@@ -80,7 +80,7 @@ ON
   names.conceptid = families.disease_id
 GROUP BY
   contig_name,
-  position,
+  start_pos,
   ref,
   alt,
   clinicalsignificance,
@@ -91,4 +91,4 @@ ORDER BY
   num_family_members_with_variant DESC,
   clinicalsignificance,
   contig_name,
-  position;
+  start_pos;

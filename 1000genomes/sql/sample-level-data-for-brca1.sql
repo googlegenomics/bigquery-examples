@@ -1,7 +1,7 @@
 # Get sample level data for variants within BRCA1.
 SELECT
   contig_name,
-  position,
+  start_pos,
   GROUP_CONCAT(id) WITHIN RECORD AS ids,
   reference_bases AS ref,
   GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
@@ -19,7 +19,7 @@ FROM
   [google.com:biggene:1000genomes.phase1_variants]
 WHERE
   contig_name = '17'
-  AND position BETWEEN 41196312
+  AND start_pos BETWEEN 41196312
       AND 41277500
 HAVING
   sample_id = 'HG00100';

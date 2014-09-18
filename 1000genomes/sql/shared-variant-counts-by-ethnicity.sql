@@ -12,7 +12,7 @@ FROM
   (
   SELECT
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     alt,
     vt,
@@ -25,7 +25,7 @@ FROM
   FROM (
     SELECT
       contig_name,
-      position,
+      start_pos,
       reference_bases,
       GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
       vt,
@@ -47,7 +47,7 @@ FROM
       samples.call.callset_name = p.sample)
     GROUP EACH BY
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     alt,
     vt,

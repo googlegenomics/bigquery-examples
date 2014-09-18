@@ -2,7 +2,7 @@
 # 1,000 Genomes dataset and also includes the pre-computed value from the dataset.
 SELECT
   contig_name,
-  position,
+  start_pos,
   reference_bases,
   alternate_bases,
   SUM(ref_count)+SUM(alt_count) AS num_sample_alleles,
@@ -14,7 +14,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     alternate_bases,
     alt,
@@ -32,7 +32,7 @@ FROM (
   FROM (
     SELECT
       contig_name,
-      position,
+      start_pos,
       reference_bases,
       alternate_bases,
       af AS alt_freq_from_1KG,
@@ -44,23 +44,23 @@ FROM (
         call)
     WHERE
       contig_name = '17'
-      AND position BETWEEN 41196312
+      AND start_pos BETWEEN 41196312
       AND 41277500
       AND vt='SNP')
   GROUP BY
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     alternate_bases,
     alt,
     alt_freq_from_1KG)
 GROUP BY
   contig_name,
-  position,
+  start_pos,
   reference_bases,
   alternate_bases,
   alt,
   alt_freq_from_1KG
 ORDER BY
   contig_name,
-  position;
+  start_pos;

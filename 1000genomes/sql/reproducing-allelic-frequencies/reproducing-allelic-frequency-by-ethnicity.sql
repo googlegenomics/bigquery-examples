@@ -3,7 +3,7 @@
 # and also includes the pre-computed value from the dataset.
 SELECT
   contig_name,
-  position,
+  start_pos,
   super_population,
   reference_bases,
   alternate_bases,
@@ -16,7 +16,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     super_population,
     reference_bases,
     alternate_bases,
@@ -35,7 +35,7 @@ FROM (
   FROM (
     SELECT
       g.contig_name AS contig_name,
-      g.position AS position,
+      g.start_pos AS start_pos,
       p.super_population AS super_population,
       g.reference_bases AS reference_bases,
       g.alternate_bases AS alternate_bases,
@@ -61,13 +61,13 @@ FROM (
       g.call.callset_name = p.sample
     WHERE
       g.contig_name = '17'
-      AND g.position BETWEEN 41196312
+      AND g.start_pos BETWEEN 41196312
       AND 41277500
       AND g.vt='SNP'
       )
   GROUP BY
     contig_name,
-    position,
+    start_pos,
     super_population,
     reference_bases,
     alternate_bases,
@@ -75,12 +75,12 @@ FROM (
     alt_freq_from_1KG)
 GROUP BY
   contig_name,
-  position,
+  start_pos,
   super_population,
   reference_bases,
   alternate_bases,
   alt_freq_from_1KG
 ORDER BY
   contig_name,
-  position,
+  start_pos,
   super_population;

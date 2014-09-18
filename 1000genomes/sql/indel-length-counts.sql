@@ -5,7 +5,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     LENGTH(reference_bases) AS ref_length,
     alternate_bases AS allele,

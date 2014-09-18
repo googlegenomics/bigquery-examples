@@ -10,7 +10,7 @@
 
 SELECT
   contig_name,
-  position,
+  start_pos,
   end,
   reference_bases,
   alt,
@@ -38,7 +38,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     end,
     reference_bases,
     alt,
@@ -63,7 +63,7 @@ FROM (
   FROM (
     SELECT
       contig_name,
-      position,
+      start_pos,
       end,
       reference_bases,
       GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
@@ -105,8 +105,8 @@ FROM (
       [google.com:biggene:1000genomes.phase1_variants]
     WHERE
       contig_name = '17'
-      AND position BETWEEN 41196312 AND 41277500
+      AND start_pos BETWEEN 41196312 AND 41277500
 ))
 ORDER BY
   contig_name,
-  position
+  start_pos

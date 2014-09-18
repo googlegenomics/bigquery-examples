@@ -4,7 +4,7 @@
 # https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
   contig_name,
-  position,
+  start_pos,
   ids,
   reference_bases,
   sample_id,
@@ -19,7 +19,7 @@ SELECT
 FROM(
   SELECT
     contig_name,
-    position,
+    start_pos,
     GROUP_CONCAT(id) WITHIN RECORD AS ids,
     reference_bases,
     call.callset_name AS sample_id,
@@ -33,6 +33,6 @@ FROM(
     [google.com:biggene:1000genomes.phase1_variants]
   WHERE
     contig_name = '17'
-    AND position = 48515943
+    AND start_pos = 48515943
   HAVING
     sample_id = 'HG00100' OR sample_id = 'HG00101');

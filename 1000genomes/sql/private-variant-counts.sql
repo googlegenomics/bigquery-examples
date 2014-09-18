@@ -7,7 +7,7 @@ FROM
   (
   SELECT
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     IF(call.first_allele > 0
       OR call.second_allele > 0,

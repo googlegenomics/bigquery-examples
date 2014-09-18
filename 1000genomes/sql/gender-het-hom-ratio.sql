@@ -35,9 +35,9 @@ FROM
   WHERE
     contig_name = 'X'
     AND vt = 'SNP'
-    AND position NOT BETWEEN 60000
+    AND start_pos NOT BETWEEN 60000
     AND 2699520
-    AND position NOT BETWEEN 154931043
+    AND start_pos NOT BETWEEN 154931043
     AND 155260560
   GROUP BY
     sample_id,

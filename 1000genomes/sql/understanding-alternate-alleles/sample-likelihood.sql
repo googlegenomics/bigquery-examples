@@ -1,7 +1,7 @@
 # Get data sufficient to make a judgment upon this particular sample's call.
 SELECT
   contig_name,
-  position,
+  start_pos,
   GROUP_CONCAT(id) WITHIN RECORD AS ids,
   reference_bases AS ref,
   GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
@@ -21,6 +21,6 @@ FROM
   [google.com:biggene:1000genomes.phase1_variants]
 WHERE
   contig_name = '17'
-  AND position = 48515943
+  AND start_pos = 48515943
 HAVING
   sample_id = 'HG00100';

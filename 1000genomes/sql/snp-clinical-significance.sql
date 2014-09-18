@@ -23,7 +23,7 @@ JOIN (
     ) AS clin
 ON
   var.contig_name = clin.chromosome
-  AND var.position = clin.start
+  AND var.start_pos = clin.start
   AND reference_bases = ref
   AND alternate_bases = alt
 WHERE

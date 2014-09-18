@@ -2,7 +2,7 @@
 # 1,000 Genomes dataset.
 SELECT
   contig_name,
-  position,
+  start_pos,
   reference_bases,
   alternate_bases,
   alt,
@@ -14,7 +14,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     alternate_bases,
     alt,
@@ -31,7 +31,7 @@ FROM (
   FROM (
     SELECT
       contig_name,
-      position,
+      start_pos,
       reference_bases,
       alternate_bases,
       POSITION(alternate_bases) AS alt,
@@ -42,24 +42,24 @@ FROM (
         call)
     WHERE
       contig_name = '17'
-      AND position BETWEEN 41196312
+      AND start_pos BETWEEN 41196312
       AND 41277500
       AND vt='SNP')
   GROUP BY
     contig_name,
-    position,
+    start_pos,
     reference_bases,
     alternate_bases,
     alt)
 GROUP BY
   contig_name,
-  position,
+  start_pos,
   reference_bases,
   alternate_bases,
   alt
 ORDER BY
   contig_name,
-  position,
+  start_pos,
   reference_bases,
   alt,
   alternate_bases;

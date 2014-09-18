@@ -16,11 +16,11 @@
 # > qchisq(1 - 5e-08, df=1) 
 #   [1] 29.71679
 
-# For example, see alcohol flush reaction at position 112241766 
+# For example, see alcohol flush reaction at start_pos 112241766 
 
 SELECT
   contig_name,
-  position,
+  start_pos,
   end,
   reference_bases,
   alternate_bases,
@@ -48,7 +48,7 @@ SELECT
 FROM (
   SELECT
     contig_name,
-    position,
+    start_pos,
     end,
     reference_bases,
     alternate_bases,
@@ -77,7 +77,7 @@ FROM (
   FROM (
     SELECT
       contig_name,
-      position,
+      start_pos,
       IF('ASN' = super_population,
         TRUE,
         FALSE) AS is_case,
@@ -102,7 +102,7 @@ FROM (
       )
   GROUP BY
     contig_name,
-    position,
+    start_pos,
     end,
     reference_bases,
     alternate_bases,

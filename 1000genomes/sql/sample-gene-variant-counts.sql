@@ -23,9 +23,9 @@ FROM (
     SELECT
       call.callset_name AS sample_id,
       contig_name,
-      position AS variant_start,
+      start_pos AS variant_start,
       IF(vt != 'SV',
-        position + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
+        start_pos + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
         END) AS variant_end,
     FROM
       FLATTEN([google.com:biggene:1000genomes.phase1_variants],
