@@ -37,7 +37,7 @@ plot(cars)
 Analysis
 --------------
 
-Now let us move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).  
+Now let us move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).
 
 If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you will likely need to do something like the following to get it installed:
 
@@ -65,8 +65,8 @@ cat(sql)
 
 We will execute our query, bringing the results down to our R session for further examination:
 ```{r exec}
-billing_project <- "google.com:biggene" # put your projectID here
-result <- query_exec(project="google.com:biggene", dataset="1000genomes", query=sql, billing=billing_project)
+project <- "google.com:biggene" # put your projectID here
+result <- query_exec(sql, project)
 ```
 
 Let us examine our query result:
