@@ -20,20 +20,32 @@ SELECT
       INTEGER(1),
       INTEGER(0))) AS very_rare_variant,
 FROM
-  FLATTEN([google.com:biggene:1000genomes.phase1_variants],
+  FLATTEN((
+    SELECT
+      af,
+      vt,
+      call.callset_name,
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
+    FROM
+      [google.com:biggene:1000genomes.phase1_variants]
+    WHERE
+      vt = 'SNP'
+    HAVING
+      first_allele > 0
+      OR second_allele > 0
+      ),
     call) AS samples
 JOIN
   [google.com:biggene:1000genomes.sample_info] p
 ON
   samples.call.callset_name = p.sample
-WHERE
-  samples.vt = 'SNP'
-  AND (samples.call.first_allele > 0
-    OR samples.call.second_allele > 0)
 GROUP BY
   sample_id,
   gender,
   population,
   super_population
 ORDER BY
-  sample_id;
+  sample_id

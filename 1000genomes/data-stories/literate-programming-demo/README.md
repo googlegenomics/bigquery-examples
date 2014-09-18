@@ -14,6 +14,12 @@
 <!-- See the License for the specific language governing permissions and -->
 <!-- limitations under the License. -->
 
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
 Literate Programming with R and BigQuery
 ========================================================
 
@@ -39,7 +45,6 @@ summary(cars)
  Max.   :25.0   Max.   :120  
 ```
 
-
 You can also embed plots, for example:
 
 
@@ -47,13 +52,12 @@ You can also embed plots, for example:
 plot(cars)
 ```
 
-<img src="figure/plot_example.png" title="plot of chunk plot example" alt="plot of chunk plot example" style="display: block; margin: auto;" />
-
+<img src="figure/plot example.png" title="plot of chunk plot example" alt="plot of chunk plot example" style="display: block; margin: auto;" />
 
 Analysis
 --------------
 
-Now let us move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).  
+Now let us move onto [literate programming](http://en.wikipedia.org/wiki/Literate_programming) for [BigQuery](https://developers.google.com/bigquery/).
 
 If you have never used the [bigrquery](https://github.com/hadley/bigrquery) package before, you will likely need to do something like the following to get it installed:
 
@@ -65,7 +69,6 @@ devtools::install_github("assertthat")
 devtools::install_github("bigrquery")
 ```
 
-
 <a id="caveat">_Caveat: Be advised that the bigrquery package will initiate the OAuth dance for you via redirection to your browser.  This is pretty handy, but that means you will want to run a query interactively from the R prompt the very first time around so that it can cache your credentials.  After that you can knit via the [RStudio](http://www.rstudio.com/) Knit HTML button or via `require(knitr); knit("./1000genomes/data-stories/literate-programming-demo/README.Rmd", encoding="UTF-8");`._</a>
 
 Next we will load our needed packages into our session:
@@ -75,22 +78,22 @@ library(bigrquery)
 library(ggplot2)
 ```
 
-
 And pull in the SQL for an interesting query:
 
 ```r
-sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql", nchars = 1e+06)
+sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql",
+               nchars=1e6)
 cat(sql)
 ```
 
 ```
 # Count the variation for each sample including phenotypic traits
 SELECT
-  samples.genotype.sample_id AS sample_id,
+  samples.call.callset_name AS sample_id,
   gender,
   population,
   super_population,
-  COUNT(samples.genotype.sample_id) AS num_variants_for_sample,
+  COUNT(samples.call.callset_name) AS num_variants_for_sample,
   SUM(IF(samples.af >= 0.05,
       INTEGER(1),
       INTEGER(0))) AS common_variant,
@@ -106,34 +109,43 @@ SELECT
       INTEGER(1),
       INTEGER(0))) AS very_rare_variant,
 FROM
-  FLATTEN([google.com:biggene:1000genomes.variants1kG],
-    genotype) AS samples
+  FLATTEN((
+    SELECT
+      af,
+      vt,
+      call.callset_name,
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
+    FROM
+      [google.com:biggene:1000genomes.phase1_variants]
+    WHERE
+      vt = 'SNP'
+    HAVING
+      first_allele > 0
+      OR second_allele > 0
+      ),
+    call) AS samples
 JOIN
   [google.com:biggene:1000genomes.sample_info] p
 ON
-  samples.genotype.sample_id = p.sample
-WHERE
-  samples.vt = 'SNP'
-  AND (samples.genotype.first_allele > 0
-    OR samples.genotype.second_allele > 0)
+  samples.call.callset_name = p.sample
 GROUP BY
   sample_id,
   gender,
   population,
   super_population
 ORDER BY
-  sample_id;
+  sample_id
 ```
-
 
 We will execute our query, bringing the results down to our R session for further examination:
 
 ```r
-billing_project <- "google.com:biggene"  # put your projectID here
-result <- query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = sql, billing = billing_project)
+project <- "google.com:biggene" # put your projectID here
+result <- query_exec(sql, project)
 ```
-
 
 Let us examine our query result:
 
@@ -202,7 +214,6 @@ str(result)
  $ rare_variant           : int  24135 27066 27843 24407 26278 25801 24011 26898 24102 24585 ...
  $ very_rare_variant      : int  10296 11754 12803 6715 11072 10770 11209 12466 7276 9952 ...
 ```
-
 We can see that we have a row for each sample, with counts for the sample's variants four buckets based upon the allelic frequncy of each variant.
 
 
@@ -211,12 +222,10 @@ Data Visualization
 Some data visualization will help us to see more clearly the pattern resident within the results:
 
 ```r
-ggplot(result, aes(x = population, y = common_variant, fill = super_population)) + 
-    geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
+ggplot(result, aes(x=population, y=common_variant, fill=super_population)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
 ```
 
 <img src="figure/viz.png" title="plot of chunk viz" alt="plot of chunk viz" style="display: block; margin: auto;" />
-
 and now its clear to see that the ethnicities within the African super population have a much higher rate of mutation compared to the other ethnicities.
 
 
@@ -229,8 +238,8 @@ sessionInfo()
 ```
 
 ```
-R version 3.0.2 (2013-09-25)
-Platform: x86_64-apple-darwin10.8.0 (64-bit)
+R version 3.1.1 (2014-07-10)
+Platform: x86_64-apple-darwin13.1.0 (64-bit)
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -239,16 +248,15 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggplot2_0.9.3.1 bigrquery_0.1   knitr_1.5      
+[1] markdown_0.7.4 knitr_1.6      ggplot2_1.0.0  bigrquery_0.1 
 
 loaded via a namespace (and not attached):
- [1] assertthat_0.1.0.99 colorspace_1.2-4    dichromat_2.0-0    
- [4] digest_0.6.4        evaluate_0.5.1      formatR_0.10       
- [7] grid_3.0.2          gtable_0.1.2        httr_0.3.0.99      
-[10] jsonlite_0.9.4      labeling_0.2        MASS_7.3-30        
-[13] munsell_0.4.2       plyr_1.8.1          proto_0.3-10       
-[16] RColorBrewer_1.0-5  Rcpp_0.11.1         RCurl_1.95-4.1     
-[19] reshape2_1.2.2      scales_0.2.3        stringr_0.6.2      
-[22] tools_3.0.2        
+ [1] assertthat_0.1.0.99 colorspace_1.2-4    digest_0.6.4       
+ [4] evaluate_0.5.5      formatR_1.0         grid_3.1.1         
+ [7] gtable_0.1.2        htmltools_0.2.4     httpuv_1.3.0       
+[10] httr_0.5            jsonlite_0.9.11     labeling_0.3       
+[13] MASS_7.3-34         mime_0.1.2          munsell_0.4.2      
+[16] plyr_1.8.1          proto_0.3-10        Rcpp_0.11.2        
+[19] RCurl_1.95-4.3      reshape2_1.4        rmarkdown_0.2.64   
+[22] scales_0.2.4        stringr_0.6.2       tools_3.1.1        
 ```
-
