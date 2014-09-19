@@ -21,3 +21,6 @@ from(
   GROUP BY
     gender,
     population)
+ORDER BY
+  population,
+  gender

@@ -26,6 +26,7 @@ require(bigrquery)
 require(ggplot2)
 require(dplyr)
 require(xtable)
+require(scales)
 require(testthat)
 project <- "google.com:biggene" # put your projectID here
 DisplayAndDispatchQuery <- function(queryUri) {

@@ -23,7 +23,6 @@ Note that the full 1,000 Genomes dataset has data for 3,500 individuals but the 
 
 
 
-
 How many sample are we working with in this variant dataset?
 
 ```
@@ -35,17 +34,14 @@ FROM
   [google.com:biggene:1000genomes.sample_info]
 ```
 
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 09:29:30 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Thu Sep 18 18:27:22 2014 -->
 <TABLE border=1>
 <TR> <TH> all_samples </TH> <TH> samples_in_variants_table </TH>  </TR>
   <TR> <TD align="right"> 3500 </TD> <TD align="right"> 1092 </TD> </TR>
    </TABLE>
 
-
 <img src="figure/samples.png" title="plot of chunk samples" alt="plot of chunk samples" style="display: block; margin: auto;" />
-
 So for analyses across all samples upon table [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1), the sample size is 1,092.
 
 What is the gender ratio?
@@ -69,21 +65,18 @@ FROM (
   WHERE
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY
-    gender);
+    gender)
 ```
 
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 09:29:35 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Thu Sep 18 18:27:27 2014 -->
 <TABLE border=1>
 <TR> <TH> gender </TH> <TH> gender_count </TH> <TH> gender_ratio </TH>  </TR>
   <TR> <TD> male </TD> <TD align="right"> 525 </TD> <TD align="right"> 0.48 </TD> </TR>
   <TR> <TD> female </TD> <TD align="right"> 567 </TD> <TD align="right"> 0.52 </TD> </TR>
    </TABLE>
 
-
 <img src="figure/gender.png" title="plot of chunk gender" alt="plot of chunk gender" style="display: block; margin: auto;" />
-
 So for analyses across genders, the sample size is roughly even.
 
 What are the ratios of ethnicities?
@@ -116,12 +109,11 @@ from(
     population,
     population_description,
     super_population,
-    super_population_description);
+    super_population_description)
 ```
 
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 09:29:39 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Thu Sep 18 18:27:32 2014 -->
 <TABLE border=1>
 <TR> <TH> population </TH> <TH> population_description </TH> <TH> population_count </TH> <TH> population_ratio </TH> <TH> super_population </TH> <TH> super_population_description </TH>  </TR>
   <TR> <TD> IBS </TD> <TD> Iberian populations in Spain </TD> <TD align="right">  14 </TD> <TD align="right"> 0.01 </TD> <TD> EUR </TD> <TD> European </TD> </TR>
@@ -140,9 +132,7 @@ from(
   <TR> <TD> CHS </TD> <TD> Southern Han Chinese, China </TD> <TD align="right"> 100 </TD> <TD align="right"> 0.09 </TD> <TD> ASN </TD> <TD> East Asian </TD> </TR>
    </TABLE>
 
-
 <img src="figure/ethnicity.png" title="plot of chunk ethnicity" alt="plot of chunk ethnicity" style="display: block; margin: auto;" />
-
 So for analyses across ethnicity, we see that our sample sizes will range from 55 to 100, with an outlier of 14.
 
 What are the ratios of ethnicities grouped by super population?
@@ -169,12 +159,11 @@ from(
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY
     super_population,
-    super_population_description);
+    super_population_description)
 ```
 
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 09:29:42 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Thu Sep 18 18:27:36 2014 -->
 <TABLE border=1>
 <TR> <TH> super_population </TH> <TH> super_population_description </TH> <TH> super_population_count </TH> <TH> super_population_ratio </TH>  </TR>
   <TR> <TD> AMR </TD> <TD> American </TD> <TD align="right">   181 </TD> <TD align="right"> 0.1658 </TD> </TR>
@@ -183,9 +172,7 @@ from(
   <TR> <TD> EUR </TD> <TD> European </TD> <TD align="right">   379 </TD> <TD align="right"> 0.3471 </TD> </TR>
    </TABLE>
 
-
 <img src="figure/superpop.png" title="plot of chunk superpop" alt="plot of chunk superpop" style="display: block; margin: auto;" />
-
 We see that ratios range from 16.6% to 34.7% of samples per super population.
 
 How are the genders distributed across ethnicities?
@@ -213,15 +200,16 @@ from(
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY
     gender,
-    population);
+    population)
+ORDER BY
+  population,
+  gender
 ```
-
-
-Number of rows in result: 28 
+Number of rows returned by this query: 28.
 
 Displaying the first few rows of our result:
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 09:29:45 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Thu Sep 18 18:27:40 2014 -->
 <TABLE border=1>
 <TR> <TH> population </TH> <TH> gender </TH> <TH> population_count </TH> <TH> population_ratio </TH>  </TR>
   <TR> <TD> ASW </TD> <TD> female </TD> <TD align="right">  37 </TD> <TD align="right"> 0.61 </TD> </TR>
@@ -232,9 +220,7 @@ Displaying the first few rows of our result:
   <TR> <TD> CHB </TD> <TD> male </TD> <TD align="right">  44 </TD> <TD align="right"> 0.45 </TD> </TR>
    </TABLE>
 
-
-<img src="figure/ethnicity_and_gender.png" title="plot of chunk ethnicity and gender" alt="plot of chunk ethnicity and gender" style="display: block; margin: auto;" />
-
+<img src="figure/ethnicity and gender.png" title="plot of chunk ethnicity and gender" alt="plot of chunk ethnicity and gender" style="display: block; margin: auto;" />
 So for analyses taking into account both ethnicity and gender, we are often near the boundary for small-sample significance tests.
 
 Some of the individuals are related.  What is the distribution of family sizes?
@@ -255,11 +241,10 @@ FROM (
   GROUP BY
   family_id)
 GROUP BY
-family_size;
+family_size
 ```
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Mon Apr 21 09:29:48 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Thu Sep 18 18:27:44 2014 -->
 <TABLE border=1>
 <TR> <TH> family_size </TH> <TH> num_families_of_size </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 636 </TD> </TR>
@@ -268,7 +253,5 @@ family_size;
   <TR> <TD align="right">   4 </TD> <TD align="right">   3 </TD> </TR>
    </TABLE>
 
-
 <img src="figure/families.png" title="plot of chunk families" alt="plot of chunk families" style="display: block; margin: auto;" />
-
 We see that roughly two thirds of the families are comprised of only one family member.
