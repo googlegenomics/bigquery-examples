@@ -1,5 +1,5 @@
 # The following query computes the allelic frequency for BRCA1 variants in the
-# 1,000 Genomes dataset further classified by ethnicity from the phenotypic data 
+# 1,000 Genomes dataset further classified by ethnicity from the phenotypic data
 # and also includes the pre-computed value from the dataset.
 SELECT
   contig_name,
@@ -40,8 +40,8 @@ FROM (
       g.reference_bases AS reference_bases,
       g.alternate_bases AS alternate_bases,
       POSITION(g.alternate_bases) AS alt,
-      g.call.first_allele AS allele1,
-      g.call.second_allele AS allele2,
+      allele1,
+      allele2,
       CASE
       WHEN p.super_population =  'ASN'
       THEN  g.asn_af
@@ -53,17 +53,34 @@ FROM (
       THEN  g.amr_af
       END AS alt_freq_from_1KG
     FROM
-      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
+      FLATTEN((
+        SELECT
+          contig_name,
+          start_pos,
+          reference_bases,
+          alternate_bases,
+          afr_af,
+          amr_af,
+          asn_af,
+          eur_af,
+          call.callset_name,
+          NTH(1,
+            call.genotype) WITHIN call AS allele1,
+          NTH(2,
+            call.genotype) WITHIN call AS allele2,
+        FROM
+          [google.com:biggene:1000genomes.phase1_variants]
+        WHERE
+          contig_name = '17'
+          AND start_pos BETWEEN 41196312
+          AND 41277500
+          AND vt='SNP'
+          ),
         call) AS g
     JOIN
       [google.com:biggene:1000genomes.sample_info] p
     ON
       g.call.callset_name = p.sample
-    WHERE
-      g.contig_name = '17'
-      AND g.start_pos BETWEEN 41196312
-      AND 41277500
-      AND g.vt='SNP'
       )
   GROUP BY
     contig_name,
