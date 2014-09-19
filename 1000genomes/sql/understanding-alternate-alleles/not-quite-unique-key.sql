@@ -1,4 +1,4 @@
-# This query demonstrates that some additional field is needed to  
+# This query demonstrates that some additional field is needed to
 # comprise a unique key for the rows in the table.
 SELECT
   contig_name,
@@ -24,3 +24,5 @@ FROM (
   vt
 HAVING
   cnt > 1
+ORDER BY
+  contig_name

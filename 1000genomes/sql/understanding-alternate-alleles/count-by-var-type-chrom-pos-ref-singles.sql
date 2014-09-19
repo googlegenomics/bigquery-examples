@@ -1,4 +1,4 @@
-# Count by variant type the number of variants on chromosome 17 unique for a 
+# Count by variant type the number of variants on chromosome 17 unique for a
 # start_pos and reference base
 SELECT
   vt,
@@ -28,4 +28,6 @@ ON
 WHERE
   variants.contig_name = '17'
 GROUP EACH BY
+  vt
+ORDER BY
   vt
