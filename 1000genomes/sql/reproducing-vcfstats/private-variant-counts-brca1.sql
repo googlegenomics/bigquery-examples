@@ -1,4 +1,4 @@
-# Compute the number of variants within BRCA1 for a particular sample that are shared by 
+# Compute the number of variants within BRCA1 for a particular sample that are shared by
 # no other samples.
 SELECT
   COUNT(sample_id) AS private_variants_count,
@@ -9,12 +9,10 @@ FROM
     contig_name,
     start_pos,
     reference_bases,
-    IF(0 < call.first_allele
-      OR 0 < call.second_allele,
+    IF(0 < call.genotype,
       call.callset_name,
       NULL) AS sample_id,
-    SUM(IF(0 < call.first_allele
-        OR 0 < call.second_allele,
+    SUM(IF(0 < call.genotype,
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM

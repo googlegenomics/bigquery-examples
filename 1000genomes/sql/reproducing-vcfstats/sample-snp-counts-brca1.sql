@@ -15,8 +15,7 @@ FROM (
     AND start_pos BETWEEN 41196312
     AND 41277500
     AND vt ='SNP'
-    AND (0 < call.first_allele
-      OR 0 < call.second_allele)
+    AND (0 < call.genotype)
     )
 GROUP BY
   sample_id
