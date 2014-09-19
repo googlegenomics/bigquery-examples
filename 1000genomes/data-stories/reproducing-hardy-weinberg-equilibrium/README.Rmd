@@ -89,4 +89,14 @@ and the last few rows:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(tail(xtable(result), 10), type="html", include.rownames=F)
 ```
-Comparing these to the results in [out.hwe](./vcftools-output/out.hwe) from vcftools we see that the test scores match.
+
+And do our results match the precomputed values resident in the AF INFO field?
+```{r}
+print(expect_equal(object=result$alt_freq,
+                   expected=result$alt_freq_from_1KG,
+                   tolerance=0.005,
+                   scale=1))
+```
+We can see from the results that when the computed frequency values in column alt_freq are rounded, they exactly match the alternate allele frequencies as reported in the AF INFO field from the 1,000 Genomes VCF data.
+
+Most importantly, comparing these to the results in [out.hwe](./vcftools-output/out.hwe) from vcftools we see that the test scores match.
