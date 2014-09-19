@@ -14,6 +14,10 @@ FROM (
     ref,
     alt,
     call.callset_name AS sample_id,
+    NTH(1,
+      call.genotype) WITHIN var.call AS first_allele,
+    NTH(2,
+      call.genotype) WITHIN var.call AS second_allele,
     clinicalsignificance,
     disease_id,
   FROM
@@ -46,8 +50,9 @@ FROM (
   WHERE
     call.callset_name = 'NA19764'
     AND var.vt='SNP'
-    AND (var.call.first_allele > 0
-      OR var.call.second_allele > 0)) AS sig
+  HAVING
+    first_allele > 0
+    OR second_allele > 0) AS sig
 JOIN
   [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON

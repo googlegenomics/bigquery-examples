@@ -1,4 +1,4 @@
-# Scan the entirety of 1,000 Genomes counting the number of variants found 
+# Scan the entirety of 1,000 Genomes counting the number of variants found
 # within the BRCA1 and APOE genes
 SELECT
   gene_variants.name AS name,
@@ -65,3 +65,11 @@ GROUP BY
 HAVING
   gene_aliases CONTAINS 'BRCA1'
   OR gene_aliases CONTAINS 'APOE'
+ORDER BY
+  name,
+  contig_name,
+  min_variant_start,
+  max_variant_start,
+  gene_start,
+  gene_end,
+  cnt

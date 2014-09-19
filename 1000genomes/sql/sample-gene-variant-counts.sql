@@ -1,4 +1,4 @@
-# Count the number of variants per gene within chromosome 17 for a particular sample 
+# Count the number of variants per gene within chromosome 17 for a particular sample
 SELECT
   sample_id,
   gene_variants.name AS name,
@@ -21,20 +21,25 @@ FROM (
     COUNT(*) AS cnt
   FROM (
     SELECT
-      call.callset_name AS sample_id,
       contig_name,
       start_pos AS variant_start,
       IF(vt != 'SV',
         start_pos + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
         END) AS variant_end,
+      call.callset_name AS sample_id,
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
     FROM
       FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         alternate_bases)
     WHERE
       contig_name = '17'
       AND call.callset_name = 'NA19764'
-      AND (call.first_allele > 0
-        OR call.second_allele > 0)
+    HAVING
+      first_allele > 0
+      OR second_allele > 0
       ) AS var
   JOIN (
     SELECT
@@ -65,6 +70,15 @@ JOIN
 ON
   gene_variants.name = gene_aliases.name
 GROUP BY
+  sample_id,
+  name,
+  contig_name,
+  min_variant_start,
+  max_variant_start,
+  gene_start,
+  gene_end,
+  cnt
+ORDER BY
   sample_id,
   name,
   contig_name,

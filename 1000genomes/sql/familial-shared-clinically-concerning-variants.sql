@@ -1,4 +1,4 @@
-# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the 
+# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the
 # number of family members sharing the SNP
 SELECT
   contig_name,
@@ -28,6 +28,10 @@ FROM (
           ref,
           alt,
           call.callset_name AS sample_id,
+          NTH(1,
+            call.genotype) WITHIN var.call AS first_allele,
+          NTH(2,
+            call.genotype) WITHIN var.call AS second_allele,
           clinicalsignificance,
           disease_id,
         FROM
@@ -59,8 +63,9 @@ FROM (
           AND alternate_bases = alt
         WHERE
           var.vt='SNP'
-          AND (var.call.first_allele > 0
-            OR var.call.second_allele > 0)),
+        HAVING
+          first_allele > 0
+          OR second_allele > 0),
         var.call)) AS sig
   JOIN
     [google.com:biggene:1000genomes.pedigree] AS ped
@@ -91,4 +96,5 @@ ORDER BY
   num_family_members_with_variant DESC,
   clinicalsignificance,
   contig_name,
-  start_pos
+  start_pos,
+  family_id

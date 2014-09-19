@@ -62,3 +62,11 @@ GROUP BY
   gene_start,
   gene_end,
   cnt
+ORDER BY
+  name,
+  contig_name,
+  min_variant_start,
+  max_variant_start,
+  gene_start,
+  gene_end,
+  cnt

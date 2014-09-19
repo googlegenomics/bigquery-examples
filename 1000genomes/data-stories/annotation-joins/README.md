@@ -25,69 +25,80 @@ require(bigrquery)
 require(ggplot2)
 require(xtable)
 require(testthat)
-billing_project = "google.com:biggene"  # put your projectID here
+project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(sql, project)
+}
 ```
 
-
-Let's start by getting an idea of the number of rows in each of our tables.
+Let us start by getting an idea of the number of rows in each of our tables.
 
 ```r
-tables = c("variants1kG", "pedigree", "sample_info", "clinvar", "clinvar_disease_names", 
-    "known_genes", "known_genes_aliases")
+tables <- c("1000genomes.phase1_variants",
+            "1000genomes.pedigree",
+            "1000genomes.sample_info",
+            "annotations.clinvar",
+            "annotations.clinvar_disease_names",
+            "annotations.known_genes",
+            "annotations.known_genes_aliases")
 lapply(tables, function(table) {
-    result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-        query = paste("SELECT count(*) AS cnt FROM [google.com:biggene:1000genomes.", 
-            table, "]", sep = ""), billing = billing_project)
-    paste(table, result, sep = ": ")
+  sql <- paste0("SELECT count(*) AS cnt FROM [google.com:biggene:",
+                table, "]")
+  result <- query_exec(sql, project)
+  paste(table, result, sep=": ")
 })
 ```
 
 ```
+## 0 bytes processed
+```
+
+```
+## 0 bytes processed
+```
+
+```
 ## [[1]]
-## [1] "variants1kG: 39706715"
+## [1] "1000genomes.phase1_variants: 39706715"
 ## 
 ## [[2]]
-## [1] "pedigree: 3501"
+## [1] "1000genomes.pedigree: 3501"
 ## 
 ## [[3]]
-## [1] "sample_info: 3500"
+## [1] "1000genomes.sample_info: 3500"
 ## 
 ## [[4]]
-## [1] "clinvar: 71356"
+## [1] "annotations.clinvar: 71356"
 ## 
 ## [[5]]
-## [1] "clinvar_disease_names: 16020"
+## [1] "annotations.clinvar_disease_names: 16020"
 ## 
 ## [[6]]
-## [1] "known_genes: 82960"
+## [1] "annotations.known_genes: 82960"
 ## 
 ## [[7]]
-## [1] "known_genes_aliases: 612731"
+## [1] "annotations.known_genes_aliases: 612731"
 ```
-
 We can see that all the annotation databases are dwarfed in size by the data in the variants table.
 
-Let's also examine the types of variants within ClinVar.
+Let us also examine the types of variants within ClinVar.
 
 ```r
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = "SELECT type, count(1) cnt FROM [1000genomes.clinvar] group by type", 
-    billing = billing_project)
-dim(result)
+result <- query_exec("SELECT type, count(1) cnt FROM [google.com:biggene:annotations.clinvar] group by type",
+                     project)
 ```
-
-```
-## [1] 14  2
-```
+Number of rows returned by this query: 14.
 
 Display the rows of our result
 
 ```r
-print(xtable(result), type = "html", include.rownames = F)
+print(xtable(result), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:14 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:05:56 2014 -->
 <TABLE border=1>
 <TR> <TH> type </TH> <TH> cnt </TH>  </TR>
   <TR> <TD> insertion </TD> <TD align="right"> 1453 </TD> </TR>
@@ -105,7 +116,6 @@ print(xtable(result), type = "html", include.rownames = F)
   <TR> <TD> short repeat </TD> <TD align="right">   2 </TD> </TR>
   <TR> <TD> protein only </TD> <TD align="right">  75 </TD> </TR>
    </TABLE>
-
 We can see that the vast majority of variants within ClinVar are SNPs.
 
 ## JOINs that check whether a position overlaps an interval
@@ -114,15 +124,14 @@ We can see that the vast majority of variants within ClinVar are SNPs.
 
 
 ```r
-sql = readChar("../../sql/individual-clinically-concerning-variants.sql", nchars = 1e+06)
-cat(sql)
+result <- DisplayAndDispatchQuery("../../sql/individual-clinically-concerning-variants.sql")
 ```
 
 ```
 # Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample
 SELECT
-  contig,
-  position,
+  contig_name,
+  start_pos,
   ref,
   alt,
   clinicalsignificance,
@@ -130,15 +139,19 @@ SELECT
   sample_id,
 FROM (
   SELECT
-    contig,
-    position,
+    contig_name,
+    start_pos,
     ref,
     alt,
-    genotype.sample_id AS sample_id,
+    call.callset_name AS sample_id,
+    NTH(1,
+      call.genotype) WITHIN var.call AS first_allele,
+    NTH(2,
+      call.genotype) WITHIN var.call AS second_allele,
     clinicalsignificance,
     disease_id,
   FROM
-    FLATTEN([google.com:biggene:1000genomes.variants1kG],
+    FLATTEN([google.com:biggene:1000genomes.phase1_variants],
       alternate_bases) AS var
   JOIN (
     SELECT
@@ -152,7 +165,7 @@ FROM (
       REGEXP_EXTRACT(phenotypeids,
         r'MedGen:(\w+)') AS disease_id,
     FROM
-      [google.com:biggene:1000genomes.clinvar]
+      [google.com:biggene:annotations.clinvar]
     WHERE
       type='single nucleotide variant'
       AND (clinicalsignificance CONTAINS 'risk factor'
@@ -160,22 +173,23 @@ FROM (
         OR clinicalsignificance CONTAINS 'Pathogenic')
       ) AS clin
   ON
-    var.contig = clin.chromosome
-    AND var.position = clin.start
+    var.contig_name = clin.chromosome
+    AND var.start_pos = clin.start
     AND reference_bases = ref
     AND alternate_bases = alt
   WHERE
-    genotype.sample_id = 'NA19764'
+    call.callset_name = 'NA19764'
     AND var.vt='SNP'
-    AND (var.genotype.first_allele > 0
-      OR var.genotype.second_allele > 0)) AS sig
+  HAVING
+    first_allele > 0
+    OR second_allele > 0) AS sig
 JOIN
-  [google.com:biggene:1000genomes.clinvar_disease_names] AS names
+  [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON
   names.conceptid = sig.disease_id
 GROUP BY
-  contig,
-  position,
+  contig_name,
+  start_pos,
   ref,
   alt,
   clinicalsignificance,
@@ -183,30 +197,25 @@ GROUP BY
   sample_id,
 ORDER BY
   clinicalsignificance,
-  contig,
-  position;
-```
-
-```r
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = sql, billing = billing_project)
-dim(result)
+  contig_name,
+  start_pos
 ```
 
 ```
-[1] 53  7
+0 bytes processed
 ```
+Number of rows returned by this query: 53.
 
 Display the first few rows of our result
 
 ```r
-print(xtable(head(result)), type = "html", include.rownames = F)
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:14 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:03 2014 -->
 <TABLE border=1>
-<TR> <TH> contig </TH> <TH> position </TH> <TH> ref </TH> <TH> alt </TH> <TH> clinicalsignificance </TH> <TH> diseasename </TH> <TH> sample_id </TH>  </TR>
+<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> ref </TH> <TH> alt </TH> <TH> clinicalsignificance </TH> <TH> diseasename </TH> <TH> sample_id </TH>  </TR>
   <TR> <TD> 11 </TD> <TD align="right"> 88911696 </TD> <TD> C </TD> <TD> A </TD> <TD> Benign;Pathogenic </TD> <TD> Oculocutaneous albinism type 1A </TD> <TD> NA19764 </TD> </TR>
   <TR> <TD> 11 </TD> <TD align="right"> 113270828 </TD> <TD> G </TD> <TD> A </TD> <TD> Benign;Pathogenic </TD> <TD> Dopamine receptor d2, reduced brain density of </TD> <TD> NA19764 </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 7123838 </TD> <TD> C </TD> <TD> T </TD> <TD> Benign;Pathogenic </TD> <TD> Very long chain acyl-CoA dehydrogenase deficiency </TD> <TD> NA19764 </TD> </TR>
@@ -214,23 +223,20 @@ print(xtable(head(result)), type = "html", include.rownames = F)
   <TR> <TD> 4 </TD> <TD align="right"> 187113041 </TD> <TD> C </TD> <TD> G </TD> <TD> Benign;Pathogenic </TD> <TD> Bietti crystalline corneoretinal dystrophy </TD> <TD> NA19764 </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 45360730 </TD> <TD> T </TD> <TD> C </TD> <TD> Benign;Pathogenic;risk factor </TD> <TD> Myocardial infarction </TD> <TD> NA19764 </TD> </TR>
    </TABLE>
-
 We can see that this indivudual has 53 clinically concerning variants.
 
 ### JOINing Sample SNP Variants with ClinVar, Grouped by Family
 
 ```r
-sql = readChar("../../sql/familial-shared-clinically-concerning-variants.sql", 
-    nchars = 1e+06)
-cat(sql)
+result <- DisplayAndDispatchQuery("../../sql/familial-shared-clinically-concerning-variants.sql")
 ```
 
 ```
-# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the 
+# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the
 # number of family members sharing the SNP
 SELECT
-  contig,
-  position,
+  contig_name,
+  start_pos,
   ref,
   alt,
   clinicalsignificance,
@@ -239,8 +245,8 @@ SELECT
   num_family_members_with_variant,
 FROM (
   SELECT
-    contig,
-    position,
+    contig_name,
+    start_pos,
     ref,
     alt,
     clinicalsignificance,
@@ -251,15 +257,19 @@ FROM (
     (FLATTEN(
         (
         SELECT
-          contig,
-          position,
+          contig_name,
+          start_pos,
           ref,
           alt,
-          genotype.sample_id AS sample_id,
+          call.callset_name AS sample_id,
+          NTH(1,
+            call.genotype) WITHIN var.call AS first_allele,
+          NTH(2,
+            call.genotype) WITHIN var.call AS second_allele,
           clinicalsignificance,
           disease_id,
         FROM
-          FLATTEN([google.com:biggene:1000genomes.variants1kG],
+          FLATTEN([google.com:biggene:1000genomes.phase1_variants],
             alternate_bases) AS var
         JOIN (
           SELECT
@@ -273,7 +283,7 @@ FROM (
             REGEXP_EXTRACT(phenotypeids,
               r'MedGen:(\w+)') AS disease_id,
           FROM
-            [google.com:biggene:1000genomes.clinvar]
+            [google.com:biggene:annotations.clinvar]
           WHERE
             type='single nucleotide variant'
             AND (clinicalsignificance CONTAINS 'risk factor'
@@ -281,34 +291,35 @@ FROM (
               OR clinicalsignificance CONTAINS 'Pathogenic')
             ) AS clin
         ON
-          var.contig = clin.chromosome
-          AND var.position = clin.start
+          var.contig_name = clin.chromosome
+          AND var.start_pos = clin.start
           AND reference_bases = ref
           AND alternate_bases = alt
         WHERE
           var.vt='SNP'
-          AND (var.genotype.first_allele > 0
-            OR var.genotype.second_allele > 0)),
-        var.genotype)) AS sig
+        HAVING
+          first_allele > 0
+          OR second_allele > 0),
+        var.call)) AS sig
   JOIN
     [google.com:biggene:1000genomes.pedigree] AS ped
   ON
     sig.sample_id = ped.individual_id
   GROUP BY
-    contig,
-    position,
+    contig_name,
+    start_pos,
     ref,
     alt,
     clinicalsignificance,
     disease_id,
     family_id) families
 JOIN
-  [google.com:biggene:1000genomes.clinvar_disease_names] AS names
+  [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON
   names.conceptid = families.disease_id
 GROUP BY
-  contig,
-  position,
+  contig_name,
+  start_pos,
   ref,
   alt,
   clinicalsignificance,
@@ -318,37 +329,23 @@ GROUP BY
 ORDER BY
   num_family_members_with_variant DESC,
   clinicalsignificance,
-  contig,
-  position;
+  contig_name,
+  start_pos,
+  family_id
+Retrieving data:  5.1sRetrieving data: 11.6sRetrieving data: 15.8sRetrieving data: 18.8s
 ```
-
-```r
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = sql, billing = billing_project)
-```
-
-```
-Retrieving data:  3.1sRetrieving data:  8.5sRetrieving data: 11.9sRetrieving data: 14.8s
-```
-
-```r
-dim(result)
-```
-
-```
-[1] 42863     8
-```
+Number of rows returned by this query: 42863.
 
 Display the first few rows of our result
 
 ```r
-print(xtable(head(result)), type = "html", include.rownames = F)
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:14 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:26 2014 -->
 <TABLE border=1>
-<TR> <TH> contig </TH> <TH> position </TH> <TH> ref </TH> <TH> alt </TH> <TH> clinicalsignificance </TH> <TH> diseasename </TH> <TH> family_id </TH> <TH> num_family_members_with_variant </TH>  </TR>
+<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> ref </TH> <TH> alt </TH> <TH> clinicalsignificance </TH> <TH> diseasename </TH> <TH> family_id </TH> <TH> num_family_members_with_variant </TH>  </TR>
   <TR> <TD> 11 </TD> <TD align="right"> 88911696 </TD> <TD> C </TD> <TD> A </TD> <TD> Benign;Pathogenic </TD> <TD> Oculocutaneous albinism type 1A </TD> <TD> 1362 </TD> <TD align="right">   4 </TD> </TR>
   <TR> <TD> 4 </TD> <TD align="right"> 6292915 </TD> <TD> A </TD> <TD> G </TD> <TD> Benign;Pathogenic </TD> <TD> AllHighlyPenetrant </TD> <TD> 1346 </TD> <TD align="right">   4 </TD> </TR>
   <TR> <TD> 4 </TD> <TD align="right"> 6292915 </TD> <TD> A </TD> <TD> G </TD> <TD> Benign;Pathogenic </TD> <TD> AllHighlyPenetrant </TD> <TD> 1362 </TD> <TD align="right">   4 </TD> </TR>
@@ -356,31 +353,26 @@ print(xtable(head(result)), type = "html", include.rownames = F)
   <TR> <TD> 19 </TD> <TD align="right"> 49206674 </TD> <TD> G </TD> <TD> A </TD> <TD> Benign;Pathogenic;association </TD> <TD> Norwalk virus infection, resistance to </TD> <TD> 1346 </TD> <TD align="right">   4 </TD> </TR>
   <TR> <TD> 1 </TD> <TD align="right"> 53676448 </TD> <TD> G </TD> <TD> A </TD> <TD> Benign;risk factor </TD> <TD> Encephalopathy, acute, infection-induced, 4, susceptibility to </TD> <TD> 1346 </TD> <TD align="right">   4 </TD> </TR>
    </TABLE>
-
 We can see that some variants are shared by as many as four family members.
 
 ### JOINing Sample INDEL Variants with ClinVar
 
-First, let's see what the INDEL data looks like in ClinVar:
+First, let us see what the INDEL data looks like in ClinVar:
 
 ```r
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = "SELECT * FROM [1000genomes.clinvar] where type='indel'", billing = billing_project)
-dim(result)
+sql <- 'SELECT * FROM [google.com:biggene:annotations.clinvar] where type="indel"'
+result <- query_exec(sql, project)
 ```
+Number of rows returned by this query: 545.
 
-```
-## [1] 545  24
-```
-
-Display the firs few rows of our result
+Display the first few rows of our result
 
 ```r
-print(xtable(head(result, 20)), type = "html", include.rownames = F)
+print(xtable(head(result, 20)), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:14 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:30 2014 -->
 <TABLE border=1>
 <TR> <TH> alleleid </TH> <TH> type </TH> <TH> name </TH> <TH> geneid </TH> <TH> genesymbol </TH> <TH> clinicalsignificance </TH> <TH> rs_dbsnp </TH> <TH> nsv_dbvar </TH> <TH> rcvaccession </TH> <TH> testedingtr </TH> <TH> phenotypeids </TH> <TH> origin </TH> <TH> assembly </TH> <TH> chromosome </TH> <TH> start </TH> <TH> stop </TH> <TH> cytogenetic </TH> <TH> reviewstatus </TH> <TH> hgvs_c </TH> <TH> hgvs_p </TH> <TH> numbersubmitters </TH> <TH> lastevaluated </TH> <TH> guidelines </TH> <TH> otherids </TH>  </TR>
   <TR> <TD align="right"> 15041 </TD> <TD> indel </TD> <TD> NM_014855.2:c.80_83delGGATinsTGCTGTAAACTGTAACTGTAAA </TD> <TD align="right"> 9907 </TD> <TD>  </TD> <TD> Pathogenic </TD> <TD align="right"> 397704705 </TD> <TD>  </TD> <TD> RCV000000012 </TD> <TD> N </TD> <TD> MedGen:C3150901,OMIM:613647,Orphanet:306511 </TD> <TD> germline </TD> <TD> GRCh37 </TD> <TD> 7 </TD> <TD align="right"> 4820844 </TD> <TD align="right"> 4820847 </TD> <TD>  </TD> <TD> classified by single submitter </TD> <TD> NM_014855.2:c.80_83delGGATinsTGCTGTAAACTGTAACTGTAAA </TD> <TD> NP_055670.1:p.Arg27_Cys29delinsLeuLeuTer </TD> <TD align="right">   1 </TD> <TD> 17 Sep 2012 </TD> <TD>  </TD> <TD> OMIM Allelic Variant:613653.0001 </TD> </TR>
@@ -404,25 +396,23 @@ print(xtable(head(result, 20)), type = "html", include.rownames = F)
   <TR> <TD align="right"> 16709 </TD> <TD> indel </TD> <TD> CYP27B1, 5-BP DEL/6-BP INS </TD> <TD align="right"> 1594 </TD> <TD> CYP27B1 </TD> <TD> Pathogenic </TD> <TD align="right">  -1 </TD> <TD>  </TD> <TD> RCV000001737 </TD> <TD> N </TD> <TD> MedGen:C0268689,OMIM:264700,Orphanet:289157,SNOMED CT:67049004 </TD> <TD> germline </TD> <TD>  </TD> <TD>  </TD> <TD align="right">  -1 </TD> <TD align="right">  -1 </TD> <TD>  </TD> <TD> classified by single submitter </TD> <TD>  </TD> <TD>  </TD> <TD align="right">   1 </TD> <TD> 21 Jun 2012 </TD> <TD>  </TD> <TD> OMIM Allelic Variant:609506.0013 </TD> </TR>
   <TR> <TD align="right"> 16820 </TD> <TD> indel </TD> <TD> CYP17A1, 469-BP INS, 518-BP DEL </TD> <TD align="right"> 1586 </TD> <TD> CYP17A1 </TD> <TD> Pathogenic </TD> <TD align="right">  -1 </TD> <TD>  </TD> <TD> RCV000001853 </TD> <TD> N </TD> <TD>  </TD> <TD> germline </TD> <TD>  </TD> <TD>  </TD> <TD align="right">  -1 </TD> <TD align="right">  -1 </TD> <TD>  </TD> <TD> classified by single submitter </TD> <TD>  </TD> <TD>  </TD> <TD align="right">   1 </TD> <TD> 19 Apr 2013 </TD> <TD>  </TD> <TD> OMIM Allelic Variant:609300.0005 </TD> </TR>
    </TABLE>
-
 We can see that its not obvious as to how to parse the the ClinVar INDEL details in order to know which INDELs within 1,000 Genomes might match.
 
 ## JOINs that check whether an interval overlaps another interval
 
 ### JOINing Chromosome 17 Variants with Gene Names
 
-Next we'll JOIN our variants with gene names.  Note that the JOIN criteria is simple - just matching on the chromosome, but the WHERE clause ensures the intervals overlap.
+Next we will JOIN our variants with gene names.  Note that the JOIN criteria is simple - just matching on the chromosome, but the WHERE clause ensures the intervals overlap.
 
 ```r
-sql = readChar("../../sql/gene-variant-counts.sql", nchars = 1e+06)
-cat(sql)
+result <- DisplayAndDispatchQuery("../../sql/gene-variant-counts.sql")
 ```
 
 ```
 # Count the number of variants per gene within chromosome 17
 SELECT
   gene_variants.name AS name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -432,7 +422,7 @@ SELECT
 FROM (
   SELECT
     name,
-    var.contig AS contig,
+    var.contig_name AS contig_name,
     MIN(variant_start) AS min_variant_start,
     MAX(variant_end) AS max_variant_start,
     gene_start,
@@ -440,26 +430,26 @@ FROM (
     COUNT(*) AS cnt
   FROM (
     SELECT
-      contig,
-      position AS variant_start,
+      contig_name,
+      start_pos AS variant_start,
       IF(vt != 'SV',
-        position + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
+        start_pos + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
         END) AS variant_end,
     FROM
-      [google.com:biggene:1000genomes.variants1kG]) AS var
+      [google.com:biggene:1000genomes.phase1_variants]) AS var
   JOIN (
     SELECT
       name,
       REGEXP_EXTRACT(chrom,
-        r'chr(\d+)') AS contig,
+        r'chr(\d+)') AS contig_name,
       txStart AS gene_start,
       txEnd AS gene_end,
     FROM
-      [google.com:biggene:1000genomes.known_genes] ) AS genes
+      [google.com:biggene:annotations.known_genes] ) AS genes
   ON
-    var.contig = genes.contig
+    var.contig_name = genes.contig_name
   WHERE
-    var.contig = '17'
+    var.contig_name = '17'
     AND (( var.variant_start <= var.variant_end
         AND NOT (
           var.variant_start > genes.gene_end || var.variant_end < genes.gene_start))
@@ -468,58 +458,57 @@ FROM (
           var.variant_end > genes.gene_end || var.variant_start < genes.gene_start)))
   GROUP BY
     name,
-    contig,
+    contig_name,
     gene_start,
     gene_end) AS gene_variants
 JOIN
-  [google.com:biggene:1000genomes.known_genes_aliases] AS gene_aliases
+  [google.com:biggene:annotations.known_genes_aliases] AS gene_aliases
 ON
   gene_variants.name = gene_aliases.name
 GROUP BY
   name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
   gene_end,
-  cnt;
+  cnt
+ORDER BY
+  name,
+  contig_name,
+  min_variant_start,
+  max_variant_start,
+  gene_start,
+  gene_end,
+  cnt
 ```
 
-```r
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = sql, billing = billing_project)
 ```
-
-```r
-dim(result)
+0 bytes processed
 ```
-
-```
-[1] 4382    8
-```
+Number of rows returned by this query: 4382.
 
 Display the first few rows of our result
 
 ```r
-print(xtable(head(result)), type = "html", include.rownames = F)
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:14 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:38 2014 -->
 <TABLE border=1>
-<TR> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
-  <TR> <TD> uc031reh.1 </TD> <TD> 17 </TD> <TD align="right"> 68071614 </TD> <TD align="right"> 68131595 </TD> <TD align="right"> 68071365 </TD> <TD align="right"> 68131746 </TD> <TD align="right"> 944 </TD> <TD> IRK16_HUMAN,KCNJ16,NM_001270422,NP_733937,Q9NPI9,uc002jin.3,uc031reh.1 </TD> </TR>
-  <TR> <TD> uc002jin.4 </TD> <TD> 17 </TD> <TD align="right"> 68071614 </TD> <TD align="right"> 68131595 </TD> <TD align="right"> 68071365 </TD> <TD align="right"> 68131746 </TD> <TD align="right"> 944 </TD> <TD> IRK16_HUMAN,KCNJ16,NM_018658,NP_733937,Q9NPI9,uc002jin.3,uc002jin.4 </TD> </TR>
-  <TR> <TD> uc002jio.4 </TD> <TD> 17 </TD> <TD align="right"> 68071614 </TD> <TD align="right"> 68131595 </TD> <TD align="right"> 68071365 </TD> <TD align="right"> 68131746 </TD> <TD align="right"> 944 </TD> <TD> IRK16_HUMAN,KCNJ16,NM_170741,NP_733937,Q9NPI9,uc002jio.3,uc002jio.4 </TD> </TR>
-  <TR> <TD> uc002jip.4 </TD> <TD> 17 </TD> <TD align="right"> 68101013 </TD> <TD align="right"> 68131595 </TD> <TD align="right"> 68100994 </TD> <TD align="right"> 68131746 </TD> <TD align="right"> 461 </TD> <TD> BC033038,IRK16_HUMAN,KCNJ16,NM_170741,NP_733937,Q9NPI9,uc002jip.3,uc002jip.4 </TD> </TR>
-  <TR> <TD> uc002jiq.3 </TD> <TD> 17 </TD> <TD align="right"> 68124202 </TD> <TD align="right"> 68131595 </TD> <TD align="right"> 68124166 </TD> <TD align="right"> 68131746 </TD> <TD align="right"> 103 </TD> <TD> AK225944,IRK16_HUMAN,KCNJ16,NM_170741,NP_733937,Q9NPI9,uc002jiq.3 </TD> </TR>
-  <TR> <TD> uc021uch.1 </TD> <TD> 17 </TD> <TD align="right"> 68128241 </TD> <TD align="right"> 68129461 </TD> <TD align="right"> 68128228 </TD> <TD align="right"> 68129485 </TD> <TD align="right">  26 </TD> <TD> CCDS11687,IRK16_HUMAN,KCNJ16,NM_170741,NP_733937,Q9NPI9,uc021uch.1 </TD> </TR>
+<TR> <TH> name </TH> <TH> contig_name </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
+  <TR> <TD> uc002fre.2 </TD> <TD> 17 </TD> <TD align="right"> 62235 </TD> <TD align="right"> 202446 </TD> <TD align="right"> 62179 </TD> <TD align="right"> 202633 </TD> <TD align="right"> 2531 </TD> <TD> D3DTG7,NM_006987,NOC2,NP_008918,Q9BSB3,Q9UNE2,RPH3AL,RPH3L_HUMAN,uc002fre.2 </TD> </TR>
+  <TR> <TD> uc002frf.2 </TD> <TD> 17 </TD> <TD align="right"> 62235 </TD> <TD align="right"> 202446 </TD> <TD align="right"> 62179 </TD> <TD align="right"> 202633 </TD> <TD align="right"> 2531 </TD> <TD> NM_001190412,NOC2,NP_001177342,Q9UNE2-2,RPH3AL,uc002frf.2 </TD> </TR>
+  <TR> <TD> uc002frj.3 </TD> <TD> 17 </TD> <TD align="right"> 289795 </TD> <TD align="right"> 295729 </TD> <TD align="right"> 289770 </TD> <TD align="right"> 295731 </TD> <TD align="right"> 101 </TD> <TD> F101B_HUMAN,FAM101B,NM_182705,NP_874364,Q8N5W9,uc002frj.3 </TD> </TR>
+  <TR> <TD> uc002frk.3 </TD> <TD> 17 </TD> <TD align="right"> 412346 </TD> <TD align="right"> 579633 </TD> <TD align="right"> 411907 </TD> <TD align="right"> 579647 </TD> <TD align="right"> 2449 </TD> <TD> AX746953,B1AA16,B1AA16_HUMAN,HCCS1,NM_001128159,NP_001121631,VPS53,uc002frk.3 </TD> </TR>
+  <TR> <TD> uc002frl.2 </TD> <TD> 17 </TD> <TD align="right"> 429221 </TD> <TD align="right"> 618039 </TD> <TD align="right"> 429208 </TD> <TD align="right"> 618096 </TD> <TD align="right"> 2794 </TD> <TD> BC040223,VPS53,uc002frl.2 </TD> </TR>
+  <TR> <TD> uc002frm.2 </TD> <TD> 17 </TD> <TD align="right"> 435583 </TD> <TD align="right"> 618039 </TD> <TD align="right"> 435532 </TD> <TD align="right"> 618096 </TD> <TD align="right"> 2736 </TD> <TD> NM_018289,NP_060759,PP13624,Q5VIR6-2,VPS53,uc002frm.2 </TD> </TR>
    </TABLE>
-
 And drilling down to just the genes with name matching BRCA1
 
 ```r
-brca1_all = subset(result, grepl("BRCA1", gene_aliases))
+brca1_all <- subset(result, grepl("BRCA1", gene_aliases))
 dim(brca1_all)
 ```
 
@@ -528,54 +517,51 @@ dim(brca1_all)
 ```
 
 
-
 ```r
-print(xtable(brca1_all), type = "html", include.rownames = F)
+print(xtable(brca1_all), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:15 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:38 2014 -->
 <TABLE border=1>
-<TR> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
-  <TR> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 839 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
-  <TR> <TD> uc010whm.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 854 </TD> <TD> BRCA1,C6YB45,C6YB45_HUMAN,DQ333386,uc010whm.2 </TD> </TR>
+<TR> <TH> name </TH> <TH> contig_name </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> uc002icp.4 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 854 </TD> <TD> BRCA1,NR_027676,P38398-2,RNF53,uc002icp.4 </TD> </TR>
-  <TR> <TD> uc002icu.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,NM_007299,NP_009230,P38398-6,RNF53,uc002icu.3 </TD> </TR>
-  <TR> <TD> uc010cyx.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyx.3 </TD> </TR>
-  <TR> <TD> uc002ict.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,J3KQF3,J3KQF3_HUMAN,NM_007300,NP_009231,uc002ict.3 </TD> </TR>
-  <TR> <TD> uc010whn.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,DQ363751,G3XAC3,G3XAC3_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whn.2 </TD> </TR>
-  <TR> <TD> uc010who.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,C6YB46,C6YB46_HUMAN,DQ333387,uc010who.2,uc010who.3 </TD> </TR>
   <TR> <TD> uc002icq.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007294,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002icq.3 </TD> </TR>
-  <TR> <TD> uc010whp.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41322380 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41322420 </TD> <TD align="right"> 1383 </TD> <TD> AK293762,B4DES0,B4DES0_HUMAN,BRCA1,NM_007298,NP_009229,uc010whp.2 </TD> </TR>
-  <TR> <TD> uc010whq.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41256877 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41256973 </TD> <TD align="right"> 464 </TD> <TD> BC046142,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whq.1 </TD> </TR>
+  <TR> <TD> uc002ict.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,J3KQF3,J3KQF3_HUMAN,NM_007300,NP_009231,uc002ict.3 </TD> </TR>
+  <TR> <TD> uc002icu.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,NM_007299,NP_009230,P38398-6,RNF53,uc002icu.3 </TD> </TR>
   <TR> <TD> uc002idc.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 674 </TD> <TD> BC085615,BRCA1,E7EUM2,E7EUM2_HUMAN,NM_007299,NP_009230,uc002idc.1 </TD> </TR>
-  <TR> <TD> uc010whr.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 674 </TD> <TD> AK316200,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whr.1 </TD> </TR>
   <TR> <TD> uc002idd.3 </TD> <TD> 17 </TD> <TD align="right"> 41243190 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41243116 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 359 </TD> <TD> AY354539,BRCA1,NM_007294,NP_009225,Q5YLB2,Q5YLB2_HUMAN,uc002idd.3 </TD> </TR>
   <TR> <TD> uc002ide.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41256877 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41256973 </TD> <TD align="right"> 167 </TD> <TD> BC038947,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002ide.1 </TD> </TR>
+  <TR> <TD> uc010cyx.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyx.3 </TD> </TR>
   <TR> <TD> uc010cyy.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 372 </TD> <TD> AK308084,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyy.1 </TD> </TR>
-  <TR> <TD> uc010whs.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 377 </TD> <TD> BC114562,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010whs.1 </TD> </TR>
   <TR> <TD> uc010cyz.2 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> BC114511,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyz.2 </TD> </TR>
   <TR> <TD> uc010cza.2 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> AK307553,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cza.2 </TD> </TR>
+  <TR> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 839 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
+  <TR> <TD> uc010whm.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 854 </TD> <TD> BRCA1,C6YB45,C6YB45_HUMAN,DQ333386,uc010whm.2 </TD> </TR>
+  <TR> <TD> uc010whn.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,DQ363751,G3XAC3,G3XAC3_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whn.2 </TD> </TR>
+  <TR> <TD> uc010who.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,C6YB46,C6YB46_HUMAN,DQ333387,uc010who.2,uc010who.3 </TD> </TR>
+  <TR> <TD> uc010whp.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41322380 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41322420 </TD> <TD align="right"> 1383 </TD> <TD> AK293762,B4DES0,B4DES0_HUMAN,BRCA1,NM_007298,NP_009229,uc010whp.2 </TD> </TR>
+  <TR> <TD> uc010whq.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41256877 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41256973 </TD> <TD align="right"> 464 </TD> <TD> BC046142,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whq.1 </TD> </TR>
+  <TR> <TD> uc010whr.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 674 </TD> <TD> AK316200,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whr.1 </TD> </TR>
+  <TR> <TD> uc010whs.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 377 </TD> <TD> BC114562,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010whs.1 </TD> </TR>
   <TR> <TD> uc010wht.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> BC106746,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010wht.1 </TD> </TR>
    </TABLE>
-
 We see how many variants we have within these genes for the full dataset.
 
 ### JOINing Chromosome 17 Variants for a Particular Sample with Gene Names
 
-Now let's look at these sample variants for a particular sample
+Now let us look at these sample variants for a particular sample
 
 ```r
-sql = readChar("../../sql/sample-gene-variant-counts.sql", nchars = 1e+06)
-cat(sql)
+result <- DisplayAndDispatchQuery("../../sql/sample-gene-variant-counts.sql")
 ```
 
 ```
-# Count the number of variants per gene within chromosome 17 for a particular sample 
+# Count the number of variants per gene within chromosome 17 for a particular sample
 SELECT
   sample_id,
   gene_variants.name AS name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -586,7 +572,7 @@ FROM (
   SELECT
     sample_id,
     name,
-    var.contig AS contig,
+    var.contig_name AS contig_name,
     MIN(variant_start) AS min_variant_start,
     MAX(variant_end) AS max_variant_start,
     gene_start,
@@ -594,32 +580,37 @@ FROM (
     COUNT(*) AS cnt
   FROM (
     SELECT
-      genotype.sample_id AS sample_id,
-      contig,
-      position AS variant_start,
+      contig_name,
+      start_pos AS variant_start,
       IF(vt != 'SV',
-        position + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
+        start_pos + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
         END) AS variant_end,
+      call.callset_name AS sample_id,
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
+      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
         alternate_bases)
     WHERE
-      contig = '17'
-      AND genotype.sample_id = 'NA19764'
-      AND (genotype.first_allele > 0
-        OR genotype.second_allele > 0)
+      contig_name = '17'
+      AND call.callset_name = 'NA19764'
+    HAVING
+      first_allele > 0
+      OR second_allele > 0
       ) AS var
   JOIN (
     SELECT
       name,
       REGEXP_EXTRACT(chrom,
-        r'chr(\d+)') AS contig,
+        r'chr(\d+)') AS contig_name,
       txStart AS gene_start,
       txEnd AS gene_end,
     FROM
-      [google.com:biggene:1000genomes.known_genes] ) AS genes
+      [google.com:biggene:annotations.known_genes] ) AS genes
   ON
-    var.contig = genes.contig
+    var.contig_name = genes.contig_name
   WHERE
     ( var.variant_start <= var.variant_end
       AND NOT (
@@ -630,59 +621,55 @@ FROM (
   GROUP BY
     sample_id,
     name,
-    contig,
+    contig_name,
     gene_start,
     gene_end) AS gene_variants
 JOIN
-  [google.com:biggene:1000genomes.known_genes_aliases] AS gene_aliases
+  [google.com:biggene:annotations.known_genes_aliases] AS gene_aliases
 ON
   gene_variants.name = gene_aliases.name
 GROUP BY
   sample_id,
   name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
   gene_end,
-  cnt;
+  cnt
+ORDER BY
+  sample_id,
+  name,
+  contig_name,
+  min_variant_start,
+  max_variant_start,
+  gene_start,
+  gene_end,
+  cnt
 ```
-
-```r
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = sql, billing = billing_project)
-```
-
-```r
-dim(result)
-```
-
-```
-[1] 3958    9
-```
+Number of rows returned by this query: 3958.
 
 Display the first few rows of our result
 
 ```r
-print(xtable(head(result)), type = "html", include.rownames = F)
+print(xtable(head(result)), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:15 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:47 2014 -->
 <TABLE border=1>
-<TR> <TH> sample_id </TH> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc002hnm.3 </TD> <TD> 17 </TD> <TD align="right"> 35443085 </TD> <TD align="right"> 35713644 </TD> <TD align="right"> 35441926 </TD> <TD align="right"> 35716059 </TD> <TD align="right"> 249 </TD> <TD> ACAC,ACACA,ACACA_HUMAN,ACC1,ACCA,B2RP68,NM_198836,NP_942135,Q13085,Q6KEV6,Q6XDA8,Q7Z2G8,Q7Z561,Q7Z563,Q7Z564,Q86WB2,Q86WB3,uc002hnm.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc002hnn.3 </TD> <TD> 17 </TD> <TD align="right"> 35443085 </TD> <TD align="right"> 35766475 </TD> <TD align="right"> 35441926 </TD> <TD align="right"> 35766902 </TD> <TD align="right"> 311 </TD> <TD> ACAC,ACACA,ACACA_HUMAN,ACC1,ACCA,B2RP68,NM_198839,NP_942135,Q13085,Q6KEV6,Q6XDA8,Q7Z2G8,Q7Z561,Q7Z563,Q7Z564,Q86WB2,Q86WB3,uc002hnn.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc002hno.3 </TD> <TD> 17 </TD> <TD align="right"> 35443085 </TD> <TD align="right"> 35766475 </TD> <TD align="right"> 35441926 </TD> <TD align="right"> 35766902 </TD> <TD align="right"> 311 </TD> <TD> ACAC,ACACA,ACC1,ACCA,NM_198834,NP_942135,Q13085-4,uc002hno.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010cuz.3 </TD> <TD> 17 </TD> <TD align="right"> 35580861 </TD> <TD align="right"> 35713644 </TD> <TD align="right"> 35578438 </TD> <TD align="right"> 35716059 </TD> <TD align="right"> 133 </TD> <TD> ACAC,ACACA,ACACA_HUMAN,ACC1,ACCA,AK309084,B2RP68,NM_198834,NP_942131,Q13085,Q6KEV6,Q6XDA8,Q7Z2G8,Q7Z561,Q7Z563,Q7Z564,Q86WB2,Q86WB3,uc010cuz.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc002hnq.2 </TD> <TD> 17 </TD> <TD align="right"> 35632584 </TD> <TD align="right"> 35766475 </TD> <TD align="right"> 35631083 </TD> <TD align="right"> 35766902 </TD> <TD align="right"> 146 </TD> <TD> ACACA,AK308905,uc002hnq.2 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc002hnp.1 </TD> <TD> 17 </TD> <TD align="right"> 35642592 </TD> <TD align="right"> 35713644 </TD> <TD align="right"> 35641738 </TD> <TD align="right"> 35716059 </TD> <TD align="right">  67 </TD> <TD> ACACA,AY315622,uc002hnp.1 </TD> </TR>
+<TR> <TH> sample_id </TH> <TH> name </TH> <TH> contig_name </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002fre.2 </TD> <TD> 17 </TD> <TD align="right"> 62484 </TD> <TD align="right"> 202208 </TD> <TD align="right"> 62179 </TD> <TD align="right"> 202633 </TD> <TD align="right"> 321 </TD> <TD> D3DTG7,NM_006987,NOC2,NP_008918,Q9BSB3,Q9UNE2,RPH3AL,RPH3L_HUMAN,uc002fre.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002frf.2 </TD> <TD> 17 </TD> <TD align="right"> 62484 </TD> <TD align="right"> 202208 </TD> <TD align="right"> 62179 </TD> <TD align="right"> 202633 </TD> <TD align="right"> 321 </TD> <TD> NM_001190412,NOC2,NP_001177342,Q9UNE2-2,RPH3AL,uc002frf.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002frj.3 </TD> <TD> 17 </TD> <TD align="right"> 290362 </TD> <TD align="right"> 295283 </TD> <TD align="right"> 289770 </TD> <TD align="right"> 295731 </TD> <TD align="right">   7 </TD> <TD> F101B_HUMAN,FAM101B,NM_182705,NP_874364,Q8N5W9,uc002frj.3 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002frk.3 </TD> <TD> 17 </TD> <TD align="right"> 412673 </TD> <TD align="right"> 578180 </TD> <TD align="right"> 411907 </TD> <TD align="right"> 579647 </TD> <TD align="right"> 267 </TD> <TD> AX746953,B1AA16,B1AA16_HUMAN,HCCS1,NM_001128159,NP_001121631,VPS53,uc002frk.3 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002frl.2 </TD> <TD> 17 </TD> <TD align="right"> 430245 </TD> <TD align="right"> 618039 </TD> <TD align="right"> 429208 </TD> <TD align="right"> 618096 </TD> <TD align="right"> 277 </TD> <TD> BC040223,VPS53,uc002frl.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002frm.2 </TD> <TD> 17 </TD> <TD align="right"> 435896 </TD> <TD align="right"> 618039 </TD> <TD align="right"> 435532 </TD> <TD align="right"> 618096 </TD> <TD align="right"> 269 </TD> <TD> NM_018289,NP_060759,PP13624,Q5VIR6-2,VPS53,uc002frm.2 </TD> </TR>
    </TABLE>
-
 And drilling down to just the genes with name matching BRCA1
 
 ```r
-brca1_one = subset(result, grepl("BRCA1", gene_aliases))
+brca1_one <- subset(result, grepl("BRCA1", gene_aliases))
 dim(brca1_one)
 ```
 
@@ -691,39 +678,37 @@ dim(brca1_one)
 ```
 
 
-
 ```r
-print(xtable(brca1_one), type = "html", include.rownames = F)
+print(xtable(brca1_one), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:15 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:47 2014 -->
 <TABLE border=1>
-<TR> <TH> sample_id </TH> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41275645 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 129 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010whm.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,C6YB45,C6YB45_HUMAN,DQ333386,uc010whm.2 </TD> </TR>
+<TR> <TH> sample_id </TH> <TH> name </TH> <TH> contig_name </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> NA19764 </TD> <TD> uc002icp.4 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,NR_027676,P38398-2,RNF53,uc002icp.4 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc002icu.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,NM_007299,NP_009230,P38398-6,RNF53,uc002icu.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010cyx.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyx.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc002ict.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,J3KQF3,J3KQF3_HUMAN,NM_007300,NP_009231,uc002ict.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010whn.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,DQ363751,G3XAC3,G3XAC3_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whn.2 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010who.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,C6YB46,C6YB46_HUMAN,DQ333387,uc010who.2,uc010who.3 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc002icq.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007294,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002icq.3 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010whp.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41321910 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41322420 </TD> <TD align="right"> 218 </TD> <TD> AK293762,B4DES0,B4DES0_HUMAN,BRCA1,NM_007298,NP_009229,uc010whp.2 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010whq.1 </TD> <TD> 17 </TD> <TD align="right"> 41215825 </TD> <TD align="right"> 41255111 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41256973 </TD> <TD align="right">  75 </TD> <TD> BC046142,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whq.1 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002ict.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,J3KQF3,J3KQF3_HUMAN,NM_007300,NP_009231,uc002ict.3 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc002icu.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,NM_007299,NP_009230,P38398-6,RNF53,uc002icu.3 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc002idc.1 </TD> <TD> 17 </TD> <TD align="right"> 41215825 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 104 </TD> <TD> BC085615,BRCA1,E7EUM2,E7EUM2_HUMAN,NM_007299,NP_009230,uc002idc.1 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010whr.1 </TD> <TD> 17 </TD> <TD align="right"> 41215825 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 104 </TD> <TD> AK316200,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whr.1 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc002idd.3 </TD> <TD> 17 </TD> <TD align="right"> 41243190 </TD> <TD align="right"> 41275645 </TD> <TD align="right"> 41243116 </TD> <TD align="right"> 41276132 </TD> <TD align="right">  50 </TD> <TD> AY354539,BRCA1,NM_007294,NP_009225,Q5YLB2,Q5YLB2_HUMAN,uc002idd.3 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc002ide.1 </TD> <TD> 17 </TD> <TD align="right"> 41244000 </TD> <TD align="right"> 41255111 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41256973 </TD> <TD align="right">  23 </TD> <TD> BC038947,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002ide.1 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010cyx.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyx.3 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc010cyy.1 </TD> <TD> 17 </TD> <TD align="right"> 41244000 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277340 </TD> <TD align="right">  52 </TD> <TD> AK308084,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyy.1 </TD> </TR>
-  <TR> <TD> NA19764 </TD> <TD> uc010whs.1 </TD> <TD> 17 </TD> <TD align="right"> 41244000 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277468 </TD> <TD align="right">  52 </TD> <TD> BC114562,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010whs.1 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc010cyz.2 </TD> <TD> 17 </TD> <TD align="right"> 41244000 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right">  52 </TD> <TD> BC114511,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyz.2 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc010cza.2 </TD> <TD> 17 </TD> <TD align="right"> 41244000 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right">  52 </TD> <TD> AK307553,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cza.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41275645 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 129 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010whm.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,C6YB45,C6YB45_HUMAN,DQ333386,uc010whm.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010whn.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,DQ363751,G3XAC3,G3XAC3_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whn.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010who.3 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 132 </TD> <TD> BRCA1,C6YB46,C6YB46_HUMAN,DQ333387,uc010who.2,uc010who.3 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010whp.2 </TD> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD align="right"> 41321910 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41322420 </TD> <TD align="right"> 218 </TD> <TD> AK293762,B4DES0,B4DES0_HUMAN,BRCA1,NM_007298,NP_009229,uc010whp.2 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010whq.1 </TD> <TD> 17 </TD> <TD align="right"> 41215825 </TD> <TD align="right"> 41255111 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41256973 </TD> <TD align="right">  75 </TD> <TD> BC046142,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whq.1 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010whr.1 </TD> <TD> 17 </TD> <TD align="right"> 41215825 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 104 </TD> <TD> AK316200,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whr.1 </TD> </TR>
+  <TR> <TD> NA19764 </TD> <TD> uc010whs.1 </TD> <TD> 17 </TD> <TD align="right"> 41244000 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277468 </TD> <TD align="right">  52 </TD> <TD> BC114562,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010whs.1 </TD> </TR>
   <TR> <TD> NA19764 </TD> <TD> uc010wht.1 </TD> <TD> 17 </TD> <TD align="right"> 41244000 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right">  52 </TD> <TD> BC106746,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010wht.1 </TD> </TR>
    </TABLE>
 
-
-Let's compare these to the dataset level gene counts
+Let us compare these to the dataset level gene counts
 
 ```r
 brca1_all$name == brca1_one$name
@@ -740,8 +725,8 @@ brca1_all$cnt - brca1_one$cnt
 ```
 
 ```
-##  [1]  710  722  722  727  727  727  727  727  727 1165  389  570  570  309
-## [15]  144  320  325  325  325  325
+##  [1]  722  727  727  727  570  309  144  727  320  325  325  710  722  727
+## [15]  727 1165  389  570  325  325
 ```
 
 ```r
@@ -753,29 +738,30 @@ mean(brca1_all$cnt - brca1_one$cnt)
 ```
 
 ```r
-qplot(brca1_all$cnt, brca1_one$cnt, xlim = c(0, max(brca1_all$cnt)), ylim = c(0, 
-    max(brca1_all$cnt)), xlab = "count of variants per gene for the full dataset", 
-    ylab = "count of variants per gene for one sample", )
+qplot(brca1_all$cnt, brca1_one$cnt,
+      xlim=c(0, max(brca1_all$cnt)),
+      ylim=c(0, max(brca1_all$cnt)),
+      xlab="count of variants per gene for the full dataset",
+      ylab="count of variants per gene for one sample",
+      )
 ```
 
-![plot of chunk all vs one](figure/all_vs_one.png) 
-
+![plot of chunk all vs one](figure/all vs one.png) 
 And we see that our sample has variants within the same set of genes, but many fewer per gene.
 
 ### JOINing All Variants with Gene Names
-Let's go bigger now and run this on the entire 1,000 Genomes dataset.
+Let us go bigger now and run this on the entire 1,000 Genomes dataset.
 
 ```r
-sql = readChar("../../sql/specific-gene-variant-counts.sql", nchars = 1e+06)
-cat(sql)
+result <- DisplayAndDispatchQuery("../../sql/specific-gene-variant-counts.sql")
 ```
 
 ```
-# Scan the entirety of 1,000 Genomes counting the number of variants found 
+# Scan the entirety of 1,000 Genomes counting the number of variants found
 # within the BRCA1 and APOE genes
 SELECT
   gene_variants.name AS name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -785,7 +771,7 @@ SELECT
 FROM (
   SELECT
     name,
-    var.contig AS contig,
+    var.contig_name AS contig_name,
     MIN(variant_start) AS min_variant_start,
     MAX(variant_end) AS max_variant_start,
     gene_start,
@@ -793,24 +779,24 @@ FROM (
     COUNT(*) AS cnt
   FROM (
     SELECT
-      contig,
-      position AS variant_start,
+      contig_name,
+      start_pos AS variant_start,
       IF(vt != 'SV',
-        position + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
+        start_pos + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
         END) AS variant_end,
     FROM
-      [google.com:biggene:1000genomes.variants1kG]) AS var
+      [google.com:biggene:1000genomes.phase1_variants]) AS var
   JOIN (
     SELECT
       name,
       REGEXP_EXTRACT(chrom,
-        r'chr(\d+)') AS contig,
+        r'chr(\d+)') AS contig_name,
       txStart AS gene_start,
       txEnd AS gene_end,
     FROM
-      [google.com:biggene:1000genomes.known_genes] ) AS genes
+      [google.com:biggene:annotations.known_genes] ) AS genes
   ON
-    var.contig = genes.contig
+    var.contig_name = genes.contig_name
   WHERE
     (( var.variant_start <= var.variant_end
         AND NOT (
@@ -820,16 +806,16 @@ FROM (
           var.variant_end > genes.gene_end || var.variant_start < genes.gene_start)))
   GROUP BY
     name,
-    contig,
+    contig_name,
     gene_start,
     gene_end) AS gene_variants
 JOIN
-  [google.com:biggene:1000genomes.known_genes_aliases] AS gene_aliases
+  [google.com:biggene:annotations.known_genes_aliases] AS gene_aliases
 ON
   gene_variants.name = gene_aliases.name
 GROUP BY
   name,
-  contig,
+  contig_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -837,55 +823,53 @@ GROUP BY
   cnt
 HAVING
   gene_aliases CONTAINS 'BRCA1'
-  OR gene_aliases CONTAINS 'APOE';
+  OR gene_aliases CONTAINS 'APOE'
+ORDER BY
+  name,
+  contig_name,
+  min_variant_start,
+  max_variant_start,
+  gene_start,
+  gene_end,
+  cnt
 ```
-
-```r
-result = query_exec(project = "google.com:biggene", dataset = "1000genomes", 
-    query = sql, billing = billing_project)
-dim(result)
-```
-
-```
-[1] 26  8
-```
+Number of rows returned by this query: 26.
 
 Display the rows of our result
 
 ```r
-print(xtable(result), type = "html", include.rownames = F)
+print(xtable(result), type="html", include.rownames=F)
 ```
 
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Fri Apr 18 14:56:15 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Sep 19 16:06:51 2014 -->
 <TABLE border=1>
-<TR> <TH> name </TH> <TH> contig </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
-  <TR> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 839 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
-  <TR> <TD> uc010whm.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 854 </TD> <TD> BRCA1,C6YB45,C6YB45_HUMAN,DQ333386,uc010whm.2 </TD> </TR>
-  <TR> <TD> uc002icp.4 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 854 </TD> <TD> BRCA1,NR_027676,P38398-2,RNF53,uc002icp.4 </TD> </TR>
-  <TR> <TD> uc002icu.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,NM_007299,NP_009230,P38398-6,RNF53,uc002icu.3 </TD> </TR>
-  <TR> <TD> uc010cyx.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyx.3 </TD> </TR>
-  <TR> <TD> uc002ict.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,J3KQF3,J3KQF3_HUMAN,NM_007300,NP_009231,uc002ict.3 </TD> </TR>
-  <TR> <TD> uc010whn.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,DQ363751,G3XAC3,G3XAC3_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whn.2 </TD> </TR>
-  <TR> <TD> uc010who.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,C6YB46,C6YB46_HUMAN,DQ333387,uc010who.2,uc010who.3 </TD> </TR>
-  <TR> <TD> uc002icq.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007294,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002icq.3 </TD> </TR>
-  <TR> <TD> uc010whp.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41322380 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41322420 </TD> <TD align="right"> 1383 </TD> <TD> AK293762,B4DES0,B4DES0_HUMAN,BRCA1,NM_007298,NP_009229,uc010whp.2 </TD> </TR>
-  <TR> <TD> uc010whq.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41256877 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41256973 </TD> <TD align="right"> 464 </TD> <TD> BC046142,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whq.1 </TD> </TR>
-  <TR> <TD> uc002idc.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 674 </TD> <TD> BC085615,BRCA1,E7EUM2,E7EUM2_HUMAN,NM_007299,NP_009230,uc002idc.1 </TD> </TR>
-  <TR> <TD> uc010whr.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 674 </TD> <TD> AK316200,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whr.1 </TD> </TR>
-  <TR> <TD> uc002idd.3 </TD> <TD> 17 </TD> <TD align="right"> 41243190 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41243116 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 359 </TD> <TD> AY354539,BRCA1,NM_007294,NP_009225,Q5YLB2,Q5YLB2_HUMAN,uc002idd.3 </TD> </TR>
-  <TR> <TD> uc002ide.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41256877 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41256973 </TD> <TD align="right"> 167 </TD> <TD> BC038947,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002ide.1 </TD> </TR>
-  <TR> <TD> uc010cyy.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 372 </TD> <TD> AK308084,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyy.1 </TD> </TR>
-  <TR> <TD> uc010whs.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 377 </TD> <TD> BC114562,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010whs.1 </TD> </TR>
-  <TR> <TD> uc010cyz.2 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> BC114511,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyz.2 </TD> </TR>
-  <TR> <TD> uc010cza.2 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> AK307553,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cza.2 </TD> </TR>
-  <TR> <TD> uc010wht.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> BC106746,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010wht.1 </TD> </TR>
+<TR> <TH> name </TH> <TH> contig_name </TH> <TH> min_variant_start </TH> <TH> max_variant_start </TH> <TH> gene_start </TH> <TH> gene_end </TH> <TH> cnt </TH> <TH> gene_aliases </TH>  </TR>
   <TR> <TD> uc001cvi.2 </TD> <TD> 1 </TD> <TD align="right"> 53708043 </TD> <TD align="right"> 53793511 </TD> <TD align="right"> 53708040 </TD> <TD align="right"> 53793821 </TD> <TD align="right"> 1053 </TD> <TD> APOER2,B1AMT6,B1AMT7,B1AMT8,LRP8,LRP8_HUMAN,NM_004631,NP_004622,O14968,Q14114,Q86V27,Q99876,Q9BR78,uc001cvi.2 </TD> </TR>
   <TR> <TD> uc001cvj.2 </TD> <TD> 1 </TD> <TD align="right"> 53708043 </TD> <TD align="right"> 53793511 </TD> <TD align="right"> 53708040 </TD> <TD align="right"> 53793821 </TD> <TD align="right"> 1053 </TD> <TD> APOER2,LRP8,NM_001018054,NP_001018064,Q14114-3,uc001cvj.2 </TD> </TR>
   <TR> <TD> uc001cvk.2 </TD> <TD> 1 </TD> <TD align="right"> 53708043 </TD> <TD align="right"> 53793511 </TD> <TD align="right"> 53708040 </TD> <TD align="right"> 53793821 </TD> <TD align="right"> 1053 </TD> <TD> APOER2,LRP8,NM_033300,NP_150643,Q14114-4,uc001cvk.2 </TD> </TR>
   <TR> <TD> uc001cvl.2 </TD> <TD> 1 </TD> <TD align="right"> 53708043 </TD> <TD align="right"> 53793511 </TD> <TD align="right"> 53708040 </TD> <TD align="right"> 53793821 </TD> <TD align="right"> 1053 </TD> <TD> APOER2,LRP8,NM_017522,NP_059992,Q14114-2,uc001cvl.2 </TD> </TR>
   <TR> <TD> uc001cvm.1 </TD> <TD> 1 </TD> <TD align="right"> 53716416 </TD> <TD align="right"> 53734102 </TD> <TD align="right"> 53716361 </TD> <TD align="right"> 53734270 </TD> <TD align="right"> 192 </TD> <TD> AK122887,APOER2,LRP8,NM_033300,NP_150643,Q14114-4,uc001cvm.1 </TD> </TR>
+  <TR> <TD> uc002icp.4 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 854 </TD> <TD> BRCA1,NR_027676,P38398-2,RNF53,uc002icp.4 </TD> </TR>
+  <TR> <TD> uc002icq.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007294,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002icq.3 </TD> </TR>
+  <TR> <TD> uc002ict.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,J3KQF3,J3KQF3_HUMAN,NM_007300,NP_009231,uc002ict.3 </TD> </TR>
+  <TR> <TD> uc002icu.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,NM_007299,NP_009230,P38398-6,RNF53,uc002icu.3 </TD> </TR>
+  <TR> <TD> uc002idc.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 674 </TD> <TD> BC085615,BRCA1,E7EUM2,E7EUM2_HUMAN,NM_007299,NP_009230,uc002idc.1 </TD> </TR>
+  <TR> <TD> uc002idd.3 </TD> <TD> 17 </TD> <TD align="right"> 41243190 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41243116 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 359 </TD> <TD> AY354539,BRCA1,NM_007294,NP_009225,Q5YLB2,Q5YLB2_HUMAN,uc002idd.3 </TD> </TR>
+  <TR> <TD> uc002ide.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41256877 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41256973 </TD> <TD align="right"> 167 </TD> <TD> BC038947,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc002ide.1 </TD> </TR>
   <TR> <TD> uc002pab.3 </TD> <TD> 19 </TD> <TD align="right"> 45409113 </TD> <TD align="right"> 45412420 </TD> <TD align="right"> 45409038 </TD> <TD align="right"> 45412650 </TD> <TD align="right">  36 </TD> <TD> APOE,APOE_HUMAN,B2RC15,C0JYY5,NM_000041,NP_000032,P02649,Q9P2S4,uc002pab.3 </TD> </TR>
+  <TR> <TD> uc010cyx.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyx.3 </TD> </TR>
+  <TR> <TD> uc010cyy.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 372 </TD> <TD> AK308084,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyy.1 </TD> </TR>
+  <TR> <TD> uc010cyz.2 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> BC114511,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cyz.2 </TD> </TR>
+  <TR> <TD> uc010cza.2 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> AK307553,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010cza.2 </TD> </TR>
+  <TR> <TD> uc010whl.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41276093 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41276132 </TD> <TD align="right"> 839 </TD> <TD> BRCA1,E7ETR2,E7ETR2_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whl.2 </TD> </TR>
+  <TR> <TD> uc010whm.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277187 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277340 </TD> <TD align="right"> 854 </TD> <TD> BRCA1,C6YB45,C6YB45_HUMAN,DQ333386,uc010whm.2 </TD> </TR>
+  <TR> <TD> uc010whn.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,DQ363751,G3XAC3,G3XAC3_HUMAN,NM_007298,NP_009229,hCG_16943,uc010whn.2 </TD> </TR>
+  <TR> <TD> uc010who.3 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 859 </TD> <TD> BRCA1,C6YB46,C6YB46_HUMAN,DQ333387,uc010who.2,uc010who.3 </TD> </TR>
+  <TR> <TD> uc010whp.2 </TD> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD align="right"> 41322380 </TD> <TD align="right"> 41196311 </TD> <TD align="right"> 41322420 </TD> <TD align="right"> 1383 </TD> <TD> AK293762,B4DES0,B4DES0_HUMAN,BRCA1,NM_007298,NP_009229,uc010whp.2 </TD> </TR>
+  <TR> <TD> uc010whq.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41256877 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41256973 </TD> <TD align="right"> 464 </TD> <TD> BC046142,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whq.1 </TD> </TR>
+  <TR> <TD> uc010whr.1 </TD> <TD> 17 </TD> <TD align="right"> 41215368 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41215349 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 674 </TD> <TD> AK316200,BRCA1,NM_007299,NP_009230,P38398-3,RNF53,uc010whr.1 </TD> </TR>
+  <TR> <TD> uc010whs.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277468 </TD> <TD align="right"> 377 </TD> <TD> BC114562,BRCA1,BRCA1_HUMAN,NM_007294,NP_009225,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010whs.1 </TD> </TR>
+  <TR> <TD> uc010wht.1 </TD> <TD> 17 </TD> <TD align="right"> 41243509 </TD> <TD align="right"> 41277460 </TD> <TD align="right"> 41243451 </TD> <TD align="right"> 41277500 </TD> <TD align="right"> 377 </TD> <TD> BC106746,BRCA1,BRCA1_HUMAN,NM_007297,NP_009228,O15129,P38398,Q3LRJ0,Q3LRJ6,Q6IN79,Q7KYU9,RNF53,uc010wht.1 </TD> </TR>
    </TABLE>
-
 And we see the count of variants in this entire dataset found within the genes corresponding to BRCA1 and APOE.

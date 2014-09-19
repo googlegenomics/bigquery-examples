@@ -25,13 +25,24 @@ require(ggplot2)
 require(xtable)
 require(testthat)
 project <- "google.com:biggene" # put your projectID here
+DisplayAndDispatchQuery <- function(queryUri) {
+  sql <- readChar(queryUri, nchars=1e6)
+  cat(sql)
+  query_exec(sql, project)
+}
 ```
 
 Let us start by getting an idea of the number of rows in each of our tables.
 ```{r cache=TRUE}
-tables <- c("variants1kG", "pedigree", "sample_info", "clinvar", "clinvar_disease_names", "known_genes", "known_genes_aliases")
+tables <- c("1000genomes.phase1_variants",
+            "1000genomes.pedigree",
+            "1000genomes.sample_info",
+            "annotations.clinvar",
+            "annotations.clinvar_disease_names",
+            "annotations.known_genes",
+            "annotations.known_genes_aliases")
 lapply(tables, function(table) {
-  sql <- paste0("SELECT count(*) AS cnt FROM [google.com:biggene:1000genomes.",
+  sql <- paste0("SELECT count(*) AS cnt FROM [google.com:biggene:",
                 table, "]")
   result <- query_exec(sql, project)
   paste(table, result, sep=": ")
@@ -41,10 +52,11 @@ We can see that all the annotation databases are dwarfed in size by the data in 
 
 Let us also examine the types of variants within ClinVar.
 ```{r cache=TRUE}
-result <- query_exec("SELECT type, count(1) cnt FROM [google.com:biggene:1000genomes.clinvar] group by type",
+result <- query_exec("SELECT type, count(1) cnt FROM [google.com:biggene:annotations.clinvar] group by type",
                      project)
-dim(result)
 ```
+Number of rows returned by this query: `r nrow(result)`.
+
 Display the rows of our result
 ```{r comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
@@ -56,12 +68,10 @@ We can see that the vast majority of variants within ClinVar are SNPs.
 ### JOINing Sample SNP Variants with ClinVar
 
 ```{r cache=TRUE, comment=NA}
-sql <- readChar("../../sql/individual-clinically-concerning-variants.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(sql, project)
-dim(result)
+result <- DisplayAndDispatchQuery("../../sql/individual-clinically-concerning-variants.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
+
 Display the first few rows of our result
 ```{r comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -70,12 +80,10 @@ We can see that this indivudual has 53 clinically concerning variants.
 
 ### JOINing Sample SNP Variants with ClinVar, Grouped by Family
 ```{r cache=TRUE, comment=NA}
-sql <- readChar("../../sql/familial-shared-clinically-concerning-variants.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(sql, project)
-dim(result)
+result <- DisplayAndDispatchQuery("../../sql/familial-shared-clinically-concerning-variants.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
+
 Display the first few rows of our result
 ```{r comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -86,11 +94,12 @@ We can see that some variants are shared by as many as four family members.
 
 First, let us see what the INDEL data looks like in ClinVar:
 ```{r cache=TRUE}
-sql <- 'SELECT * FROM [google.com:biggene:1000genomes.clinvar] where type="indel"'
+sql <- 'SELECT * FROM [google.com:biggene:annotations.clinvar] where type="indel"'
 result <- query_exec(sql, project)
-dim(result)
 ```
-Display the firs few rows of our result
+Number of rows returned by this query: `r nrow(result)`.
+
+Display the first few rows of our result
 ```{r comment=NA, results="asis"}
 print(xtable(head(result, 20)), type="html", include.rownames=F)
 ```
@@ -102,12 +111,10 @@ We can see that its not obvious as to how to parse the the ClinVar INDEL details
 
 Next we will JOIN our variants with gene names.  Note that the JOIN criteria is simple - just matching on the chromosome, but the WHERE clause ensures the intervals overlap.
 ```{r cache=TRUE, comment=NA}
-sql <- readChar("../../sql/gene-variant-counts.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(sql, project)
-dim(result)
+result <- DisplayAndDispatchQuery("../../sql/gene-variant-counts.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
+
 Display the first few rows of our result
 ```{r comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -127,12 +134,10 @@ We see how many variants we have within these genes for the full dataset.
 
 Now let us look at these sample variants for a particular sample
 ```{r cache=TRUE, comment=NA}
-sql <- readChar("../../sql/sample-gene-variant-counts.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(sql, project)
-dim(result)
+result <- DisplayAndDispatchQuery("../../sql/sample-gene-variant-counts.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
+
 Display the first few rows of our result
 ```{r comment=NA, results="asis"}
 print(xtable(head(result)), type="html", include.rownames=F)
@@ -165,12 +170,10 @@ And we see that our sample has variants within the same set of genes, but many f
 ### JOINing All Variants with Gene Names
 Let us go bigger now and run this on the entire 1,000 Genomes dataset.
 ```{r cache=TRUE, comment=NA}
-sql <- readChar("../../sql/specific-gene-variant-counts.sql",
-               nchars=1e6)
-cat(sql)
-result <- query_exec(sql, project)
-dim(result)
+result <- DisplayAndDispatchQuery("../../sql/specific-gene-variant-counts.sql")
 ```
+Number of rows returned by this query: `r nrow(result)`.
+
 Display the rows of our result
 ```{r comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
