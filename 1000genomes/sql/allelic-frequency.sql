@@ -1,4 +1,4 @@
-# The following query computes the allelic frequency for BRCA1 variants in the 
+# The following query computes the allelic frequency for BRCA1 variants in the
 # 1,000 Genomes dataset.
 SELECT
   contig_name,
@@ -18,14 +18,14 @@ FROM (
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = call.first_allele,
+    SUM(IF(0 = first_allele,
         1,
-        0) + IF(0 = call.second_allele,
+        0) + IF(0 = second_allele,
         1,
         0)) AS ref_count,
-    SUM(IF(alt = call.first_allele,
+    SUM(IF(alt = first_allele,
         1,
-        0) + IF(alt = call.second_allele,
+        0) + IF(alt = second_allele,
         1,
         0)) AS alt_count
   FROM (
@@ -35,16 +35,26 @@ FROM (
       reference_bases,
       alternate_bases,
       POSITION(alternate_bases) AS alt,
-      call.first_allele,
-      call.second_allele
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
-        call)
-    WHERE
-      contig_name = '17'
-      AND start_pos BETWEEN 41196312
-      AND 41277500
-      AND vt='SNP')
+      FLATTEN((
+        SELECT
+          contig_name,
+          start_pos,
+          reference_bases,
+          alternate_bases,
+          call.genotype
+        FROM
+          [google.com:biggene:1000genomes.phase1_variants]
+        WHERE
+          contig_name = '17'
+          AND start_pos BETWEEN 41196312
+          AND 41277500
+          AND vt='SNP'),
+        call))
   GROUP BY
     contig_name,
     start_pos,

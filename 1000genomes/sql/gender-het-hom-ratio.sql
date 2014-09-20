@@ -1,5 +1,5 @@
-# The following query uses the homozygous and heterozygous variant counts within 
-# chromosome X to help determine whether the gender phenotype values are correct 
+# The following query uses the homozygous and heterozygous variant counts within
+# chromosome X to help determine whether the gender phenotype values are correct
 # for the samples.
 SELECT
   sample_id,
@@ -15,30 +15,38 @@ SELECT
 FROM
   (
   SELECT
-    call.callset_name AS sample_id,
     contig_name,
-    SUM(IF(0 = call.first_allele
-        AND 0 = call.second_allele,
+    sample_id,
+    SUM(IF(0 = first_allele
+        AND 0 = second_allele,
         1,
         0)) AS hom_RR_count,
-    SUM(IF(call.first_allele = call.second_allele
-        AND call.first_allele > 0,
+    SUM(IF(first_allele = second_allele
+        AND first_allele > 0,
         1,
         0)) AS hom_AA_count,
-    SUM(IF(call.first_allele != call.second_allele
-        AND (call.first_allele > 0
-          OR call.second_allele > 0),
+    SUM(IF((first_allele != second_allele OR second_allele IS NULL)
+        AND (first_allele > 0
+          OR second_allele > 0),
         1,
         0)) AS het_RA_count
-  FROM
-    [google.com:biggene:1000genomes.phase1_variants]
-  WHERE
-    contig_name = 'X'
-    AND vt = 'SNP'
-    AND start_pos NOT BETWEEN 60000
-    AND 2699520
-    AND start_pos NOT BETWEEN 154931043
-    AND 155260560
+  FROM (
+    SELECT
+      contig_name,
+      call.callset_name AS sample_id,
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
+    FROM
+      [google.com:biggene:1000genomes.phase1_variants]
+    WHERE
+      contig_name = 'X'
+      AND vt = 'SNP'
+      AND start_pos NOT BETWEEN 60000
+      AND 2699520
+      AND start_pos NOT BETWEEN 154931043
+      AND 155260560)
   GROUP BY
     sample_id,
     contig_name
@@ -59,5 +67,6 @@ GROUP BY
   perct_het_alt_in_snvs,
   perct_hom_alt_in_snvs
 ORDER BY
-perct_het_alt_in_snvs desc,
+  perct_het_alt_in_snvs DESC,
   sample_id
+

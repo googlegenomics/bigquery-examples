@@ -12,15 +12,15 @@
 # http://www.statisticslectures.com/topics/ztestproportions/
 # two-proportion z-test
 # z-score critical value for p-value=5*10^-8 is +/-5.326724
-# > qnorm(1 - 5e-08) 
+# > qnorm(1 - 5e-08)
 # [1] 5.326724
 
-# For example, see alcohol flush reaction at start_pos 112241766 
+# For example, see alcohol flush reaction at start_pos 112241766
 
 SELECT
   contig_name,
   start_pos,
-  end,
+  END,
   reference_bases,
   alternate_bases,
   vt,
@@ -37,16 +37,16 @@ SELECT
     (case_alt_count/case_count - control_alt_count/control_count)
     /
     SQRT(
-      ((((case_alt_count+control_alt_count)/allele_count) * 
-        ((case_ref_count+control_ref_count)/allele_count))
-       / case_count
-      )
+      ((((case_alt_count+control_alt_count)/allele_count) *
+          ((case_ref_count+control_ref_count)/allele_count))
+        / case_count
+        )
       +
       ((((case_alt_count+control_alt_count)/allele_count) *
-        ((case_ref_count+control_ref_count)/allele_count))
-       / control_count
+          ((case_ref_count+control_ref_count)/allele_count))
+        / control_count
+        )
       )
-    )
     ,
     3)
   AS z_score
@@ -54,7 +54,7 @@ FROM (
   SELECT
     contig_name,
     start_pos,
-    end,
+    END,
     reference_bases,
     alternate_bases,
     vt,
@@ -88,32 +88,50 @@ FROM (
         FALSE) AS is_case,
       reference_bases,
       alternate_bases,
-      end,
+      END,
       vt,
-      # 1,000 genomes data is bi-allelic so there is only ever a single alt
-      (0 = call.first_allele) + (0 = call.second_allele) AS ref_count,
-      (1 = call.first_allele) + (1 = call.second_allele) AS alt_count,
+      # 1000 genomes data IS bi-allelic so there IS only ever a single alt
+      (0 = first_allele) + (0 = second_allele) AS ref_count,
+      (1 = first_allele) + (1 = second_allele) AS alt_count,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
+      FLATTEN((
+        SELECT
+          contig_name,
+          start_pos,
+          reference_bases,
+          alternate_bases,
+          END,
+          vt,
+          call.callset_name,
+          NTH(1,
+            call.genotype) WITHIN call AS first_allele,
+          NTH(2,
+            call.genotype) WITHIN call AS second_allele,
+        FROM
+          [google.com:biggene:1000genomes.phase1_variants]
+        WHERE
+          contig_name = '12'
+        HAVING
+          # Exclude calls _where one _or both alleles were NOT called (-1)
+          0 <= first_allele
+          AND 0 <= second_allele
+          ),
         call) AS g
     JOIN
       [google.com:biggene:1000genomes.sample_info] p
     ON
       g.call.callset_name = p.sample
-    WHERE
-      contig_name = '12'
-      # Exclude calls where one or both alleles were not called (-1)
-      AND 0 <= call.first_allele AND 0 <= call.second_allele
       )
   GROUP BY
     contig_name,
     start_pos,
-    end,
+    END,
     reference_bases,
     alternate_bases,
     vt)
 HAVING
-  z_score >= 5.326724 OR z_score <= -5.326724
+  z_score >= 5.326724
+  OR z_score <= -5.326724
 ORDER BY
   z_score DESC,
   allele_count DESC

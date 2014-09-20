@@ -1,4 +1,4 @@
-# Summarize the variant counts by 10,000 start_pos-wide windows in order to identify 
+# Summarize the variant counts by 10,000 start_pos-wide windows in order to identify
 # variant hotspots within a chromosome for all samples.
 SELECT
   contig_name,
@@ -14,11 +14,15 @@ FROM (
     start_pos,
     INTEGER(FLOOR(start_pos / 10000)) AS window,
     call.callset_name AS sample_id,
+    NTH(1,
+      call.genotype) WITHIN call AS first_allele,
+    NTH(2,
+      call.genotype) WITHIN call AS second_allele,
   FROM
     [google.com:biggene:1000genomes.phase1_variants]
-  WHERE
-    call.first_allele > 0
-      OR call.second_allele > 0)
+  HAVING
+    first_allele > 0
+      OR second_allele > 0)
 GROUP BY
   contig_name,
   window,

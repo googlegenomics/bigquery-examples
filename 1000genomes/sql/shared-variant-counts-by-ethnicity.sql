@@ -4,9 +4,9 @@ SELECT
   pops.super_population AS super_population,
   super_population_count,
   is_common_variant,
-  num_samples_in_pop_with_variant_in_category,
-  num_samples_in_pop_with_variant_in_category / super_population_count
-  AS percent_samples_in_pop_with_variant_in_category,
+  num_samples,
+  num_samples / super_population_count
+  AS percent_samples,
   COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM
   (
@@ -16,42 +16,54 @@ FROM
     reference_bases,
     alt,
     vt,
-    end,
+    END,
     super_population,
-    IF(af >= 0.05,
-      1,
-      0) AS is_common_variant,
-    SUM(has_variant) AS num_samples_in_pop_with_variant_in_category
+    is_common_variant,
+    SUM(has_variant) AS num_samples
   FROM (
     SELECT
       contig_name,
       start_pos,
       reference_bases,
-      GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+      alt,
       vt,
-      end,
+      END,
       super_population,
-      IF(af >= 0.05,
-        TRUE,
-        FALSE) AS is_common_variant,
-      IF(call.first_allele > 0
-        OR call.second_allele > 0,
+      is_common_variant,
+      IF(first_allele > 0
+        OR second_allele > 0,
         1,
         0) AS has_variant
-    FROM
-      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
-        call) AS samples
+    FROM (
+        FLATTEN((
+          SELECT
+            contig_name,
+            start_pos,
+            reference_bases,
+            GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+            vt,
+            END,
+            af >= 0.05 AS is_common_variant,
+            call.callset_name AS sample_id,
+            NTH(1,
+              call.genotype) WITHIN call AS first_allele,
+            NTH(2,
+              call.genotype) WITHIN call AS second_allele,
+          FROM
+            [google.com:biggene:1000genomes.phase1_variants]
+            ),
+          call)) AS samples
     JOIN
       [google.com:biggene:1000genomes.sample_info] p
     ON
-      samples.call.callset_name = p.sample)
+      samples.sample_id = p.sample)
     GROUP EACH BY
     contig_name,
     start_pos,
     reference_bases,
     alt,
     vt,
-    end,
+    END,
     super_population,
     is_common_variant) AS vars
 JOIN (
@@ -70,7 +82,9 @@ ON
   super_population,
   super_population_count,
   is_common_variant,
-  num_samples_in_pop_with_variant_in_category,
-  percent_samples_in_pop_with_variant_in_category
+  num_samples,
+  percent_samples
 ORDER BY
-  num_samples_in_pop_with_variant_in_category
+  num_samples,
+  super_population,
+  is_common_variant
