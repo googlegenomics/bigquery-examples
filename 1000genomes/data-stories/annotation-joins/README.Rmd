@@ -26,9 +26,9 @@ require(xtable)
 require(testthat)
 project <- "google.com:biggene" # put your projectID here
 DisplayAndDispatchQuery <- function(queryUri) {
-  sql <- readChar(queryUri, nchars=1e6)
-  cat(sql)
-  query_exec(sql, project)
+  querySql <- readChar(queryUri, nchars=1e6)
+  cat(querySql)
+  query_exec(querySql, project)
 }
 ```
 
@@ -42,9 +42,9 @@ tables <- c("1000genomes.phase1_variants",
             "annotations.known_genes",
             "annotations.known_genes_aliases")
 lapply(tables, function(table) {
-  sql <- paste0("SELECT count(*) AS cnt FROM [google.com:biggene:",
+  querySql <- paste0("SELECT count(*) AS cnt FROM [google.com:biggene:",
                 table, "]")
-  result <- query_exec(sql, project)
+  result <- query_exec(querySql, project)
   paste(table, result, sep=": ")
 })
 ```
@@ -94,8 +94,8 @@ We can see that some variants are shared by as many as four family members.
 
 First, let us see what the INDEL data looks like in ClinVar:
 ```{r cache=TRUE}
-sql <- 'SELECT * FROM [google.com:biggene:annotations.clinvar] where type="indel"'
-result <- query_exec(sql, project)
+querySql <- 'SELECT * FROM [google.com:biggene:annotations.clinvar] where type="indel"'
+result <- query_exec(querySql, project)
 ```
 Number of rows returned by this query: `r nrow(result)`.
 

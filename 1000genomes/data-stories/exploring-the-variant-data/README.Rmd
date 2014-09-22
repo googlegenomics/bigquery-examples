@@ -30,9 +30,9 @@ pallette_colour = scale_colour_manual(values=cbPalette)
 
 # Run a query against BigQuery 1k genomes table
 project <- "google.com:biggene" # put your projectID here
-RunQuery <- function(sql) {
-  cat(sql)
-  return(query_exec(sql, project))
+RunQuery <- function(querySql) {
+  cat(querySql)
+  return(query_exec(querySql, project))
 }
 
 # Examines the quality score distibution of each variant type.

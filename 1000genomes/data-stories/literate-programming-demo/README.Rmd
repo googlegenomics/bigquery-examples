@@ -58,15 +58,15 @@ library(ggplot2)
 
 And pull in the SQL for an interesting query:
 ```{r sql, comment=NA}
-sql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql",
+querySql <- readChar("../../sql/minimum-allelic-frequency-by-ethnicity.sql",
                nchars=1e6)
-cat(sql)
+cat(querySql)
 ```
 
 We will execute our query, bringing the results down to our R session for further examination:
 ```{r exec}
 project <- "google.com:biggene" # put your projectID here
-result <- query_exec(sql, project)
+result <- query_exec(querySql, project)
 ```
 
 Let us examine our query result:
