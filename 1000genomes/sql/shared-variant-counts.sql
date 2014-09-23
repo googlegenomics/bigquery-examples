@@ -1,6 +1,6 @@
 # Count the number of variants shared by none, shared by one sample, two samples, etc...
 SELECT
-  num_samples_with_variant AS num_shared_variants,
+  num_samples_with_variant,
   COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM (
   SELECT
@@ -25,6 +25,6 @@ FROM (
     alt
     )
 GROUP BY
-  num_shared_variants
+  num_samples_with_variant
 ORDER BY
-  num_shared_variants
+  num_samples_with_variant

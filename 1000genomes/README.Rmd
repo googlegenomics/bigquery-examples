@@ -18,13 +18,12 @@
 =================
 
 ### Additional Resources
-* [Schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1)
+* [Schema](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1)
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
  * [Exploring the variant data](./data-stories/exploring-the-variant-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
- * [Literate Programming with R and BigQuery](./data-stories/literate-programming-demo)
 * [Index of variant analyses](./sql)
 
 ### Diving right in
@@ -44,12 +43,14 @@ DisplayAndDispatchQuery <- function(queryUri) {
 }
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+```{r echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+# TODO fixme when these columns are back
 result <- DisplayAndDispatchQuery("./sql/ratio-of-dbsnp-variants-by-chromosome.sql")
 ```
 
 We see the tabular results:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+```{r echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+# TODO fixme when these columns are back
 print(xtable(result, digits=6), type="html", include.rownames=F)
 ```
 
@@ -64,7 +65,7 @@ qplot(num_variants, num_dbsnp_variants, color=num_variants, data=result) +
 ```
 
 ### Variant Metadata
-The 1000 Genomes variant data is stored in the [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for more detail.
+The 1000 Genomes variant data is stored in the [variants](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1) for more detail.
 
 Show variants within BRCA1:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
@@ -133,7 +134,7 @@ Number of rows returned by this query: `r nrow(result)`.
 
 ```{r sanity check, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 # Check that the query logic was correct
-expect_equal(object=sum(as.numeric(result$num_samples_in_pop_with_variant_in_category *
+expect_equal(object=sum(as.numeric(result$num_samples *
                                    result$num_variants_shared_by_this_many_samples)),
              expected=sum(as.numeric(sharedVars$num_samples_with_variant *
                                      sharedVars$num_variants_shared_by_this_many_samples)))
@@ -150,7 +151,7 @@ print(xtable(tail(result)), type="html", include.rownames=F)
 ```
 
 ```{r shared variants by pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
-ggplot(result, aes(x=num_samples_in_pop_with_variant_in_category,
+ggplot(result, aes(x=num_samples,
                    y=num_variants_shared_by_this_many_samples,
                    color=super_population,
                    shape=is_common_variant)) +
@@ -167,7 +168,7 @@ separate plots for common and rare variants.
 
 First, common variants:
 ```{r shared common variants by pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
-ggplot(filter(result, is_common_variant == TRUE), aes(x=num_samples_in_pop_with_variant_in_category,
+ggplot(filter(result, is_common_variant == TRUE), aes(x=num_samples,
                    y=num_variants_shared_by_this_many_samples,
                    color=super_population,
                    shape=is_common_variant)) +
@@ -181,7 +182,7 @@ ggplot(filter(result, is_common_variant == TRUE), aes(x=num_samples_in_pop_with_
 ```
 There seems to be some interesting shape to this plot, but the sample counts are a little misleading since the number of samples within each super population is not the same.  Let us normalize by total number of samples in each super population group.
 ```{r shared common variants by percent pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
-ggplot(filter(result, is_common_variant == TRUE), aes(x=percent_samples_in_pop_with_variant_in_category,
+ggplot(filter(result, is_common_variant == TRUE), aes(x=percent_samples,
                    y=num_variants_shared_by_this_many_samples,
                    color=super_population,
                    shape=is_common_variant)) +
@@ -198,7 +199,7 @@ Its interesting to see that the Asian superpopulation has both the most variants
 And now for rare variants:
 ```{r shared rare variants by pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(filter(result, is_common_variant == FALSE),
-       aes(x=num_samples_in_pop_with_variant_in_category,
+       aes(x=num_samples,
            y=num_variants_shared_by_this_many_samples,
            color=super_population,
            shape=is_common_variant)) +
@@ -213,7 +214,7 @@ ggplot(filter(result, is_common_variant == FALSE),
 Again, normalizing by population size:
 ```{r shared rare variants by percent pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(filter(result, is_common_variant == FALSE),
-       aes(x=percent_samples_in_pop_with_variant_in_category,
+       aes(x=percent_samples,
            y=num_variants_shared_by_this_many_samples,
            color=super_population,
            shape=is_common_variant)) +

@@ -12,7 +12,6 @@ The following sections demonstrate some interactive exploration within the 1,000
    * [Reproducing Allelic Frequencies](./reproducing-allelic-frequencies)
    * [Reproducing the Hardy-Weinberg Equilibrium test](./reproducing-hardy-weinberg-equilibrium)
  * Advanced Topics
-   * [Literate Programming with R and BigQuery](./literate-programming-demo)
    * [JOINs 1,000 Genomes with Variant Annotation Databases](./annotation-joins)
 
 Have other data stories you would like to see here?  Have any data stories you would like to *share*?  Have *corrections to the biology* covered in this material?  Have query *simplifications* or *speed improvements*?  Let us know by [filing an issue](https://github.com/googlegenomics/bigquery-examples/issues) or [contacting us directly](mailto:google-genomics-contact@googlegroups.com).
