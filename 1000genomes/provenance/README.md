@@ -19,7 +19,7 @@ Note: information for sample NA12236 is present in the pedigree table but not sa
 Description: 
 * http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/README_20130606_sample_info
 * http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/README.populations
-* [BigQuery table](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.sample_info?pli=1)
+* [BigQuery table](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.sample_info?pli=1)
 
 Source: 
 * http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_sample_info.txt 
@@ -29,14 +29,30 @@ Source:
 Status: 
 * complete, see script [sample-info-prep.R](./sample-info-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery
 
+To load the script output via the [bq command line tool](https://developers.google.com/bigquery/bq-command-line-tool#creatingtablefromfile), run:
+```
+bq load --project_id <YOUR-PROJECT_ID> --source_format=CSV \
+--skip_leading_rows=1 <YOUR_DATASET.YOUR_TABLE> \
+gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.csv \
+gs://genomics-public-data/1000-genomes/other/sample_info/sample_info.schema
+```
+
 ### pedigree table
 
 Description: 
 * http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/README_20130606_sample_info
-* [BigQuery table](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.pedigree?pli=1)
+* [BigQuery table](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.pedigree?pli=1)
 
 Source:  
 * http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_g1k.ped
 
 Status: 
-* complete, no cleaning or transformation needed 
+* complete, no cleaning or transformation needed
+
+To load the source file via the [bq command line tool](https://developers.google.com/bigquery/bq-command-line-tool#creatingtablefromfile), download it to your local system and run:
+```
+bq load --project_id <YOUR-PROJECT_ID> --source_format=CSV \
+--field_delimiter=tab --skip_leading_rows=1 <YOUR_DATASET.YOUR_TABLE> \
+./20130606_g1k.ped \
+Family_ID:STRING,Individual_ID:STRING,Paternal_ID:STRING,Maternal_ID:STRING,Gender:INTEGER,Phenotype:INTEGER,Population:STRING,Relationship:STRING,Siblings:STRING,Second_Order:STRING,Third_Order:STRING,Other_Comments:STRING
+```
