@@ -12,55 +12,65 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Script to auto-generate BigQuery schema and clean the data for BigQuery ingestion
-library(plyr)
+# This script auto-generates the BigQuery schema and cleans the 1,000 Genomes sample info
+# for BigQuery ingestion.
+library(dplyr)
 library(testthat)
 
-dataDir <- './'
+# Change these values to load this data into your own project
+destinationProject <- 'genomics-public-data'
+destinationTable <- '1000_genomes.sample_info'
 
-# Load Data
-pheno <- read.delim(file.path(dataDir, '20130606_sample_info.txt'),
-                    na.strings=c('NA', 'N/A'))
-expect_that(nrow(pheno), equals(3500))
-expect_that(ncol(pheno), equals(61))
+inputDir <- 'http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/'
+outputDir <- './'
 
-pop <- read.delim(file.path(dataDir, '20131219.populations.tsv'),
+# Load source data.
+info <- read.delim(file.path(inputDir,
+                             'technical/working/20130606_sample_info/20130606_sample_info.txt'),
+                   na.strings=c('NA', 'N/A'))
+expect_that(nrow(info), equals(3500))
+expect_that(ncol(info), equals(61))
+
+pop <- read.delim(file.path(inputDir,
+                            '20131219.populations.tsv'),
                   na.strings=c('NA', 'N/A'))
 expect_that(nrow(pop), equals(29))
 expect_that(ncol(pop), equals(9))
 
-super_pop <- read.delim(file.path(dataDir, '20131219.superpopulations.tsv'),
+super_pop <- read.delim(file.path(inputDir,
+                                  '20131219.superpopulations.tsv'),
                         na.strings=c('NA', 'N/A'))
 expect_that(nrow(super_pop), equals(5))
 expect_that(ncol(super_pop), equals(2))
 
-# Fix colnames so that colnames to JOIN upon match
+# Fix colnames so that colnames to JOIN upon match.
 colnames(pop) <- gsub('Population.Code', 'Population', colnames(pop))
 colnames(super_pop) <- gsub('Population.Code', 'Super.Population',
                             colnames(super_pop))
 colnames(super_pop) <- gsub('Description', 'Super.Population.Description',
                             colnames(super_pop))
 
-# Check our JOIN criteria
+# Check our JOIN criteria.
 expect_that(length(union(as.character(pop$Population),
-                         as.character(pheno$Population))),
+                         as.character(info$Population))),
             equals(27))
 expect_that(setdiff(as.character(pop$Population),
-                    as.character(pheno$Population)),
-            equals(c("")))
+                    as.character(info$Population)),
+            equals(c('')))
 expect_that(setdiff(as.character(super_pop$Super.Population),
                     as.character(pop$Super.Population)),
             equals(character(0)))
 
-# JOIN it all together
-pop_data <- join(pop[, colnames(pop) %in% c('Population',
-                                            'Population.Description',
-                                            'Super.Population')], super_pop)
-data <- join(pheno, pop_data, type='inner')
+# JOIN it all together.
+pop_data <- inner_join(pop[, colnames(pop) %in% c('Population',
+                                                  'Population.Description',
+                                                  'Super.Population')],
+                       super_pop)
+data <- inner_join(info, pop_data)
 expect_that(nrow(data), equals(3500))
 expect_that(ncol(data), equals(63))
 
-# Clean column names
+# Clean column names.
 colnames(data) <- gsub('\\.+', '_', colnames(data))
 colnames(data) <- gsub('E_Indel_Ration', 'E_Indel_Ratio', colnames(data))
 
@@ -132,7 +142,7 @@ description <- list(
     Super_Population_Description='From ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv'
     )
 
-# Generate BQ Schema
+# Auto-generate the BigQuery schema from the column types in the dataframe.
 cols <- colnames(data)
 empty_ints <- c(NA)
 bool_ints <- c(0, 1, NA)
@@ -156,21 +166,42 @@ for (i in 1:length(cols)) {
             type <- 'INTEGER'
         }
     }
-    schema <- append(schema, paste("{'name':'", cols[i], "', 'type':'",
-      type, "', 'description':'", description[[cols[i]]], "'}",
-      sep="", collapse=","))
+    schema <- append(schema, paste('{"name":"', cols[i], '", "type":"',
+      type, '", "description":"', description[[cols[i]]], '"}',
+      sep='', collapse=','))
 }
-print(paste(schema, collapse=','))
+schemaFilepath <- file.path(outputDir, 'sample_info.schema')
+fileConn<-file(schemaFilepath)
+writeLines(c('[', paste(schema, collapse=','), ']'), fileConn)
+close(fileConn)
 
-# Drop empty columns
+# Drop empty columns.
 cleaned_data <- data[, !(names(data) %in% to_drop)]
 
-# Spot check our result
+# Spot check our result.
 expect_that(subset(cleaned_data, Sample == 'HG00114',
                    select=Total_Exome_Sequence)[1, 1], equals(10374134700))
 expect_that(subset(cleaned_data, Sample == 'HG00114',
                    select=EBV_Coverage)[1, 1], equals(10.78))
 
-# Write out file to load into BigQuery
-write.csv(cleaned_data, file.path(dataDir, 'pheno_pop.csv'),
-          row.names=FALSE, na="")
+# Write out the file to load into BigQuery.
+dataFilepath <- file.path(outputDir, 'sample_info.csv')
+write.csv(cleaned_data, dataFilepath,
+          row.names=FALSE, na='')
+
+# Load the data to BigQuery.
+# Below we are calling the bq command line tool but the data can also be loaded
+# via the BigQuery browser tool.
+# https://developers.google.com/bigquery/bigquery-browser-tool#createtable
+
+# https://developers.google.com/bigquery/bq-command-line-tool#creatingtablefromfile
+command = paste('~/google-cloud-sdk/bin/bq',
+                'load',
+                '--project_id', destinationProject,
+                '--source_format=CSV',
+                '--skip_leading_rows=1', # the CSV header row
+                destinationTable,
+                dataFilepath,
+                schemaFilepath,
+                '2>&1')
+system(command, intern=TRUE)

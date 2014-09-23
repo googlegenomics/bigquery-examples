@@ -6,41 +6,7 @@ Source Variant Data
 
 ### variants table
 
-Description:
-* http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20110521/README.phase1_integrated_release_version3_20120430
-* [BigQuery table](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1)
-
-
-Source: 
-* http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20110521
-
-Files: 
-* ALL.chr1.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr2.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr3.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr4.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr5.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr6.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr7.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr8.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr9.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr10.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr11.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr12.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr13.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr14.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr15.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr16.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr18.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr19.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr20.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr21.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chr22.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-* ALL.chrX.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz
-
-Status: 
-* Complete
+See [Google Genomics Public Data](https://cloud.google.com/genomics/data/1000-genomes) for provenance details for this data.
 
 Source Sample Information
 --------------------------------
@@ -61,7 +27,7 @@ Source:
 * http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/20131219.superpopulations.tsv
 
 Status: 
-* complete, see script [pheno-pop-prep.R](./pheno-pop-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery
+* complete, see script [sample-info-prep.R](./sample-info-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery
 
 ### pedigree table
 
