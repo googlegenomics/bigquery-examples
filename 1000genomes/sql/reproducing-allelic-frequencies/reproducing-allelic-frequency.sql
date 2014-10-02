@@ -1,8 +1,8 @@
 # The following query computes the allelic frequency for BRCA1 variants in the
 # 1,000 Genomes dataset and also includes the pre-computed value from the dataset.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alternate_bases,
   SUM(ref_count)+SUM(alt_count) AS num_sample_alleles,
@@ -13,8 +13,8 @@ SELECT
   alt_freq_from_1KG
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     alternate_bases,
     alt,
@@ -31,8 +31,8 @@ FROM (
     alt_freq_from_1KG
   FROM (
     SELECT
-      contig_name,
-      start_pos,
+      reference_name,
+      start,
       reference_bases,
       alternate_bases,
       alt_freq_from_1KG,
@@ -44,35 +44,35 @@ FROM (
     FROM
       FLATTEN((
         SELECT
-          contig_name,
-          start_pos,
+          reference_name,
+          start,
           reference_bases,
           alternate_bases,
           af AS alt_freq_from_1KG,
           call.genotype
         FROM
-          [google.com:biggene:1000genomes.phase1_variants]
+          [genomics-public-data:1000_genomes.variants]
         WHERE
-          contig_name = '17'
-          AND start_pos BETWEEN 41196312
-          AND 41277500
+          reference_name = '17'
+          AND start BETWEEN 41196311
+          AND 41277499
           AND vt='SNP'),
         call)
       )
   GROUP BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     alternate_bases,
     alt,
     alt_freq_from_1KG)
 GROUP BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alternate_bases,
   alt,
   alt_freq_from_1KG
 ORDER BY
-  contig_name,
-  start_pos
+  reference_name,
+  start

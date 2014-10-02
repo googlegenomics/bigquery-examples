@@ -18,14 +18,14 @@ SELECT
       0)) AS het_RA_count
 FROM (
   SELECT
-    contig_name,
-    call.callset_name AS sample_id,
+    reference_name,
+    call.call_set_name AS sample_id,
     NTH(1,
       call.genotype) WITHIN call AS first_allele,
     NTH(2,
       call.genotype) WITHIN call AS second_allele,
   FROM
-    [google.com:biggene:1000genomes.phase1_variants])
+    [genomics-public-data:1000_genomes.variants])
 GROUP BY
   sample_id
 ORDER BY

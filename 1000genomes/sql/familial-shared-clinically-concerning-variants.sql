@@ -1,8 +1,8 @@
 # Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the
 # number of family members sharing the SNP
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -11,8 +11,8 @@ SELECT
   num_family_members_with_variant,
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     ref,
     alt,
     clinicalsignificance,
@@ -23,11 +23,11 @@ FROM (
     (FLATTEN(
         (
         SELECT
-          contig_name,
-          start_pos,
+          reference_name,
+          var.start AS start,
           ref,
           alt,
-          call.callset_name AS sample_id,
+          call.call_set_name AS sample_id,
           NTH(1,
             call.genotype) WITHIN var.call AS first_allele,
           NTH(2,
@@ -35,7 +35,7 @@ FROM (
           clinicalsignificance,
           disease_id,
         FROM
-          FLATTEN([google.com:biggene:1000genomes.phase1_variants],
+          FLATTEN([genomics-public-data:1000_genomes.variants],
             alternate_bases) AS var
         JOIN (
           SELECT
@@ -57,8 +57,8 @@ FROM (
               OR clinicalsignificance CONTAINS 'Pathogenic')
             ) AS clin
         ON
-          var.contig_name = clin.chromosome
-          AND var.start_pos = clin.start
+          var.reference_name = clin.chromosome
+          AND var.start = clin.start
           AND reference_bases = ref
           AND alternate_bases = alt
         WHERE
@@ -68,12 +68,12 @@ FROM (
           OR second_allele > 0),
         var.call)) AS sig
   JOIN
-    [google.com:biggene:1000genomes.pedigree] AS ped
+    [genomics-public-data:1000_genomes.pedigree] AS ped
   ON
     sig.sample_id = ped.individual_id
   GROUP BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     ref,
     alt,
     clinicalsignificance,
@@ -84,8 +84,8 @@ JOIN
 ON
   names.conceptid = families.disease_id
 GROUP BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -95,6 +95,6 @@ GROUP BY
 ORDER BY
   num_family_members_with_variant DESC,
   clinicalsignificance,
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   family_id

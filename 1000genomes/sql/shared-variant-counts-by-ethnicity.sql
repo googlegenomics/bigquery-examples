@@ -11,8 +11,8 @@ SELECT
 FROM
   (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     alt,
     vt,
@@ -22,8 +22,8 @@ FROM
     SUM(has_variant) AS num_samples
   FROM (
     SELECT
-      contig_name,
-      start_pos,
+      reference_name,
+      start,
       reference_bases,
       alt,
       vt,
@@ -37,29 +37,29 @@ FROM
     FROM (
         FLATTEN((
           SELECT
-            contig_name,
-            start_pos,
+            reference_name,
+            start,
             reference_bases,
             GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
             vt,
             END,
             af >= 0.05 AS is_common_variant,
-            call.callset_name AS sample_id,
+            call.call_set_name AS sample_id,
             NTH(1,
               call.genotype) WITHIN call AS first_allele,
             NTH(2,
               call.genotype) WITHIN call AS second_allele,
           FROM
-            [google.com:biggene:1000genomes.phase1_variants]
+            [genomics-public-data:1000_genomes.variants]
             ),
           call)) AS samples
     JOIN
-      [google.com:biggene:1000genomes.sample_info] p
+      [genomics-public-data:1000_genomes.sample_info] p
     ON
       samples.sample_id = p.sample)
     GROUP EACH BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     alt,
     vt,
@@ -71,7 +71,7 @@ JOIN (
     super_population,
     COUNT(population) AS super_population_count,
   FROM
-    [google.com:biggene:1000genomes.sample_info]
+    [genomics-public-data:1000_genomes.sample_info]
   WHERE
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY

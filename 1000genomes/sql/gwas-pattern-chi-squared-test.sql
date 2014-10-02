@@ -16,11 +16,11 @@
 # > qchisq(1 - 5e-08, df=1)
 #   [1] 29.71679
 
-# For example, see alcohol flush reaction at start_pos 112241766
+# For example, see alcohol flush reaction at start 112241766
 
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   end,
   reference_bases,
   alternate_bases,
@@ -47,8 +47,8 @@ SELECT
   AS chi_squared_score
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     end,
     reference_bases,
     alternate_bases,
@@ -76,8 +76,8 @@ FROM (
         0)) AS control_alt_count,
   FROM (
     SELECT
-      contig_name,
-      start_pos,
+      reference_name,
+      start,
       IF('ASN' = super_population,
         TRUE,
         FALSE) AS is_case,
@@ -91,21 +91,21 @@ FROM (
     FROM
       FLATTEN((
         SELECT
-          contig_name,
-          start_pos,
+          reference_name,
+          start,
           reference_bases,
           alternate_bases,
           END,
           vt,
-          call.callset_name,
+          call.call_set_name,
           NTH(1,
             call.genotype) WITHIN call AS first_allele,
           NTH(2,
             call.genotype) WITHIN call AS second_allele,
         FROM
-          [google.com:biggene:1000genomes.phase1_variants]
+          [genomics-public-data:1000_genomes.variants]
         WHERE
-          contig_name = '12'
+          reference_name = '12'
         HAVING
           # Exclude calls _where one _or both alleles were NOT called (-1)
           0 <= first_allele
@@ -113,13 +113,13 @@ FROM (
           ),
         call) AS g
     JOIN
-      [google.com:biggene:1000genomes.sample_info] p
+      [genomics-public-data:1000_genomes.sample_info] p
     ON
-      g.call.callset_name = p.sample
+      g.call.call_set_name = p.sample
       )
   GROUP BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     end,
     reference_bases,
     alternate_bases,

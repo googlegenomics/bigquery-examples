@@ -6,21 +6,21 @@ SELECT
 FROM
   (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     IF(0 < call.genotype,
-      call.callset_name,
+      call.call_set_name,
       NULL) AS sample_id,
     SUM(IF(0 < call.genotype,
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM
-    [google.com:biggene:1000genomes.phase1_variants]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig_name = '17'
-    AND start_pos BETWEEN 41196312
-    AND 41277500
+    reference_name = '17'
+    AND start BETWEEN 41196311
+    AND 41277499
   HAVING
     num_samples_with_variant = 1
     AND sample_id IS NOT NULL)

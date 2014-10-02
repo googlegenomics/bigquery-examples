@@ -2,7 +2,7 @@
 SELECT
   sample_id,
   gene_variants.name AS name,
-  contig_name,
+  reference_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -13,7 +13,7 @@ FROM (
   SELECT
     sample_id,
     name,
-    var.contig_name AS contig_name,
+    var.reference_name AS reference_name,
     MIN(variant_start) AS min_variant_start,
     MAX(variant_end) AS max_variant_start,
     gene_start,
@@ -21,22 +21,22 @@ FROM (
     COUNT(*) AS cnt
   FROM (
     SELECT
-      contig_name,
-      start_pos AS variant_start,
+      reference_name,
+      start AS variant_start,
       IF(vt != 'SV',
-        start_pos + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
+        start + (LENGTH(alternate_bases) - LENGTH(reference_bases)),
         END) AS variant_end,
-      call.callset_name AS sample_id,
+      call.call_set_name AS sample_id,
       NTH(1,
         call.genotype) WITHIN call AS first_allele,
       NTH(2,
         call.genotype) WITHIN call AS second_allele,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.phase1_variants],
+      FLATTEN([genomics-public-data:1000_genomes.variants],
         alternate_bases)
     WHERE
-      contig_name = '17'
-      AND call.callset_name = 'NA19764'
+      reference_name = '17'
+      AND call.call_set_name = 'NA19764'
     HAVING
       first_allele > 0
       OR second_allele > 0
@@ -45,13 +45,13 @@ FROM (
     SELECT
       name,
       REGEXP_EXTRACT(chrom,
-        r'chr(\d+)') AS contig_name,
+        r'chr(\d+)') AS reference_name,
       txStart AS gene_start,
       txEnd AS gene_end,
     FROM
       [google.com:biggene:annotations.known_genes] ) AS genes
   ON
-    var.contig_name = genes.contig_name
+    var.reference_name = genes.reference_name
   WHERE
     ( var.variant_start <= var.variant_end
       AND NOT (
@@ -62,7 +62,7 @@ FROM (
   GROUP BY
     sample_id,
     name,
-    contig_name,
+    reference_name,
     gene_start,
     gene_end) AS gene_variants
 JOIN
@@ -72,7 +72,7 @@ ON
 GROUP BY
   sample_id,
   name,
-  contig_name,
+  reference_name,
   min_variant_start,
   max_variant_start,
   gene_start,
@@ -81,7 +81,7 @@ GROUP BY
 ORDER BY
   sample_id,
   name,
-  contig_name,
+  reference_name,
   min_variant_start,
   max_variant_start,
   gene_start,

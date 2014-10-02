@@ -3,7 +3,7 @@ SELECT
   clinicalsignificance,
   COUNT(1) AS num_variants
 FROM
-  FLATTEN([google.com:biggene:1000genomes.phase1_variants],
+  FLATTEN([genomics-public-data:1000_genomes.variants],
     alternate_bases) AS var
 JOIN (
   SELECT
@@ -22,8 +22,8 @@ JOIN (
     type='single nucleotide variant'
     ) AS clin
 ON
-  var.contig_name = clin.chromosome
-  AND var.start_pos = clin.start
+  var.reference_name = clin.chromosome
+  AND var.start = clin.start
   AND reference_bases = ref
   AND alternate_bases = alt
 WHERE

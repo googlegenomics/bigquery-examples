@@ -1,7 +1,7 @@
 # Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -9,11 +9,11 @@ SELECT
   sample_id,
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    var.start AS start,
     ref,
     alt,
-    call.callset_name AS sample_id,
+    call.call_set_name AS sample_id,
     NTH(1,
       call.genotype) WITHIN var.call AS first_allele,
     NTH(2,
@@ -21,7 +21,7 @@ FROM (
     clinicalsignificance,
     disease_id,
   FROM
-    FLATTEN([google.com:biggene:1000genomes.phase1_variants],
+    FLATTEN([genomics-public-data:1000_genomes.variants],
       alternate_bases) AS var
   JOIN (
     SELECT
@@ -43,12 +43,12 @@ FROM (
         OR clinicalsignificance CONTAINS 'Pathogenic')
       ) AS clin
   ON
-    var.contig_name = clin.chromosome
-    AND var.start_pos = clin.start
+    var.reference_name = clin.chromosome
+    AND var.start = clin.start
     AND reference_bases = ref
     AND alternate_bases = alt
   WHERE
-    call.callset_name = 'NA19764'
+    call.call_set_name = 'NA19764'
     AND var.vt='SNP'
   HAVING
     first_allele > 0
@@ -58,8 +58,8 @@ JOIN
 ON
   names.conceptid = sig.disease_id
 GROUP BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -67,5 +67,5 @@ GROUP BY
   sample_id,
 ORDER BY
   clinicalsignificance,
-  contig_name,
-  start_pos
+  reference_name,
+  start

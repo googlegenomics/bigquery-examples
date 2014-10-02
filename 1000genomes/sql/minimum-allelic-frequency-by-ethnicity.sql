@@ -1,10 +1,10 @@
 # Count the variation for each sample including phenotypic traits
 SELECT
-  samples.call.callset_name AS sample_id,
+  samples.call.call_set_name AS sample_id,
   gender,
   population,
   super_population,
-  COUNT(samples.call.callset_name) AS num_variants_for_sample,
+  COUNT(samples.call.call_set_name) AS num_variants_for_sample,
   SUM(IF(samples.af >= 0.05,
       INTEGER(1),
       INTEGER(0))) AS common_variant,
@@ -24,13 +24,13 @@ FROM
     SELECT
       af,
       vt,
-      call.callset_name,
+      call.call_set_name,
       NTH(1,
         call.genotype) WITHIN call AS first_allele,
       NTH(2,
         call.genotype) WITHIN call AS second_allele,
     FROM
-      [google.com:biggene:1000genomes.phase1_variants]
+      [genomics-public-data:1000_genomes.variants]
     WHERE
       vt = 'SNP'
     HAVING
@@ -39,9 +39,9 @@ FROM
       ),
     call) AS samples
 JOIN
-  [google.com:biggene:1000genomes.sample_info] p
+  [genomics-public-data:1000_genomes.sample_info] p
 ON
-  samples.call.callset_name = p.sample
+  samples.call.call_set_name = p.sample
 GROUP BY
   sample_id,
   gender,

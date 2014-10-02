@@ -1,19 +1,19 @@
-# Get three particular start_pos on chromosome 17 that have alternate variants.
+# Get three particular start on chromosome 17 that have alternate variants.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-#  GROUP_CONCAT(id) WITHIN RECORD AS ids,
+  GROUP_CONCAT(names) WITHIN RECORD AS names,
   vt,
 FROM
-  [google.com:biggene:1000genomes.phase1_variants]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig_name = '17'
-  AND (start_pos = 48515943
-    OR start_pos = 48570614
-    OR start_pos = 48659343)
+  reference_name = '17'
+  AND (start = 48515943
+    OR start = 48570614
+    OR start = 48659343)
 ORDER BY
-  start_pos,
+  start,
   reference_bases,
   alt

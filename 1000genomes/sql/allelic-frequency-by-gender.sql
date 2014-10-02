@@ -1,8 +1,8 @@
 # The following query computes the allelic frequency for BRCA1 variants in the 
 # 1,000 Genomes dataset further classified by gender from the phenotypic data.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   gender,
   reference_bases,
   alternate_bases
@@ -14,75 +14,75 @@ SELECT
   SUM(alt_count)/(SUM(ref_count)+SUM(alt_count)) AS alt_freq,
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     gender,
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = allele1,
+    SUM(IF(0 = first_allele,
         1,
-        0) + IF(0 = allele2,
+        0) + IF(0 = second_allele,
         1,
         0)) AS ref_count,
-    SUM(IF(alt = allele1,
+    SUM(IF(alt = first_allele,
         1,
-        0) + IF(alt = allele2,
+        0) + IF(alt = second_allele,
         1,
         0)) AS alt_count
   FROM (
     SELECT
-      g.contig_name AS contig_name,
-      g.start_pos AS start_pos,
+      g.reference_name AS reference_name,
+      g.start AS start,
       p.gender AS gender,
       g.reference_bases AS reference_bases,
       g.alternate_bases AS alternate_bases,
       POSITION(g.alternate_bases) AS alt,
-      allele1,
-      allele2,
+      first_allele,
+      second_allele,
     FROM
       FLATTEN((
         SELECT
-          contig_name,
-          start_pos,
+          reference_name,
+          start,
           reference_bases,
           alternate_bases,
-          call.callset_name,
+          call.call_set_name,
           NTH(1,
-            call.genotype) WITHIN call AS allele1,
+            call.genotype) WITHIN call AS first_allele,
           NTH(2,
-            call.genotype) WITHIN call AS allele2,
+            call.genotype) WITHIN call AS second_allele,
         FROM
-          [google.com:biggene:1000genomes.phase1_variants]
+          [genomics-public-data:1000_genomes.variants]
         WHERE
-          contig_name = '17'
-          AND start_pos BETWEEN 41196312
-          AND 41277500
+          reference_name = '17'
+          AND start BETWEEN 41196311
+          AND 41277499
           AND vt='SNP'
           ),
         call) AS g
     JOIN
-      [google.com:biggene:1000genomes.sample_info] p
+      [genomics-public-data:1000_genomes.sample_info] p
     ON
-      g.call.callset_name = p.sample
+      g.call.call_set_name = p.sample
       )
   GROUP BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     gender,
     reference_bases,
     alternate_bases,
     alt)
 GROUP BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   gender,
   reference_bases,
   alternate_bases,
   alt
 ORDER BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   gender,
   reference_bases,
   alt,

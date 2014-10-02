@@ -9,8 +9,8 @@
 # http://www.nfstc.org/pdi/Subject07/pdi_s07_m01_02.p.htm
 
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   END,
   reference_bases,
   alt,
@@ -37,8 +37,8 @@ SELECT
   alt_freq_from_1KG,
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     END,
     reference_bases,
     alt,
@@ -62,8 +62,8 @@ FROM (
     hom_alt_freq,
   FROM (
     SELECT
-      contig_name,
-      start_pos,
+      reference_name,
+      start,
       END,
       reference_bases,
       alt,
@@ -102,8 +102,8 @@ FROM (
           OR 1 = second_allele)) WITHIN RECORD AS hom_alt_freq,
     FROM (
       SELECT
-        contig_name,
-        start_pos,
+        reference_name,
+        start,
         END,
         reference_bases,
         GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
@@ -115,12 +115,12 @@ FROM (
         NTH(2,
           call.genotype) WITHIN call AS second_allele,
       FROM
-        [google.com:biggene:1000genomes.phase1_variants]
+        [genomics-public-data:1000_genomes.variants]
       WHERE
-        contig_name = '17'
-        AND start_pos BETWEEN 41196312
-        AND 41277500
+        reference_name = '17'
+        AND start BETWEEN 41196311
+        AND 41277499
         )))
 ORDER BY
-  contig_name,
-  start_pos
+  reference_name,
+  start

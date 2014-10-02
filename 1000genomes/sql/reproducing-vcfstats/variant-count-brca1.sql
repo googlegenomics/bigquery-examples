@@ -1,9 +1,9 @@
 # Count the number of variants in BRCA1
 SELECT
-  count(contig_name) as num_variants,
+  count(reference_name) as num_variants,
 FROM
-  [google.com:biggene:1000genomes.phase1_variants]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig_name = '17'
-  AND start_pos BETWEEN 41196312
-  AND 41277500
+  reference_name = '17'
+  AND start BETWEEN 41196311
+  AND 41277499
