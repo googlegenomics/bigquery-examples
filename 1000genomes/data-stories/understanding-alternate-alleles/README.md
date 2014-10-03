@@ -50,7 +50,7 @@ Number of rows returned by this query: 417.
 
 We see the first six tabular results:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:33:39 2014 -->
+<!-- Thu Oct  2 22:42:26 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 184672 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
@@ -88,7 +88,7 @@ GROUP BY
   num_alternates
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:33:44 2014 -->
+<!-- Thu Oct  2 22:42:32 2014 -->
 <TABLE border=1>
 <TR> <TH> num_alternates </TH> <TH> num_records </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 1045899 </TD> </TR>
@@ -120,7 +120,7 @@ ORDER BY
   alt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:33:53 2014 -->
+<!-- Thu Oct  2 22:42:38 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> names </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> rs8076712,rs8076712 </TD> <TD> SNP </TD> </TR>
@@ -170,7 +170,7 @@ ORDER BY
   vt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:33:58 2014 -->
+<!-- Thu Oct  2 22:42:42 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 412 </TD> </TR>
@@ -217,7 +217,7 @@ ORDER BY
   vt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:34:02 2014 -->
+<!-- Thu Oct  2 22:42:46 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 38754 </TD> </TR>
@@ -272,7 +272,7 @@ ORDER BY
   sample_id
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:34:10 2014 -->
+<!-- Thu Oct  2 22:42:52 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> alt </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> first_allele </TH> <TH> second_allele </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
@@ -318,16 +318,15 @@ HAVING
   sample_id = 'HG00100'
 ORDER BY
   alt
-Running query:   RUNNING  2.7sRunning query:   RUNNING  4.1sRunning query:   RUNNING  6.2s
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:34:21 2014 -->
+<!-- Thu Oct  2 22:42:57 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> ref </TH> <TH> alt </TH> <TH> filters </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> phaseset </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> PASS </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> TG </TD> <TD> PASS </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 0.90 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 0.90 </TD> <TD> 0,-0.6,-5.4 </TD> </TR>
    </TABLE>
-The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for details about the other fields.
+The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the table schema for details about the other fields.
 
 So a question for our users who have much experience in this domain, which variant is more likely for the second allele of HG00100?
 
@@ -368,7 +367,7 @@ ORDER BY
 ```
 
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 19:34:28 2014 -->
+<!-- Thu Oct  2 22:43:01 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
   <TR> <TD> 14 </TD> <TD align="right"> 106885900 </TD> <TD> G </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
