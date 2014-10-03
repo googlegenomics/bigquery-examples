@@ -1,4 +1,6 @@
-# Count the number of variants per gene within chromosome 17 for a particular sample
+# Count the number of variants per gene within chromosome 17 for a particular sample.
+# TODO: double check whether the annotation coordinates are 0-based as is
+#       the case for the variants.
 SELECT
   sample_id,
   gene_variants.name AS name,

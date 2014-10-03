@@ -1,5 +1,7 @@
 # Scan the entirety of 1,000 Genomes counting the number of variants found
-# within the BRCA1 and APOE genes
+# within the BRCA1 and APOE genes.
+# TODO: double check whether the annotation coordinates are 0-based as is
+#       the case for the variants.
 SELECT
   gene_variants.name AS name,
   reference_name,

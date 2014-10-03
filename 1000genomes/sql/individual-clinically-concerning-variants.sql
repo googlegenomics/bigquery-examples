@@ -1,4 +1,6 @@
-# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample
+# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample.
+# TODO: double check whether the annotation coordinates are 0-based as is
+#       the case for the variants.
 SELECT
   reference_name,
   start,

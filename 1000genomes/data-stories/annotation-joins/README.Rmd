@@ -17,7 +17,8 @@
 Annotation JOINs
 ========================================================
 
-In this data story we explore JOINing variant data in BigQuery with several annotation databases.
+In this data story we explore JOINing variant data in BigQuery with several annotation databases.  **NOTE: the JOIN criteria may not be correct.**  Please only use this resource for ideas, and file github issues for corrections.
+
 
 ```{r}
 require(bigrquery)
@@ -33,7 +34,7 @@ DisplayAndDispatchQuery <- function(queryUri) {
 ```
 
 Let us start by getting an idea of the number of rows in each of our tables.
-```{r cache=TRUE}
+```{r cache=FALSE}
 tables <- c("1000genomes.phase1_variants",
             "1000genomes.pedigree",
             "1000genomes.sample_info",
@@ -51,7 +52,7 @@ lapply(tables, function(table) {
 We can see that all the annotation databases are dwarfed in size by the data in the variants table.
 
 Let us also examine the types of variants within ClinVar.
-```{r cache=TRUE}
+```{r cache=FALSE}
 result <- query_exec("SELECT type, count(1) cnt FROM [google.com:biggene:annotations.clinvar] group by type",
                      project)
 ```
@@ -67,7 +68,7 @@ We can see that the vast majority of variants within ClinVar are SNPs.
 
 ### JOINing Sample SNP Variants with ClinVar
 
-```{r cache=TRUE, comment=NA}
+```{r cache=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/individual-clinically-concerning-variants.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.
@@ -79,7 +80,7 @@ print(xtable(head(result)), type="html", include.rownames=F)
 We can see that this indivudual has 53 clinically concerning variants.
 
 ### JOINing Sample SNP Variants with ClinVar, Grouped by Family
-```{r cache=TRUE, comment=NA}
+```{r cache=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/familial-shared-clinically-concerning-variants.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.
@@ -93,7 +94,7 @@ We can see that some variants are shared by as many as four family members.
 ### JOINing Sample INDEL Variants with ClinVar
 
 First, let us see what the INDEL data looks like in ClinVar:
-```{r cache=TRUE}
+```{r cache=FALSE}
 querySql <- 'SELECT * FROM [google.com:biggene:annotations.clinvar] where type="indel"'
 result <- query_exec(querySql, project)
 ```
@@ -110,7 +111,7 @@ We can see that its not obvious as to how to parse the the ClinVar INDEL details
 ### JOINing Chromosome 17 Variants with Gene Names
 
 Next we will JOIN our variants with gene names.  Note that the JOIN criteria is simple - just matching on the chromosome, but the WHERE clause ensures the intervals overlap.
-```{r cache=TRUE, comment=NA}
+```{r cache=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/gene-variant-counts.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.
@@ -133,7 +134,7 @@ We see how many variants we have within these genes for the full dataset.
 ### JOINing Chromosome 17 Variants for a Particular Sample with Gene Names
 
 Now let us look at these sample variants for a particular sample
-```{r cache=TRUE, comment=NA}
+```{r cache=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/sample-gene-variant-counts.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.
@@ -169,7 +170,7 @@ And we see that our sample has variants within the same set of genes, but many f
 
 ### JOINing All Variants with Gene Names
 Let us go bigger now and run this on the entire 1,000 Genomes dataset.
-```{r cache=TRUE, comment=NA}
+```{r cache=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/specific-gene-variant-counts.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.

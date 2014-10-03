@@ -1,5 +1,7 @@
 # Summarize all the SNPs in 1,000 Genomes also found in ClinVar by significance
 # and disease name.
+# TODO: double check whether the annotation coordinates are 0-based as is
+#       the case for the variants.
 SELECT
   clinicalsignificance,
   diseasename,

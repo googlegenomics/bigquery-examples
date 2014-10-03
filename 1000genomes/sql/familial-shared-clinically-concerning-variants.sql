@@ -1,5 +1,7 @@
 # Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the
-# number of family members sharing the SNP
+# number of family members sharing the SNP.
+# TODO: double check whether the annotation coordinates are 0-based as is
+#       the case for the variants.
 SELECT
   reference_name,
   start,
