@@ -1,18 +1,18 @@
 bigquery-examples
 =================
 
-The projects in this repository demonstrate working with genomic data via [Google BigQuery](https://developers.google.com/bigquery/).  All examples are built upon public datasets.
+The data stories and queries in this repository demonstrate working with genomic data via [Google BigQuery](https://developers.google.com/bigquery/).  All examples are built upon public datasets.
 
-You can execute these examples by copying and pasting the queries into the BigQuery [Browser Tool](https://bigquery.cloud.google.com) or running the data stories from [R](http://www.r-project.org/).  All data stories have been written in [RMarkdown](http://rmarkdown.rstudio.com/).
+Have other data stories you would like to see here?  Have any data stories you would like to *share*?  Have *corrections to the biology* covered in this material?  Have query *simplifications* or *speed improvements*?  Let us know by [filing an issue](https://github.com/googlegenomics/bigquery-examples/issues) or [contacting us directly](mailto:google-genomics-contact@googlegroups.com).
 
 Getting Started
 -----------------
-See [getting-started-bigquery](https://github.com/googlegenomics/getting-started-bigquery).
+Start here: [getting-started-bigquery](https://github.com/googlegenomics/getting-started-bigquery).
 
 Loading your own Variant Data into BigQuery
 -------------------------------------------
 
-The Google Genomics API spec includes a [import method that loads VCF and CGI masterVar files](https://developers.google.com/genomics/v1beta/reference/variants/import) directly from Google Cloud Storage. 
+The Google Genomics API spec includes a [import method that loads VCF and CGI masterVar files](https://cloud.google.com/genomics/v1beta/managing-variants) directly from Google Cloud Storage. 
 
 For other types of data, such as variant annotations, see [Preparing Data for BigQuery](https://developers.google.com/bigquery/preparing-data-for-bigquery) and also [BigQuery in Practice : Loading Data Sets That are Terabytes and Beyond](https://cloud.google.com/developers/articles/bigquery-in-practice) for more detail.
 
