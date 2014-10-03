@@ -24,13 +24,13 @@ Min/Max Chromosomal Positions of Variants
 
 ```
 SELECT
-   INTEGER(contig_name) AS chromosome,
-   MIN(start_pos) AS min,
-   MAX(start_pos) AS max
+   INTEGER(reference_name) AS chromosome,
+   MIN(start) AS min,
+   MAX(start) AS max
  FROM
-   [google.com:biggene:1000genomes.phase1_variants]
+   [genomics-public-data:1000_genomes.variants]
  OMIT RECORD IF
-   contig_name IN ("X", "Y")
+   reference_name IN ("X", "Y", "MT")
  GROUP BY
    chromosome
 ```
@@ -46,13 +46,13 @@ Frequency of Variant Types Per Chromosome
 
 ```
 SELECT
-  INTEGER(contig_name) AS chromosome,
+  INTEGER(reference_name) AS chromosome,
   vt AS variant_type,
   COUNT(1) AS cnt
  FROM
-   [google.com:biggene:1000genomes.phase1_variants]
+   [genomics-public-data:1000_genomes.variants]
  OMIT RECORD IF
-   contig_name IN ("X", "Y")
+   reference_name IN ("X", "Y", "MT")
  GROUP BY
    chromosome,
    variant_type
@@ -80,16 +80,16 @@ SELECT
   COUNT(1) AS cnt,
 FROM
      FLATTEN((SELECT 
-         contig_name,
+         reference_name,
          reference_bases,
          alternate_bases,
          vt,
          NTH(1, call.genotype) WITHIN call AS first_allele,
          NTH(2, call.genotype) WITHIN call AS second_allele
-       FROM [google.com:biggene:1000genomes.phase1_variants])
+       FROM [genomics-public-data:1000_genomes.variants])
      , call)
 OMIT RECORD IF
-     contig_name IN ("X", "Y")
+     reference_name IN ("X", "Y", "MT")
   OR first_allele < 0
   OR second_allele < 0
   OR vt != "SNP"
@@ -126,13 +126,13 @@ END AS length,
   COUNT(1) AS cnt
 FROM
      FLATTEN((SELECT 
-         contig_name,
+         reference_name,
          reference_bases,
          alternate_bases,
          vt,
          NTH(1, call.genotype) WITHIN call AS first_allele,
          NTH(2, call.genotype) WITHIN call AS second_allele
-       FROM [google.com:biggene:1000genomes.phase1_variants])
+       FROM [genomics-public-data:1000_genomes.variants])
      , call)
 WHERE
       first_allele =
@@ -140,7 +140,7 @@ WHERE
   AND LENGTH(alternate_bases) -
       LENGTH(reference_bases) != 0
 OMIT RECORD IF
-      contig_name IN ("X", "Y")
+      reference_name IN ("X", "Y", "MT")
   AND vt != "INDEL"
 GROUP BY
   length
@@ -157,14 +157,20 @@ GROUP BY
 Quality score of calls (at least, of INDELs)
 --------------------------------------------
 
-```r
-# TODO: get this working again when the QUAL column is restored to the table.
-plots <- MakeQualityPlot()
 ```
-
-```r
-CreateGriddedPlot(plots)
+SELECT
+  vt AS variant_type,
+  quality,
+  COUNT(1) AS cnt
+FROM
+  [genomics-public-data:1000_genomes.variants]
+OMIT RECORD IF
+  reference_name IN ("X", "Y", "MT")
+GROUP BY
+  variant_type,
+  quality
 ```
+<img src="figure/unnamed-chunk-11.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
 From the 1k genome docs:
 > phred-scaled quality score for the assertion made in ALT. i.e. -10log_10 prob(call in ALT is wrong). If ALT is ”.” (no variant) then this is -10log_10 p(variant), and if ALT is not ”.” this is -10log_10 p(no variant). High QUAL scores indicate high confidence calls.
 
@@ -186,14 +192,14 @@ FROM (
           -0.5)) AS likelihood,
   FROM
      FLATTEN((SELECT 
-         contig_name,
+         reference_name,
          vt AS variant_type,
-         call.callset_name AS genome,
+         call.call_set_name AS genome,
          call.phaseset AS phaseset,
          call.genotype_likelihood AS gl,
          NTH(1, call.genotype) WITHIN call AS first_allele,
          NTH(2, call.genotype) WITHIN call AS second_allele
-       FROM [google.com:biggene:1000genomes.phase1_variants])
+       FROM [genomics-public-data:1000_genomes.variants])
      , call)
   WHERE
         (first_allele <= second_allele
@@ -207,7 +213,7 @@ FROM (
             (first_allele + 1) / 2) +
           second_allele)
   OMIT RECORD IF 
-       contig_name in ("X", "Y")
+       reference_name in ("X", "Y", "MT")
     OR phaseset IS NULL
 )
 GROUP BY
@@ -242,17 +248,17 @@ FROM
        AS double,
    FROM
      FLATTEN((SELECT 
-         contig_name,
-         call.callset_name AS genome,
+         reference_name,
+         call.call_set_name AS genome,
          NTH(1, call.genotype) WITHIN call AS first_allele,
          NTH(2, call.genotype) WITHIN call AS second_allele
-       FROM [google.com:biggene:1000genomes.phase1_variants])
+       FROM [genomics-public-data:1000_genomes.variants])
      , call)
    OMIT RECORD IF
-     contig_name IN ("X", "Y")
+     reference_name IN ("X", "Y", "MT")
   ) AS variant_info
   JOIN
-    [google.com:biggene:1000genomes.sample_info] AS sample_info
+    [genomics-public-data:1000_genomes.sample_info] AS sample_info
   ON
     variant_info.genome = sample_info.sample
 GROUP BY
