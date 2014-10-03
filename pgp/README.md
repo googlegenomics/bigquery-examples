@@ -27,8 +27,7 @@ Personal Genomes Project
 
 
 
-
-This data was recently loaded and there are not too many data stories yet.  Please help us add some!
+Note: the variants schema for the PGP data has not yet been updated to the current schema.  Some of the column names for common data may differ from those of your own variants data exported to BigQuery.
 
 Here is an initial query joining the variant data with the phenotypic data.  See the [phenotypes schema](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.phenotypes?pli=1) for more detail.
 
@@ -57,16 +56,13 @@ GROUP BY
   Sex_Gender
 ```
 
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Wed Jul  2 17:08:31 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:42:36 2014 -->
 <TABLE border=1>
 <TR> <TH> Sex_Gender </TH> <TH> cnt </TH>  </TR>
-  <TR> <TD> Male </TD> <TD align="right"> 112 </TD> </TR>
   <TR> <TD> Female </TD> <TD align="right">  53 </TD> </TR>
+  <TR> <TD> Male </TD> <TD align="right"> 112 </TD> </TR>
   <TR> <TD>  </TD> <TD align="right">   6 </TD> </TR>
    </TABLE>
 
-
 <img src="figure/gender.png" title="plot of chunk gender" alt="plot of chunk gender" style="display: block; margin: auto;" />
-
