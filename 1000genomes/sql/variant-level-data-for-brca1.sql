@@ -14,3 +14,5 @@ WHERE
   reference_name = '17'
   AND start BETWEEN 41196311
   AND 41277499
+ORDER BY
+  start

@@ -52,7 +52,8 @@ FROM (
     AND var.vt='SNP'
   HAVING
     first_allele > 0
-    OR second_allele > 0) AS sig
+    OR (second_allele IS NOT NULL
+        AND second_allele > 0)) AS sig
 JOIN
   [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON

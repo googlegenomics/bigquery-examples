@@ -35,7 +35,8 @@ FROM
       vt = 'SNP'
     HAVING
       first_allele > 0
-      OR second_allele > 0
+      OR (second_allele IS NOT NULL
+          AND second_allele > 0)
       ),
     call) AS samples
 JOIN

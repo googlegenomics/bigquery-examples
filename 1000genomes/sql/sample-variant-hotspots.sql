@@ -25,7 +25,8 @@ FROM (
     call.call_set_name = 'HG00096'
   HAVING
     first_allele > 0
-    OR second_allele > 0)
+    OR (second_allele IS NOT NULL
+        AND second_allele > 0))
 GROUP BY
   reference_name,
   window,

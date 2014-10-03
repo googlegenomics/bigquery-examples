@@ -39,7 +39,8 @@ FROM (
       AND call.call_set_name = 'NA19764'
     HAVING
       first_allele > 0
-      OR second_allele > 0
+      OR (second_allele IS NOT NULL
+            AND second_allele > 0)
       ) AS var
   JOIN (
     SELECT

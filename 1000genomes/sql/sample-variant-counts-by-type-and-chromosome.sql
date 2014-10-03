@@ -19,7 +19,8 @@ FROM
     [genomics-public-data:1000_genomes.variants]
   HAVING
     first_allele > 0
-    OR second_allele > 0)
+    OR (second_allele IS NOT NULL
+        AND second_allele > 0))
 GROUP BY
   sample_id,
   reference_name,

@@ -5,11 +5,13 @@ SELECT
 FROM (
   SELECT
     SUM(first_allele > 0
-      OR second_allele > 0) AS num_samples_with_variant
+      OR (second_allele IS NOT NULL
+        AND second_allele > 0)) AS num_samples_with_variant
   FROM(
     SELECT
       reference_name,
       start,
+      END,
       reference_bases,
       GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
       NTH(1,
@@ -17,10 +19,14 @@ FROM (
       NTH(2,
         call.genotype) WITHIN call AS second_allele,
     FROM
-      [genomics-public-data:1000_genomes.variants])
-  GROUP EACH BY
+      [genomics-public-data:1000_genomes.variants]
+    WHERE
+      reference_name NOT IN ("X", "Y", "MT")
+    )
+    GROUP EACH BY
     reference_name,
     start,
+    END,
     reference_bases,
     alt
     )

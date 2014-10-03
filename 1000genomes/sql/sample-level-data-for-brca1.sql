@@ -24,3 +24,5 @@ WHERE
       AND 41277499
 HAVING
   sample_id = 'HG00100'
+ORDER BY
+  start

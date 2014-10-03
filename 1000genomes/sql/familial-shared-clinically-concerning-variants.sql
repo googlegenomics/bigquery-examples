@@ -65,7 +65,8 @@ FROM (
           var.vt='SNP'
         HAVING
           first_allele > 0
-          OR second_allele > 0),
+          OR (second_allele IS NOT NULL
+              AND second_allele > 0)),
         var.call)) AS sig
   JOIN
     [genomics-public-data:1000_genomes.pedigree] AS ped

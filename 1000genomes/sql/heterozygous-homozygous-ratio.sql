@@ -25,7 +25,10 @@ FROM (
     NTH(2,
       call.genotype) WITHIN call AS second_allele,
   FROM
-    [genomics-public-data:1000_genomes.variants])
+    [genomics-public-data:1000_genomes.variants]
+  WHERE
+    reference_name != 'Y' AND reference_name != 'M'
+  )
 GROUP BY
   sample_id
 ORDER BY

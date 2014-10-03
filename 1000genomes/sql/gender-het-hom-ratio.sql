@@ -43,10 +43,10 @@ FROM
     WHERE
       reference_name = 'X'
       AND vt = 'SNP'
-      AND start NOT BETWEEN 60000
-      AND 2699520
-      AND start NOT BETWEEN 154931043
-      AND 155260560)
+      AND start NOT BETWEEN 59999
+      AND 2699519
+      AND start NOT BETWEEN 154931042
+      AND 155260559)
   GROUP BY
     sample_id,
     reference_name
