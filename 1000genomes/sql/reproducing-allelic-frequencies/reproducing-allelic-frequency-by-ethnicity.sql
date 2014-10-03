@@ -43,7 +43,7 @@ FROM (
       first_allele,
       second_allele,
       CASE
-      WHEN p.super_population =  'ASN'
+      WHEN p.super_population =  'EAS'
       THEN  g.asn_af
       WHEN p.super_population=  'EUR'
       THEN g.eur_af

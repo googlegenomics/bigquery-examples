@@ -1,6 +1,6 @@
 # An example of a pattern one might use for GWAS queries upon 1,000
 # Genomes variants.  It is specifically examining differences allelic
-# frequency for variants upon chromosome 12 between the ASN super
+# frequency for variants upon chromosome 12 between the EAS super
 # population versus all other individuals, returning a ranked list of
 # variants by decreasing variation between groups.  Note that this
 # particular query below is naive in many, many respects and is merely
@@ -83,7 +83,7 @@ FROM (
     SELECT
       reference_name,
       start,
-      IF('ASN' = super_population,
+      IF('EAS' = super_population,
         TRUE,
         FALSE) AS is_case,
       reference_bases,
