@@ -14,12 +14,12 @@
 <!-- See the License for the specific language governing permissions and -->
 <!-- limitations under the License. -->
 
-Exploring the Phenotypic Data
+Exploring the Sample Information
 ========================================================
 
 [Ethnicity, gender, and family relationship](http://www.1000genomes.org/faq/can-i-get-phenotype-gender-and-family-relationship-information-samples) information is available for the 1,000 Genomes dataset.  Super population groupings are described in the [FAQ](http://www.1000genomes.org/category/frequently-asked-questions/population).
 
-Note that the full 1,000 Genomes dataset has data for 3,500 individuals but the low coverage variant data in table [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) is only for a subset of those individuals.  Let’s explore ethnicity, gender, and family relationships for the individuals whose variant data we do have.
+Note that the full 1,000 Genomes dataset has data for 3,500 individuals but the low coverage variant data in table `variants` is only for a subset of those individuals.  Let’s explore ethnicity, gender, and family relationships for the individuals whose variant data we do have.
 
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
@@ -54,7 +54,7 @@ ggplot(sample_groups, aes(x=group, y=count, fill=group)) +
   ylab("Count of Samples") +
   xlab("Sample Groups")
 ```
-So for analyses across all samples upon table [variants1kG](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1), the sample size is 1,092.
+So for analyses across all samples upon table `variants`, the sample size is 1,092.
 
 What is the gender ratio?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA}
