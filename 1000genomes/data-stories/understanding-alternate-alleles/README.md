@@ -21,7 +21,7 @@ We know from the [FAQ](http://www.1000genomes.org/faq/are-all-genotype-calls-cur
 
 
 
-Let’s explore the question _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_
+Let’s explore the question _“Is (reference_name, start, reference_bases) a unique key in the 1,000 Genomes Data?”_
 
 
 ```
@@ -50,7 +50,7 @@ Number of rows returned by this query: 417.
 
 We see the first six tabular results:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:42:26 2014 -->
+<!-- Fri Oct  3 08:51:46 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 184672 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
@@ -62,7 +62,7 @@ We see the first six tabular results:
    </TABLE>
 So we see from the data that the answer to our question is “No”.
 
-So how many rows might we see per (contig, position, reference_bases) tuple?
+So how many rows might we see per (reference_name, start, reference_bases) tuple?
 
 ```
 # Count number of alternate variants on chromosome 17 for the same start and
@@ -88,13 +88,13 @@ GROUP BY
   num_alternates
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:42:32 2014 -->
+<!-- Fri Oct  3 08:51:51 2014 -->
 <TABLE border=1>
 <TR> <TH> num_alternates </TH> <TH> num_records </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 1045899 </TD> </TR>
   <TR> <TD align="right">   2 </TD> <TD align="right"> 417 </TD> </TR>
    </TABLE>
-So we see that for any particular (contig, position, reference_bases) tuple the vast majority have a single alternate allele and a few have two.
+So we see that for any particular (reference_name, start, reference_bases) tuple the vast majority have a single alternate allele and a few have two.
 
 Let’s examine a few of the tuples with two alternate alleles more closely.
 
@@ -120,7 +120,7 @@ ORDER BY
   alt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:42:38 2014 -->
+<!-- Fri Oct  3 08:51:57 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> names </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> rs8076712,rs8076712 </TD> <TD> SNP </TD> </TR>
@@ -132,7 +132,7 @@ ORDER BY
    </TABLE>
 From this small sample, it appears that the alternate allele is either a SNP or an INDEL.
 
-Is that the case for all the records corresponding to duplicate (contig, position, reference_bases) tuples?
+Is that the case for all the records corresponding to duplicate (reference_name, start, reference_bases) tuples?
 
 ```
 # Count by variant type the number of alternate variants on chromosome 17 for the same
@@ -170,16 +170,16 @@ ORDER BY
   vt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:42:42 2014 -->
+<!-- Fri Oct  3 08:52:02 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 412 </TD> </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 417 </TD> </TR>
   <TR> <TD> SV </TD> <TD align="right">   5 </TD> </TR>
    </TABLE>
-It appears that for all records for duplicate (contig, position, reference_bases) tuples that we have a SNP and also an INDEL or SV.
+It appears that for all records for duplicate (reference_name, start, reference_bases) tuples that we have a SNP and also an INDEL or SV.
 
-For records corresponding to a unique (contig, position, reference_bases) tuple, are the variants always SNPs?
+For records corresponding to a unique (reference_name, start, reference_bases) tuple, are the variants always SNPs?
 
 ```
 # Count by variant type the number of variants on chromosome 17 unique for a
@@ -217,16 +217,16 @@ ORDER BY
   vt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:42:46 2014 -->
+<!-- Fri Oct  3 08:52:09 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 38754 </TD> </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 1006702 </TD> </TR>
   <TR> <TD> SV </TD> <TD align="right"> 443 </TD> </TR>
    </TABLE>
-And we see that the answer to our question is “No” - for records corresponding to a unique (contig, position, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
+And we see that the answer to our question is “No” - for records corresponding to a unique (reference_name, start, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
 
-So what does this all mean for a particular duplicate (contig, position, reference_bases) tuple for a particular sample at a particular genomic position?
+So what does this all mean for a particular duplicate (reference_name, start, reference_bases) tuple for a particular sample at a particular genomic position?
 
 ```
 # Get sample alleles for some specific variants.
@@ -272,7 +272,7 @@ ORDER BY
   sample_id
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:42:52 2014 -->
+<!-- Fri Oct  3 08:52:17 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> alt </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> first_allele </TH> <TH> second_allele </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
@@ -280,7 +280,7 @@ ORDER BY
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> TG </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
    </TABLE>
-We can see that HG00101 was called the same in both records but HG00100 was called differently.  So which is the [correct interpretation](http://vcftools.sourceforge.net/VCF-poster.pdf) for each allele at position 48515943 on chromosome 17?
+We can see that HG00101 was called the same in both records but HG00100 was called differently.  So which is the [correct interpretation](http://vcftools.sourceforge.net/VCF-poster.pdf) for each allele at position 48515942 on chromosome 17?
 ```
 first allele
 xxxTxxxx
@@ -320,7 +320,7 @@ ORDER BY
   alt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:42:57 2014 -->
+<!-- Fri Oct  3 08:52:22 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> ref </TH> <TH> alt </TH> <TH> filters </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> phaseset </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> PASS </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
@@ -332,7 +332,7 @@ So a question for our users who have much experience in this domain, which varia
 
 ### But we digress . . .
 
-Our original question was _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
+Our original question was _“Is (reference_name, start, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
 
 
 ```
@@ -367,7 +367,7 @@ ORDER BY
 ```
 
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 22:43:01 2014 -->
+<!-- Fri Oct  3 08:52:27 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
   <TR> <TD> 14 </TD> <TD align="right"> 106885900 </TD> <TD> G </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
@@ -419,7 +419,7 @@ print(expect_true(is.null(result)))
 As expected: is.null(result) is true 
 ```
 
-And now we have it, a unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
+And now we have it, a unique key is: (reference_name, start, reference_bases, alternate_bases, vt, end)
 
 Lastly, what is a minimal unique key?
 
@@ -458,4 +458,4 @@ print(expect_true(is.null(result)))
 As expected: is.null(result) is true 
 ```
 
-We see that a minimal unique key is: (contig, position, alternate_bases, end) or alternatively (contig, position, end, vt)
+We see that a minimal unique key is: (reference_name, start, alternate_bases, end) or alternatively (reference_name, start, end, vt)

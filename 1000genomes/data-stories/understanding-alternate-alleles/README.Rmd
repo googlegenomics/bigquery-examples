@@ -33,7 +33,7 @@ DisplayAndDispatchQuery <- function(queryUri) {
 }
 ```
 
-Let’s explore the question _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_
+Let’s explore the question _“Is (reference_name, start, reference_bases) a unique key in the 1,000 Genomes Data?”_
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/chrom-pos-ref-dups.sql")
@@ -46,14 +46,14 @@ print(xtable(head(result)), type="html", include.rownames=F)
 ```
 So we see from the data that the answer to our question is “No”.
 
-So how many rows might we see per (contig, position, reference_bases) tuple?
+So how many rows might we see per (reference_name, start, reference_bases) tuple?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/count-chrom-pos-ref.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
 ```
-So we see that for any particular (contig, position, reference_bases) tuple the vast majority have a single alternate allele and a few have two.
+So we see that for any particular (reference_name, start, reference_bases) tuple the vast majority have a single alternate allele and a few have two.
 
 Let’s examine a few of the tuples with two alternate alleles more closely.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
@@ -64,32 +64,32 @@ print(xtable(result), type="html", include.rownames=F)
 ```
 From this small sample, it appears that the alternate allele is either a SNP or an INDEL.
 
-Is that the case for all the records corresponding to duplicate (contig, position, reference_bases) tuples?
+Is that the case for all the records corresponding to duplicate (reference_name, start, reference_bases) tuples?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/count-by-var-type-chrom-pos-ref-dups.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
 ```
-It appears that for all records for duplicate (contig, position, reference_bases) tuples that we have a SNP and also an INDEL or SV.
+It appears that for all records for duplicate (reference_name, start, reference_bases) tuples that we have a SNP and also an INDEL or SV.
 
-For records corresponding to a unique (contig, position, reference_bases) tuple, are the variants always SNPs?
+For records corresponding to a unique (reference_name, start, reference_bases) tuple, are the variants always SNPs?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/count-by-var-type-chrom-pos-ref-singles.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
 ```
-And we see that the answer to our question is “No” - for records corresponding to a unique (contig, position, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
+And we see that the answer to our question is “No” - for records corresponding to a unique (reference_name, start, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
 
-So what does this all mean for a particular duplicate (contig, position, reference_bases) tuple for a particular sample at a particular genomic position?
+So what does this all mean for a particular duplicate (reference_name, start, reference_bases) tuple for a particular sample at a particular genomic position?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/sample-chrom-pos-ref-dups.sql")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
 ```
-We can see that HG00101 was called the same in both records but HG00100 was called differently.  So which is the [correct interpretation](http://vcftools.sourceforge.net/VCF-poster.pdf) for each allele at position 48515943 on chromosome 17?
+We can see that HG00101 was called the same in both records but HG00100 was called differently.  So which is the [correct interpretation](http://vcftools.sourceforge.net/VCF-poster.pdf) for each allele at position 48515942 on chromosome 17?
 ```
 first allele
 xxxTxxxx
@@ -112,7 +112,7 @@ So a question for our users who have much experience in this domain, which varia
 
 ### But we digress . . .
 
-Our original question was _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
+Our original question was _“Is (reference_name, start, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/not-quite-unique-key.sql")
@@ -132,7 +132,7 @@ result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/uni
 print(expect_true(is.null(result)))
 ```
 
-And now we have it, a unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
+And now we have it, a unique key is: (reference_name, start, reference_bases, alternate_bases, vt, end)
 
 Lastly, what is a minimal unique key?
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
@@ -143,4 +143,4 @@ result <- DisplayAndDispatchQuery("../../sql/understanding-alternate-alleles/min
 print(expect_true(is.null(result)))
 ```
 
-We see that a minimal unique key is: (contig, position, alternate_bases, end) or alternatively (contig, position, end, vt)
+We see that a minimal unique key is: (reference_name, start, alternate_bases, end) or alternatively (reference_name, start, end, vt)
