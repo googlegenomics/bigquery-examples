@@ -33,7 +33,7 @@ DisplayAndDispatchQuery <- function(queryUri) {
 }
 ```
 
-```{r af, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+```{r af, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.
@@ -53,7 +53,7 @@ print(expect_equal(object=result$alt_freq,
 We can see from the results that when the computed frequency values in column alt_freq are rounded, they exactly match the alternate allele frequencies as reported in the AF INFO field from the 1,000 Genomes VCF data.
 
 Next, we compute those same alternate allele frequencies further broken down by super population groups.
-```{r afeth, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+```{r afeth, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/reproducing-allelic-frequencies/reproducing-allelic-frequency-by-ethnicity.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.
@@ -75,7 +75,7 @@ print(expect_equal(object=result$alt_freq,
 We can see from the results that when the computed frequency values in column alt_freq are rounded, they exactly match the alternate allele frequencies as reported in the AFR_AF, ASN_AF, AMR_AF, EUR_AF INFO fields from the 1,000 Genomes VCF data.
 
 Moving onto other results regarding rates of variation across populations:
-```{r sql maf, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+```{r sql maf, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/minimum-allelic-frequency-by-ethnicity.sql")
 ```
 Number of rows returned by this query: `r nrow(result)`.
@@ -101,7 +101,7 @@ Now lets examine the rate of variation across genders:
 ggplot(result, aes(x=super_population, y=common_variant, fill=gender)) + geom_boxplot() + ylab("Count of common variants per sample") + ggtitle("Common Variants (Minimum Allelic Frequency 5%)")
 ```
 We see a noticieable difference, BUT this query included variants within chromosome X.  Updating the query to ignore sex chromosomes:
-```{r sql maf no X, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=TRUE}
+```{r sql maf no X, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/minimum-allelic-frequency-by-ethnicity-no-sex-chromosomes.sql")
 ```
 We see that the genders are quite close in their rate of variation.

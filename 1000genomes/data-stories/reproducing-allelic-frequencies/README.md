@@ -26,8 +26,8 @@ The following query computes the frequency of both the reference and alternate S
 # The following query computes the allelic frequency for BRCA1 variants in the
 # 1,000 Genomes dataset and also includes the pre-computed value from the dataset.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alternate_bases,
   SUM(ref_count)+SUM(alt_count) AS num_sample_alleles,
@@ -38,8 +38,8 @@ SELECT
   alt_freq_from_1KG
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     alternate_bases,
     alt,
@@ -56,8 +56,8 @@ FROM (
     alt_freq_from_1KG
   FROM (
     SELECT
-      contig_name,
-      start_pos,
+      reference_name,
+      start,
       reference_bases,
       alternate_bases,
       alt_freq_from_1KG,
@@ -69,52 +69,52 @@ FROM (
     FROM
       FLATTEN((
         SELECT
-          contig_name,
-          start_pos,
+          reference_name,
+          start,
           reference_bases,
           alternate_bases,
           af AS alt_freq_from_1KG,
           call.genotype
         FROM
-          [google.com:biggene:1000genomes.phase1_variants]
+          [genomics-public-data:1000_genomes.variants]
         WHERE
-          contig_name = '17'
-          AND start_pos BETWEEN 41196312
-          AND 41277500
+          reference_name = '17'
+          AND start BETWEEN 41196311
+          AND 41277499
           AND vt='SNP'),
         call)
       )
   GROUP BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     alternate_bases,
     alt,
     alt_freq_from_1KG)
 GROUP BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alternate_bases,
   alt,
   alt_freq_from_1KG
 ORDER BY
-  contig_name,
-  start_pos
+  reference_name,
+  start
 ```
 Number of rows returned by this query: 843.
 
 Displaying the first few rows of our result:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 14:02:19 2014 -->
+<!-- Thu Oct  2 21:45:49 2014 -->
 <TABLE border=1>
-<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> reference_bases </TH> <TH> alternate_bases </TH> <TH> num_sample_alleles </TH> <TH> sample_allele_ref_cnt </TH> <TH> sample_allele_alt_cnt </TH> <TH> ref_freq </TH> <TH> alt_freq </TH> <TH> alt_freq_from_1KG </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2173 </TD> <TD align="right">      11 </TD> <TD align="right"> 0.994963 </TD> <TD align="right"> 0.005037 </TD> <TD align="right"> 0.010000 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196368 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196372 </TD> <TD> T </TD> <TD> C </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196403 </TD> <TD> A </TD> <TD> G </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196408 </TD> <TD> G </TD> <TD> A </TD> <TD align="right">    2184 </TD> <TD align="right">    1503 </TD> <TD align="right">     681 </TD> <TD align="right"> 0.688187 </TD> <TD align="right"> 0.311813 </TD> <TD align="right"> 0.310000 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196582 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2173 </TD> <TD align="right">      11 </TD> <TD align="right"> 0.994963 </TD> <TD align="right"> 0.005037 </TD> <TD align="right"> 0.010000 </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alternate_bases </TH> <TH> num_sample_alleles </TH> <TH> sample_allele_ref_cnt </TH> <TH> sample_allele_alt_cnt </TH> <TH> ref_freq </TH> <TH> alt_freq </TH> <TH> alt_freq_from_1KG </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2173 </TD> <TD align="right">      11 </TD> <TD align="right"> 0.994963 </TD> <TD align="right"> 0.005037 </TD> <TD align="right"> 0.010000 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196367 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196371 </TD> <TD> T </TD> <TD> C </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196402 </TD> <TD> A </TD> <TD> G </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196407 </TD> <TD> G </TD> <TD> A </TD> <TD align="right">    2184 </TD> <TD align="right">    1503 </TD> <TD align="right">     681 </TD> <TD align="right"> 0.688187 </TD> <TD align="right"> 0.311813 </TD> <TD align="right"> 0.310000 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196581 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2173 </TD> <TD align="right">      11 </TD> <TD align="right"> 0.994963 </TD> <TD align="right"> 0.005037 </TD> <TD align="right"> 0.010000 </TD> </TR>
    </TABLE>
 
 And do our results match the precomputed values resident in the AF INFO field?
@@ -138,8 +138,8 @@ Next, we compute those same alternate allele frequencies further broken down by 
 # 1,000 Genomes dataset further classified by ethnicity from the phenotypic data
 # and also includes the pre-computed value from the dataset.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   super_population,
   reference_bases,
   alternate_bases,
@@ -151,35 +151,35 @@ SELECT
   alt_freq_from_1KG
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     super_population,
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = allele1,
+    SUM(IF(0 = first_allele,
         1,
-        0) + IF(0 = allele2,
+        0) + IF(0 = second_allele,
         1,
         0)) AS ref_count,
-    SUM(IF(alt = allele1,
+    SUM(IF(alt = first_allele,
         1,
-        0) + IF(alt = allele2,
+        0) + IF(alt = second_allele,
         1,
         0)) AS alt_count,
     alt_freq_from_1KG
   FROM (
     SELECT
-      g.contig_name AS contig_name,
-      g.start_pos AS start_pos,
+      g.reference_name AS reference_name,
+      g.start AS start,
       p.super_population AS super_population,
       g.reference_bases AS reference_bases,
       g.alternate_bases AS alternate_bases,
       POSITION(g.alternate_bases) AS alt,
-      allele1,
-      allele2,
+      first_allele,
+      second_allele,
       CASE
-      WHEN p.super_population =  'ASN'
+      WHEN p.super_population =  'EAS'
       THEN  g.asn_af
       WHEN p.super_population=  'EUR'
       THEN g.eur_af
@@ -191,66 +191,66 @@ FROM (
     FROM
       FLATTEN((
         SELECT
-          contig_name,
-          start_pos,
+          reference_name,
+          start,
           reference_bases,
           alternate_bases,
           afr_af,
           amr_af,
           asn_af,
           eur_af,
-          call.callset_name,
+          call.call_set_name,
           NTH(1,
-            call.genotype) WITHIN call AS allele1,
+            call.genotype) WITHIN call AS first_allele,
           NTH(2,
-            call.genotype) WITHIN call AS allele2,
+            call.genotype) WITHIN call AS second_allele,
         FROM
-          [google.com:biggene:1000genomes.phase1_variants]
+          [genomics-public-data:1000_genomes.variants]
         WHERE
-          contig_name = '17'
-          AND start_pos BETWEEN 41196312
-          AND 41277500
+          reference_name = '17'
+          AND start BETWEEN 41196311
+          AND 41277499
           AND vt='SNP'
           ),
         call) AS g
     JOIN
-      [google.com:biggene:1000genomes.sample_info] p
+      [genomics-public-data:1000_genomes.sample_info] p
     ON
-      g.call.callset_name = p.sample
+      g.call.call_set_name = p.sample
       )
   GROUP BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     super_population,
     reference_bases,
     alternate_bases,
     alt,
     alt_freq_from_1KG)
 GROUP BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   super_population,
   reference_bases,
   alternate_bases,
   alt_freq_from_1KG
 ORDER BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   super_population
 ```
 Number of rows returned by this query: 3372.
 
 Displaying the first few rows of our result:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 14:02:25 2014 -->
+<!-- Thu Oct  2 21:46:00 2014 -->
 <TABLE border=1>
-<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> super_population </TH> <TH> reference_bases </TH> <TH> alternate_bases </TH> <TH> num_sample_alleles </TH> <TH> sample_allele_ref_cnt </TH> <TH> sample_allele_alt_cnt </TH> <TH> ref_freq </TH> <TH> alt_freq </TH> <TH> alt_freq_from_1KG </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> AFR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     492 </TD> <TD align="right">     492 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> AMR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     362 </TD> <TD align="right">     360 </TD> <TD align="right">       2 </TD> <TD align="right"> 0.994475 </TD> <TD align="right"> 0.005525 </TD> <TD align="right"> 0.010000 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> ASN </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     572 </TD> <TD align="right">     572 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196363 </TD> <TD> EUR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     758 </TD> <TD align="right">     749 </TD> <TD align="right">       9 </TD> <TD align="right"> 0.988127 </TD> <TD align="right"> 0.011873 </TD> <TD align="right"> 0.010000 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196368 </TD> <TD> AFR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     492 </TD> <TD align="right">     492 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 41196368 </TD> <TD> AMR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     362 </TD> <TD align="right">     362 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> super_population </TH> <TH> reference_bases </TH> <TH> alternate_bases </TH> <TH> num_sample_alleles </TH> <TH> sample_allele_ref_cnt </TH> <TH> sample_allele_alt_cnt </TH> <TH> ref_freq </TH> <TH> alt_freq </TH> <TH> alt_freq_from_1KG </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> AFR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     492 </TD> <TD align="right">     492 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> AMR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     362 </TD> <TD align="right">     360 </TD> <TD align="right">       2 </TD> <TD align="right"> 0.994475 </TD> <TD align="right"> 0.005525 </TD> <TD align="right"> 0.010000 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> EAS </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     572 </TD> <TD align="right">     572 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> EUR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     758 </TD> <TD align="right">     749 </TD> <TD align="right">       9 </TD> <TD align="right"> 0.988127 </TD> <TD align="right"> 0.011873 </TD> <TD align="right"> 0.010000 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196367 </TD> <TD> AFR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     492 </TD> <TD align="right">     492 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 41196367 </TD> <TD> AMR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     362 </TD> <TD align="right">     362 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
    </TABLE>
 
 And do our results match the precomputed values resident in the superpopulation-specific AF INFO fields?
@@ -274,11 +274,11 @@ Moving onto other results regarding rates of variation across populations:
 ```
 # Count the variation for each sample including phenotypic traits
 SELECT
-  samples.call.callset_name AS sample_id,
+  samples.call.call_set_name AS sample_id,
   gender,
   population,
   super_population,
-  COUNT(samples.call.callset_name) AS num_variants_for_sample,
+  COUNT(samples.call.call_set_name) AS num_variants_for_sample,
   SUM(IF(samples.af >= 0.05,
       INTEGER(1),
       INTEGER(0))) AS common_variant,
@@ -298,24 +298,25 @@ FROM
     SELECT
       af,
       vt,
-      call.callset_name,
+      call.call_set_name,
       NTH(1,
         call.genotype) WITHIN call AS first_allele,
       NTH(2,
         call.genotype) WITHIN call AS second_allele,
     FROM
-      [google.com:biggene:1000genomes.phase1_variants]
+      [genomics-public-data:1000_genomes.variants]
     WHERE
       vt = 'SNP'
     HAVING
       first_allele > 0
-      OR second_allele > 0
+      OR (second_allele IS NOT NULL
+          AND second_allele > 0)
       ),
     call) AS samples
 JOIN
-  [google.com:biggene:1000genomes.sample_info] p
+  [genomics-public-data:1000_genomes.sample_info] p
 ON
-  samples.call.callset_name = p.sample
+  samples.call.call_set_name = p.sample
 GROUP BY
   sample_id,
   gender,
@@ -328,7 +329,7 @@ Number of rows returned by this query: 1092.
 
 Displaying the first few rows of our result:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 14:02:31 2014 -->
+<!-- Thu Oct  2 21:46:08 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> gender </TH> <TH> population </TH> <TH> super_population </TH> <TH> num_variants_for_sample </TH> <TH> common_variant </TH> <TH> middle_variant </TH> <TH> rare_variant </TH> <TH> very_rare_variant </TH>  </TR>
   <TR> <TD> HG00096 </TD> <TD> male </TD> <TD> GBR </TD> <TD> EUR </TD> <TD align="right"> 3503172 </TD> <TD align="right"> 3339817 </TD> <TD align="right">  128924 </TD> <TD align="right">   24135 </TD> <TD align="right">   10296 </TD> </TR>
@@ -354,11 +355,11 @@ We see a noticieable difference, BUT this query included variants within chromos
 # Count the variation for each sample including phenotypic traits but excluding
 # sex chromosomes.
 SELECT
-  samples.call.callset_name AS sample_id,
+  samples.call.call_set_name AS sample_id,
   gender,
   population,
   super_population,
-  COUNT(samples.call.callset_name) AS num_variants_for_sample,
+  COUNT(samples.call.call_set_name) AS num_variants_for_sample,
   SUM(IF(samples.af >= 0.05,
       INTEGER(1),
       INTEGER(0))) AS common_variant,
@@ -378,26 +379,27 @@ FROM
     SELECT
       af,
       vt,
-      call.callset_name,
+      call.call_set_name,
       NTH(1,
         call.genotype) WITHIN call AS first_allele,
       NTH(2,
         call.genotype) WITHIN call AS second_allele,
     FROM
-      [google.com:biggene:1000genomes.phase1_variants]
+      [genomics-public-data:1000_genomes.variants]
     WHERE
       vt = 'SNP'
-      AND contig_name != 'X'
-      AND contig_name != 'Y'
+      AND reference_name != 'X'
+      AND reference_name != 'Y'
     HAVING
       first_allele > 0
-      OR second_allele > 0
+      OR (second_allele IS NOT NULL
+          AND second_allele > 0)
       ),
     call) AS samples
 JOIN
-  [google.com:biggene:1000genomes.sample_info] p
+  [genomics-public-data:1000_genomes.sample_info] p
 ON
-  samples.call.callset_name = p.sample
+  samples.call.call_set_name = p.sample
 GROUP BY
   sample_id,
   gender,
