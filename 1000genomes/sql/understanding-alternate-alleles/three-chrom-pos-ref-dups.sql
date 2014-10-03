@@ -10,9 +10,9 @@ FROM
   [genomics-public-data:1000_genomes.variants]
 WHERE
   reference_name = '17'
-  AND (start = 48515943
-    OR start = 48570614
-    OR start = 48659343)
+  AND (start = 48515942
+    OR start = 48570613
+    OR start = 48659342)
 ORDER BY
   start,
   reference_bases,

@@ -25,70 +25,70 @@ Let’s explore the question _“Is (contig, position, reference_bases) a unique
 
 
 ```
-# Find variants on chromosome 17 that reside on the same start_pos with the same reference base
+# Find variants on chromosome 17 that reside on the same start with the same reference base
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
-  COUNT(start_pos) AS num_alternates
+  COUNT(start) AS num_alternates
 FROM
-  [google.com:biggene:1000genomes.phase1_variants]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig_name = '17'
+  reference_name = '17'
 GROUP BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases
 HAVING
   num_alternates > 1
 ORDER BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases
 ```
 Number of rows returned by this query: 417.
 
 We see the first six tabular results:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:15 2014 -->
+<!-- Thu Oct  2 19:33:39 2014 -->
 <TABLE border=1>
-<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 184673 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 211032 </TD> <TD> C </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 240040 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 443436 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 533536 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 557991 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 184672 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 211031 </TD> <TD> C </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 240039 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 443435 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 533535 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 557990 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
    </TABLE>
 So we see from the data that the answer to our question is “No”.
 
 So how many rows might we see per (contig, position, reference_bases) tuple?
 
 ```
-# Count number of alternate variants on chromosome 17 for the same start_pos and
+# Count number of alternate variants on chromosome 17 for the same start and
 # reference base
 SELECT
   num_alternates,
   COUNT(num_alternates) AS num_records
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(start_pos) AS num_alternates,
+    COUNT(start) AS num_alternates,
   FROM
-    [google.com:biggene:1000genomes.phase1_variants]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig_name = '17'
+    reference_name = '17'
   GROUP BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases)
 GROUP BY
   num_alternates
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:19 2014 -->
+<!-- Thu Oct  2 19:33:44 2014 -->
 <TABLE border=1>
 <TR> <TH> num_alternates </TH> <TH> num_records </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 1045899 </TD> </TR>
@@ -99,36 +99,36 @@ So we see that for any particular (contig, position, reference_bases) tuple the 
 Let’s examine a few of the tuples with two alternate alleles more closely.
 
 ```
-# Get three particular start_pos on chromosome 17 that have alternate variants.
+# Get three particular start on chromosome 17 that have alternate variants.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-#  GROUP_CONCAT(id) WITHIN RECORD AS ids,
+  GROUP_CONCAT(names) WITHIN RECORD AS names,
   vt,
 FROM
-  [google.com:biggene:1000genomes.phase1_variants]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig_name = '17'
-  AND (start_pos = 48515943
-    OR start_pos = 48570614
-    OR start_pos = 48659343)
+  reference_name = '17'
+  AND (start = 48515942
+    OR start = 48570613
+    OR start = 48659342)
 ORDER BY
-  start_pos,
+  start,
   reference_bases,
   alt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:24 2014 -->
+<!-- Thu Oct  2 19:33:53 2014 -->
 <TABLE border=1>
-<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> G </TD> <TD> SNP </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> TG </TD> <TD> INDEL </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> AT </TD> <TD> INDEL </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> T </TD> <TD> SNP </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> INDEL </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> T </TD> <TD> SNP </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> names </TH> <TH> vt </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> rs8076712,rs8076712 </TD> <TD> SNP </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> TG </TD> <TD> rs113432301,rs113432301 </TD> <TD> INDEL </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48570613 </TD> <TD> A </TD> <TD> AT </TD> <TD> rs201827568,rs201827568 </TD> <TD> INDEL </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48570613 </TD> <TD> A </TD> <TD> T </TD> <TD> rs9896330,rs9896330 </TD> <TD> SNP </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659342 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> rs148905490,rs148905490 </TD> <TD> INDEL </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659342 </TD> <TD> C </TD> <TD> T </TD> <TD> rs113983760,rs113983760 </TD> <TD> SNP </TD> </TR>
    </TABLE>
 From this small sample, it appears that the alternate allele is either a SNP or an INDEL.
 
@@ -136,41 +136,41 @@ Is that the case for all the records corresponding to duplicate (contig, positio
 
 ```
 # Count by variant type the number of alternate variants on chromosome 17 for the same
-# start_pos and reference base
+# start and reference base
 SELECT
   vt,
   COUNT(vt) AS num_variant_type
 FROM
-  [google.com:biggene:1000genomes.phase1_variants] AS variants
+  [genomics-public-data:1000_genomes.variants] AS variants
 JOIN (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(start_pos) AS num_alternates,
+    COUNT(start) AS num_alternates,
   FROM
-    [google.com:biggene:1000genomes.phase1_variants]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig_name = '17'
+    reference_name = '17'
   GROUP EACH BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases
   HAVING
     num_alternates > 1) AS dups
 ON
-  variants.contig_name = dups.contig_name
-  AND variants.start_pos = dups.start_pos
+  variants.reference_name = dups.reference_name
+  AND variants.start = dups.start
   AND variants.reference_bases = dups.reference_bases
 WHERE
-  variants.contig_name = '17'
+  variants.reference_name = '17'
 GROUP EACH BY
   vt
 ORDER BY
   vt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:28 2014 -->
+<!-- Thu Oct  2 19:33:58 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 412 </TD> </TR>
@@ -183,41 +183,41 @@ For records corresponding to a unique (contig, position, reference_bases) tuple,
 
 ```
 # Count by variant type the number of variants on chromosome 17 unique for a
-# start_pos and reference base
+# start and reference base
 SELECT
   vt,
   COUNT(vt) AS num_variant_type
 FROM
-  [google.com:biggene:1000genomes.phase1_variants] AS variants
+  [genomics-public-data:1000_genomes.variants] AS variants
 JOIN EACH (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(start_pos) AS num_alternates
+    COUNT(start) AS num_alternates
   FROM
-    [google.com:biggene:1000genomes.phase1_variants]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig_name = '17'
+    reference_name = '17'
   GROUP EACH BY
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases
   HAVING
     num_alternates = 1) AS singles
 ON
-  variants.contig_name = singles.contig_name
-  AND variants.start_pos = singles.start_pos
+  variants.reference_name = singles.reference_name
+  AND variants.start = singles.start
   AND variants.reference_bases = singles.reference_bases
 WHERE
-  variants.contig_name = '17'
+  variants.reference_name = '17'
 GROUP EACH BY
   vt
 ORDER BY
   vt
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:31 2014 -->
+<!-- Thu Oct  2 19:34:02 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 38754 </TD> </TR>
@@ -234,37 +234,37 @@ So what does this all mean for a particular duplicate (contig, position, referen
 # across more than two alternates.  For more info, see
 # https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   alt,
   reference_bases,
   sample_id,
   CASE
-  WHEN 0 = allele1 THEN reference_bases
-  WHEN 1 = allele1 THEN alt1
-  WHEN 2 = allele1 THEN alt2 END AS allele1,
+  WHEN 0 = first_allele THEN reference_bases
+  WHEN 1 = first_allele THEN alt1
+  WHEN 2 = first_allele THEN alt2 END AS first_allele,
   CASE
-  WHEN 0 = allele2 THEN reference_bases
-  WHEN 1 = allele2 THEN alt1
-  WHEN 2 = allele2 THEN alt2 END AS allele2,
+  WHEN 0 = second_allele THEN reference_bases
+  WHEN 1 = second_allele THEN alt1
+  WHEN 2 = second_allele THEN alt2 END AS second_allele,
 FROM(
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     reference_bases,
-    call.callset_name AS sample_id,
+    call.call_set_name AS sample_id,
     NTH(1,
       alternate_bases) WITHIN RECORD AS alt1,
     NTH(2,
       alternate_bases) WITHIN RECORD AS alt2,
-    NTH(1, call.genotype) WITHIN call AS allele1,
-    NTH(2, call.genotype) WITHIN call AS allele2,
+    NTH(1, call.genotype) WITHIN call AS first_allele,
+    NTH(2, call.genotype) WITHIN call AS second_allele,
   FROM
-    [google.com:biggene:1000genomes.phase1_variants]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig_name = '17'
-    AND start_pos = 48515943
+    reference_name = '17'
+    AND start = 48515942
   HAVING
     sample_id = 'HG00100' OR sample_id = 'HG00101')
 ORDER BY
@@ -272,13 +272,13 @@ ORDER BY
   sample_id
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:36 2014 -->
+<!-- Thu Oct  2 19:34:10 2014 -->
 <TABLE border=1>
-<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> alt </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> allele1 </TH> <TH> allele2 </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> TG </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> alt </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> first_allele </TH> <TH> second_allele </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> TG </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
    </TABLE>
 We can see that HG00101 was called the same in both records but HG00100 was called differently.  So which is the [correct interpretation](http://vcftools.sourceforge.net/VCF-poster.pdf) for each allele at position 48515943 on chromosome 17?
 ```
@@ -295,39 +295,37 @@ Let’s examine the quality, some INFO fields, and the genotype likelihoods a li
 ```
 # Get data sufficient to make a judgment upon this particular sample's call.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases AS ref,
   GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-# TODO: uncomment these when the fields are restored to the table
-#  quality,
-#  GROUP_CONCAT(filter) WITHIN RECORD AS filters,
+  GROUP_CONCAT(filter) WITHIN RECORD AS filters,
   avgpost,
   rsq
   vt,
-  call.callset_name AS sample_id,
+  call.call_set_name AS sample_id,
   call.phaseset AS phaseset,
-  NTH(1, call.genotype) WITHIN call AS allele1,
-  NTH(2, call.genotype) WITHIN call AS allele2,
+  NTH(1, call.genotype) WITHIN call AS first_allele,
+  NTH(2, call.genotype) WITHIN call AS second_allele,
   call.ds AS ds,
   GROUP_CONCAT(STRING(call.genotype_likelihood)) WITHIN call AS likelihoods,
 FROM
-  [google.com:biggene:1000genomes.phase1_variants]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig_name = '17'
-  AND start_pos = 48515943
+  reference_name = '17'
+  AND start = 48515942
 HAVING
   sample_id = 'HG00100'
 ORDER BY
   alt
-Running query:   RUNNING  2.6sRunning query:   RUNNING  3.7sRunning query:   RUNNING  5.1s
+Running query:   RUNNING  2.7sRunning query:   RUNNING  4.1sRunning query:   RUNNING  6.2s
 ```
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:44 2014 -->
+<!-- Thu Oct  2 19:34:21 2014 -->
 <TABLE border=1>
-<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> ref </TH> <TH> alt </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> phaseset </TH> <TH> allele1 </TH> <TH> allele2 </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> G </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> TG </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 0.90 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 0.90 </TD> <TD> 0,-0.6,-5.4 </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> ref </TH> <TH> alt </TH> <TH> filters </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> phaseset </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> PASS </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> TG </TD> <TD> PASS </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 0.90 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 0.90 </TD> <TD> 0,-0.6,-5.4 </TD> </TR>
    </TABLE>
 The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for details about the other fields.
 
@@ -342,40 +340,40 @@ Our original question was _“Is (contig, position, reference_bases) a unique ke
 # This query demonstrates that some additional field is needed to
 # comprise a unique key for the rows in the table.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt,
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     vt,
   FROM
-    [google.com:biggene:1000genomes.phase1_variants])
+    [genomics-public-data:1000_genomes.variants])
   GROUP EACH BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt
 HAVING
   cnt > 1
 ORDER BY
-  contig_name
+  reference_name
 ```
 
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Sep 19 12:40:50 2014 -->
+<!-- Thu Oct  2 19:34:28 2014 -->
 <TABLE border=1>
-<TR> <TH> contig_name </TH> <TH> start_pos </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
-  <TR> <TD> 14 </TD> <TD align="right"> 106885901 </TD> <TD> G </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 19 </TD> <TD align="right"> 48773401 </TD> <TD> C </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 6 </TD> <TD align="right"> 26745501 </TD> <TD> C </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
+  <TR> <TD> 14 </TD> <TD align="right"> 106885900 </TD> <TD> G </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 19 </TD> <TD align="right"> 48773400 </TD> <TD> C </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 6 </TD> <TD align="right"> 26745500 </TD> <TD> C </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
    </TABLE>
 Not quite.  We see a few structural variant deletions called at the same position.
 
@@ -385,8 +383,8 @@ Let's add in the `end` column:
 # This query demonstrates that an additional field, 'end', is needed to  
 # comprise a unique key for the rows in the table.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt,
@@ -394,17 +392,17 @@ SELECT
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     reference_bases,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     vt,
     end,
   FROM
-    [google.com:biggene:1000genomes.phase1_variants])
+    [genomics-public-data:1000_genomes.variants])
   GROUP EACH BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt,
@@ -430,22 +428,22 @@ Lastly, what is a minimal unique key?
 # This query demonstrates the minimal set of fields needed to  
 # comprise a unique key for the rows in the table.
 SELECT
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   alt,
   end,
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig_name,
-    start_pos,
+    reference_name,
+    start,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     end,
   FROM
-    [google.com:biggene:1000genomes.phase1_variants])
+    [genomics-public-data:1000_genomes.variants])
   GROUP EACH BY
-  contig_name,
-  start_pos,
+  reference_name,
+  start,
   alt,
   end
 HAVING

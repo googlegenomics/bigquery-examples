@@ -33,7 +33,7 @@ FROM(
     [genomics-public-data:1000_genomes.variants]
   WHERE
     reference_name = '17'
-    AND start = 48515943
+    AND start = 48515942
   HAVING
     sample_id = 'HG00100' OR sample_id = 'HG00101')
 ORDER BY
