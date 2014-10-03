@@ -18,7 +18,7 @@
 =================
 
 ### Additional Resources
-* [Schema](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1)
+* [Schema](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.variants?pli=1)
 * [Provenance](./provenance)
 * [Data Stories](./data-stories) such as
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
@@ -43,14 +43,12 @@ DisplayAndDispatchQuery <- function(queryUri) {
 }
 ```
 
-```{r echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
-# TODO fixme when these columns are back
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("./sql/ratio-of-dbsnp-variants-by-chromosome.sql")
 ```
 
 We see the tabular results:
-```{r echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-# TODO fixme when these columns are back
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
 print(xtable(result, digits=6), type="html", include.rownames=F)
 ```
 
@@ -61,7 +59,7 @@ qplot(num_variants, num_dbsnp_variants, color=num_variants, data=result) +
   ylab("Number of dbSNP Variants") +
   xlab("Number of Variants") +
   ggtitle("dbSNP Variant Count vs. Total Variant Count by Chromosome") +
-  geom_text(aes(label=contig), hjust=-1, vjust=0)
+  geom_text(aes(label=reference_name), hjust=-1, vjust=0)
 ```
 
 ### Variant Metadata
@@ -138,6 +136,9 @@ expect_equal(object=sum(as.numeric(result$num_samples *
                                    result$num_variants_shared_by_this_many_samples)),
              expected=sum(as.numeric(sharedVars$num_samples_with_variant *
                                      sharedVars$num_variants_shared_by_this_many_samples)))
+# NOTE: if we modify these shared variant queries to leave in X, Y, and MT we
+# undercount the shared variants by ethnicity by 1,751 variants for some reason.
+
 # Coerce the variant type to logical so that we can use it for categorization in plots
 result$is_common_variant <- as.logical(result$is_common_variant)
 ```
