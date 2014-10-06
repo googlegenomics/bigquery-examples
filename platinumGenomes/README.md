@@ -3,7 +3,7 @@ Platinum Genomes
 
 ### Additional Resources
 * [Schema](https://bigquery.cloud.google.com/table/genomics-public-data:platinum_genomes.variants?pli=1)
-* [Provenance](./provenance)
+* Provenance
   * `variants` table: See [Google Genomics Public Data](https://cloud.google.com/genomics/data/platinum-genomes) for provenance details for this data.
   * `sample_info` table: use the [sample information](../1000genomes/provenance#source-sample-information) from 1,000 Genomes.
 
