@@ -61,7 +61,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:18:53 2014 -->
+<!-- Mon Oct  6 15:36:16 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> num_dbsnp_variants </TH> <TH> num_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 0.998275 </TD> </TR>
@@ -95,7 +95,7 @@ And visually:
 <img src="figure/dbSNP Variants.png" title="plot of chunk dbSNP Variants" alt="plot of chunk dbSNP Variants" style="display: block; margin: auto;" />
 
 ### Variant Metadata
-The 1000 Genomes variant data is stored in the [variants](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1) for more detail.
+The 1000 Genomes variant data is stored in the [variants](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.variants?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.variants?pli=1) for more detail.
 
 Show variants within BRCA1:
 
@@ -123,7 +123,7 @@ Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:18:57 2014 -->
+<!-- Mon Oct  6 15:36:21 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> names </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> rs8176320,rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> </TR>
@@ -172,7 +172,7 @@ Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:19:02 2014 -->
+<!-- Mon Oct  6 15:36:26 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> names </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> phaseset </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> call_ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> rs8176320,rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD> -0.03,-1.19,-5 </TD> </TR>
@@ -232,7 +232,7 @@ Number of rows returned by this query: 1093.
 
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:19:07 2014 -->
+<!-- Mon Oct  6 15:36:32 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right">   0 </TD> <TD align="right"> 154741 </TD> </TR>
@@ -244,7 +244,7 @@ Examing the first few rows, we see that a substantial number of variants are sha
    </TABLE>
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:19:07 2014 -->
+<!-- Mon Oct  6 15:36:32 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right"> 1087 </TD> <TD align="right"> 16600 </TD> </TR>
@@ -359,7 +359,7 @@ Number of rows returned by this query: 1447.
 
 First few rows:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:19:12 2014 -->
+<!-- Mon Oct  6 15:36:40 2014 -->
 <TABLE border=1>
 <TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples </TH> <TH> percent_samples </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD> AFR </TD> <TD align="right"> 246 </TD> <TD> FALSE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 12386569 </TD> </TR>
@@ -371,7 +371,7 @@ First few rows:
    </TABLE>
 Last few rows:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:19:12 2014 -->
+<!-- Mon Oct  6 15:36:40 2014 -->
 <TABLE border=1>
 <TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples </TH> <TH> percent_samples </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 374 </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 29660 </TD> </TR>

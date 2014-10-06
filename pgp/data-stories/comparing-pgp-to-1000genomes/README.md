@@ -19,8 +19,7 @@ Comparing PGP variants data to that of 1,000 Genomes
 
 How does the structure and composition of the PGP dataset vary from that of 1,000 Genomes, described in detail via the [1,000 Genomes data stories](../../../1000genomes/data-stories)?
 
-
-
+**Note: the variants schema for the PGP data has not yet been updated to the current schema.  This story also uses an older import of 1,000 genomes.  This content will be updated at a later date.**
 
 Variant Level Data
 ------------------

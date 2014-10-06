@@ -63,7 +63,7 @@ qplot(num_variants, num_dbsnp_variants, color=num_variants, data=result) +
 ```
 
 ### Variant Metadata
-The 1000 Genomes variant data is stored in the [variants](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/coherent-fx-462:1000_genomes.variants?pli=1) for more detail.
+The 1000 Genomes variant data is stored in the [variants](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.variants?pli=1) table.  Every record in the variants table maps to a single site (line) in the [VCF](http://www.1000genomes.org/wiki/Analysis/Variant%20Call%20Format/vcf-variant-call-format-version-41) file.  See the [schema](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes.variants?pli=1) for more detail.
 
 Show variants within BRCA1:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
