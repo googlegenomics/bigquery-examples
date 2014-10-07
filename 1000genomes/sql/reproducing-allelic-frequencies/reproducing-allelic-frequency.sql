@@ -1,8 +1,8 @@
 # The following query computes the allelic frequency for BRCA1 variants in the
 # 1,000 Genomes dataset and also includes the pre-computed value from the dataset.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
   alternate_bases,
   SUM(ref_count)+SUM(alt_count) AS num_sample_alleles,
@@ -13,54 +13,66 @@ SELECT
   alt_freq_from_1KG
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = genotype.first_allele,
+    SUM(IF(0 = first_allele,
         1,
-        0) + IF(0 = genotype.second_allele,
+        0) + IF(0 = second_allele,
         1,
         0)) AS ref_count,
-    SUM(IF(alt = genotype.first_allele,
+    SUM(IF(alt = first_allele,
         1,
-        0) + IF(alt = genotype.second_allele,
+        0) + IF(alt = second_allele,
         1,
         0)) AS alt_count,
     alt_freq_from_1KG
   FROM (
     SELECT
-      contig,
-      position,
+      reference_name,
+      start,
       reference_bases,
       alternate_bases,
-      af AS alt_freq_from_1KG,
+      alt_freq_from_1KG,
       POSITION(alternate_bases) AS alt,
-      genotype.first_allele,
-      genotype.second_allele,
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
     FROM
-      FLATTEN([google.com:biggene:1000genomes.variants1kG],
-        genotype)
-    WHERE
-      contig = '17'
-      AND position BETWEEN 41196312
-      AND 41277500
-      AND vt='SNP')
+      FLATTEN((
+        SELECT
+          reference_name,
+          start,
+          reference_bases,
+          alternate_bases,
+          af AS alt_freq_from_1KG,
+          call.genotype
+        FROM
+          [genomics-public-data:1000_genomes.variants]
+        WHERE
+          reference_name = '17'
+          AND start BETWEEN 41196311
+          AND 41277499
+          AND vt='SNP'),
+        call)
+      )
   GROUP BY
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
     alternate_bases,
     alt,
     alt_freq_from_1KG)
 GROUP BY
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
   alternate_bases,
   alt,
   alt_freq_from_1KG
 ORDER BY
-  contig,
-  position;
+  reference_name,
+  start

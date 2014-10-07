@@ -1,23 +1,23 @@
 # This query demonstrates the minimal set of fields needed to  
 # comprise a unique key for the rows in the table.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   alt,
   end,
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     end,
   FROM
-    [google.com:biggene:1000genomes.variants1kG])
+    [genomics-public-data:1000_genomes.variants])
   GROUP EACH BY
-  contig,
-  position,
+  reference_name,
+  start,
   alt,
   end
 HAVING
-  cnt > 1;
+  cnt > 1

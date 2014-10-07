@@ -1,18 +1,33 @@
 # Count the number of samples that have the BRCA1 variant.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
-  SUM(IF(0 < genotype.first_allele
-      OR 0 < genotype.second_allele,
-      1,
-      0)) WITHIN RECORD AS num_samples_with_variant
-FROM
-  [google.com:biggene:1000genomes.variants1kG]
-WHERE
-  contig = '17'
-  AND position BETWEEN 41196312
-  AND 41277500
-  AND vt ='SNP'
+  SUM(first_allele > 0
+    OR second_allele > 0) AS num_samples_with_variant
+  FROM(
+    SELECT
+      reference_name,
+      start,
+      reference_bases,
+      GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+      NTH(1,
+        call.genotype) WITHIN call AS first_allele,
+      NTH(2,
+        call.genotype) WITHIN call AS second_allele,
+    FROM
+      [genomics-public-data:1000_genomes.variants]
+    WHERE
+      reference_name = '17'
+      AND start BETWEEN 41196311
+      AND 41277499
+      AND vt ='SNP'
+      )
+  GROUP BY
+    reference_name,
+    start,
+    reference_bases,
+    alt
 ORDER BY
-  num_samples_with_variant;
+  num_samples_with_variant,
+  start

@@ -1,4 +1,4 @@
-# Compute the number of variants for a particular sample that are shared by 
+# Compute the number of variants for a particular sample that are shared by
 # no other samples.
 SELECT
   COUNT(sample_id) AS private_variants_count,
@@ -6,23 +6,21 @@ SELECT
 FROM
   (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    IF(genotype.first_allele > 0
-      OR genotype.second_allele > 0,
-      genotype.sample_id,
+    IF(0 < call.genotype,
+      call.call_set_name,
       NULL) AS sample_id,
-    SUM(IF(genotype.first_allele > 0
-        OR genotype.second_allele > 0,
+    SUM(IF(0 < call.genotype,
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   HAVING
     num_samples_with_variant = 1
     AND sample_id IS NOT NULL)
 GROUP EACH BY
   sample_id
 ORDER BY
-  private_variants_count DESC;
+  sample_id

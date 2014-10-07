@@ -4,3 +4,4 @@ cache
 .Rhistory
 .RData
 *html
+.httr-oauth

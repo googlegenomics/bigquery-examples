@@ -28,13 +28,13 @@ FROM (
           alternate_bases)) AS mutation,
       COUNT(alternate_bases) AS num_snps,
     FROM
-      [google.com:biggene:1000genomes.variants1kG]
+      [genomics-public-data:1000_genomes.variants]
     WHERE
-      contig = '17'
-        AND position BETWEEN 41196312
-        AND 41277500
+      reference_name = '17'
+        AND start BETWEEN 41196311
+        AND 41277499
         AND vt = 'SNP'
     GROUP BY
       mutation
     ORDER BY
-      mutation));
+      mutation))

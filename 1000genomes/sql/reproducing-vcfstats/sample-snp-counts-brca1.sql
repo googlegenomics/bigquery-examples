@@ -4,21 +4,20 @@ SELECT
   sample_id
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    genotype.sample_id AS sample_id
+    call.call_set_name AS sample_id
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
-    AND position BETWEEN 41196312
-    AND 41277500
+    reference_name = '17'
+    AND start BETWEEN 41196311
+    AND 41277499
     AND vt ='SNP'
-    AND (0 < genotype.first_allele
-      OR 0 < genotype.second_allele)
+    AND (0 < call.genotype)
     )
 GROUP BY
   sample_id
 ORDER BY
-  sample_id;
+  sample_id

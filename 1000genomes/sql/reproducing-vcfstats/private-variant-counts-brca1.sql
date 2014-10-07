@@ -1,4 +1,4 @@
-# Compute the number of variants within BRCA1 for a particular sample that are shared by 
+# Compute the number of variants within BRCA1 for a particular sample that are shared by
 # no other samples.
 SELECT
   COUNT(sample_id) AS private_variants_count,
@@ -6,27 +6,25 @@ SELECT
 FROM
   (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    IF(0 < genotype.first_allele
-      OR 0 < genotype.second_allele,
-      genotype.sample_id,
+    IF(0 < call.genotype,
+      call.call_set_name,
       NULL) AS sample_id,
-    SUM(IF(0 < genotype.first_allele
-        OR 0 < genotype.second_allele,
+    SUM(IF(0 < call.genotype,
         1,
         0)) WITHIN RECORD AS num_samples_with_variant
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
-    AND position BETWEEN 41196312
-    AND 41277500
+    reference_name = '17'
+    AND start BETWEEN 41196311
+    AND 41277499
   HAVING
     num_samples_with_variant = 1
     AND sample_id IS NOT NULL)
 GROUP EACH BY
   sample_id
 ORDER BY
-  sample_id;
+  sample_id

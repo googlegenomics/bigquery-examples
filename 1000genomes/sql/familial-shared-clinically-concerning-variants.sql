@@ -1,8 +1,10 @@
-# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the 
-# number of family members sharing the SNP
+# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor, counting the
+# number of family members sharing the SNP.
+# TODO: double check whether the annotation coordinates are 0-based as is
+#       the case for the variants.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -11,8 +13,8 @@ SELECT
   num_family_members_with_variant,
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     ref,
     alt,
     clinicalsignificance,
@@ -23,15 +25,19 @@ FROM (
     (FLATTEN(
         (
         SELECT
-          contig,
-          position,
+          reference_name,
+          var.start AS start,
           ref,
           alt,
-          genotype.sample_id AS sample_id,
+          call.call_set_name AS sample_id,
+          NTH(1,
+            call.genotype) WITHIN var.call AS first_allele,
+          NTH(2,
+            call.genotype) WITHIN var.call AS second_allele,
           clinicalsignificance,
           disease_id,
         FROM
-          FLATTEN([google.com:biggene:1000genomes.variants1kG],
+          FLATTEN([genomics-public-data:1000_genomes.variants],
             alternate_bases) AS var
         JOIN (
           SELECT
@@ -45,7 +51,7 @@ FROM (
             REGEXP_EXTRACT(phenotypeids,
               r'MedGen:(\w+)') AS disease_id,
           FROM
-            [google.com:biggene:1000genomes.clinvar]
+            [google.com:biggene:annotations.clinvar]
           WHERE
             type='single nucleotide variant'
             AND (clinicalsignificance CONTAINS 'risk factor'
@@ -53,34 +59,36 @@ FROM (
               OR clinicalsignificance CONTAINS 'Pathogenic')
             ) AS clin
         ON
-          var.contig = clin.chromosome
-          AND var.position = clin.start
+          var.reference_name = clin.chromosome
+          AND var.start = clin.start
           AND reference_bases = ref
           AND alternate_bases = alt
         WHERE
           var.vt='SNP'
-          AND (var.genotype.first_allele > 0
-            OR var.genotype.second_allele > 0)),
-        var.genotype)) AS sig
+        HAVING
+          first_allele > 0
+          OR (second_allele IS NOT NULL
+              AND second_allele > 0)),
+        var.call)) AS sig
   JOIN
-    [google.com:biggene:1000genomes.pedigree] AS ped
+    [genomics-public-data:1000_genomes.pedigree] AS ped
   ON
     sig.sample_id = ped.individual_id
   GROUP BY
-    contig,
-    position,
+    reference_name,
+    start,
     ref,
     alt,
     clinicalsignificance,
     disease_id,
     family_id) families
 JOIN
-  [google.com:biggene:1000genomes.clinvar_disease_names] AS names
+  [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON
   names.conceptid = families.disease_id
 GROUP BY
-  contig,
-  position,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -90,5 +98,6 @@ GROUP BY
 ORDER BY
   num_family_members_with_variant DESC,
   clinicalsignificance,
-  contig,
-  position;
+  reference_name,
+  start,
+  family_id

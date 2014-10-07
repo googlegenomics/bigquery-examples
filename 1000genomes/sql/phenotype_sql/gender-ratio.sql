@@ -12,8 +12,8 @@ FROM (
     gender,
     COUNT(gender) AS gender_count,
   FROM
-    [google.com:biggene:1000genomes.sample_info]
+    [genomics-public-data:1000_genomes.sample_info]
   WHERE
     In_Phase1_Integrated_Variant_Set = TRUE
   GROUP BY
-    gender);
+    gender)

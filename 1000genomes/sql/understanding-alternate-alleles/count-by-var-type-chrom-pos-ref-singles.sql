@@ -1,31 +1,33 @@
-# Count by variant type the number of variants on chromosome 17 unique for a 
-# position and reference base
+# Count by variant type the number of variants on chromosome 17 unique for a
+# start and reference base
 SELECT
   vt,
   COUNT(vt) AS num_variant_type
 FROM
-  [google.com:biggene:1000genomes.variants1kG] AS variants
+  [genomics-public-data:1000_genomes.variants] AS variants
 JOIN EACH (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(position) AS num_alternates
+    COUNT(start) AS num_alternates
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
+    reference_name = '17'
   GROUP EACH BY
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases
   HAVING
     num_alternates = 1) AS singles
 ON
-  variants.contig = singles.contig
-  AND variants.position = singles.position
+  variants.reference_name = singles.reference_name
+  AND variants.start = singles.start
   AND variants.reference_bases = singles.reference_bases
 WHERE
-  variants.contig = '17'
+  variants.reference_name = '17'
 GROUP EACH BY
-  vt;
+  vt
+ORDER BY
+  vt

@@ -1,20 +1,20 @@
-# Find variants on chromosome 17 that reside on the same position with the same reference base
+# Find variants on chromosome 17 that reside on the same start with the same reference base
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
-  COUNT(position) AS num_alternates
+  COUNT(start) AS num_alternates
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig = '17'
+  reference_name = '17'
 GROUP BY
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases
 HAVING
   num_alternates > 1
 ORDER BY
-  contig,
-  position,
-  reference_bases;
+  reference_name,
+  start,
+  reference_bases

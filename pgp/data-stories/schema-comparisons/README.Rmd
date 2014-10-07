@@ -21,18 +21,17 @@ require(ggplot2)
 require(dplyr)
 require(xtable)
 require(testthat)
-billing_project <- "google.com:biggene" # put your projectID here
+project <- "google.com:biggene" # put your projectID here
 DisplayAndDispatchQuery <- function(queryUri) {
-  sql <- readChar(queryUri, nchars=1e6)
-  cat(sql)
-  query_exec(project="google.com:biggene", dataset="1000genomes",
-                    query=sql, billing=billing_project)  
+  querySql <- readChar(queryUri, nchars=1e6)
+  cat(querySql)
+  query_exec(querySql, project)
 }
 ```
 
 To determine how to improve the usability of the data and the schemas, we have the same data encoded several different ways, to compare and contrast querying each.
 
-Table      | Table Size | Description 
+Table      | Table Size | Description
 :------------- |:---------------:|:---------------
 [cgi_variants](../../provenance#cgi_variants-table)  |433GB | data from 174 CGI masterVar files in a flat schema (one row per sample) with reference matching blocks
 [gvcf_variants](../../provenance#gvcf_variants-table)  | 231GB | CGI data for 172 individuals converted to gVCF in a nested schema (per-sample data is nested) with reference matching blocks
@@ -41,8 +40,8 @@ Table      | Table Size | Description
 ```{r echo=FALSE}
 library(dplyr)
 
-count_lines <- function(path) { 
-    if(!is.na(path)) { 
+count_lines <- function(path) {
+    if(!is.na(path)) {
       length(readLines(path))
       }
     else {
@@ -67,7 +66,7 @@ obs <- mutate(observations,
 print(xtable(obs %.%
                filter(code == 'klotho.sql') %.%
                select(table_link, code_link, runtime, data_processed, line_count, notes),
-             digits=6), 
+             digits=6),
       type="html",
       include.rownames=F,
       sanitize.text.function=force)
@@ -78,7 +77,7 @@ print(xtable(obs %.%
 print(xtable(obs %.%
                filter(code == 'ti-tv-ratio.sql') %.%
                select(table_link, code_link, runtime, data_processed, line_count, notes),
-             digits=6), 
+             digits=6),
       type="html",
       include.rownames=F,
       sanitize.text.function=force)
@@ -89,7 +88,7 @@ print(xtable(obs %.%
 print(xtable(obs %.%
                filter(code == 'allelic-frequency-brca1.sql') %.%
                select(table_link, code_link, runtime, data_processed, line_count, notes),
-             digits=6), 
+             digits=6),
       type="html",
       include.rownames=F,
       sanitize.text.function=force)
@@ -100,7 +99,7 @@ print(xtable(obs %.%
 print(xtable(obs %.%
                filter(code == 'allele-count.sql') %.%
                select(table_link, code_link, runtime, data_processed, line_count, notes),
-             digits=6), 
+             digits=6),
       type="html",
       include.rownames=F,
       sanitize.text.function=force)
@@ -111,7 +110,7 @@ print(xtable(obs %.%
 print(xtable(obs %.%
                filter(code == 'allelic-frequency-chr1.sql') %.%
                select(table_link, code_link, runtime, data_processed, line_count, notes),
-             digits=6), 
+             digits=6),
       type="html",
       include.rownames=F,
       sanitize.text.function=force)
@@ -122,7 +121,7 @@ print(xtable(obs %.%
 print(xtable(obs %.%
                filter(code == 'allelic-frequency.sql') %.%
                select(table_link, code_link, runtime, data_processed, line_count, notes),
-             digits=6), 
+             digits=6),
       type="html",
       include.rownames=F,
       sanitize.text.function=force)
@@ -133,7 +132,7 @@ print(xtable(obs %.%
 print(xtable(obs %.%
                filter(code == 'allelic-frequency-comparison.sql') %.%
                select(table_link, code_link, runtime, data_processed, line_count, notes),
-             digits=6), 
+             digits=6),
       type="html",
       include.rownames=F,
       sanitize.text.function=force)
@@ -216,18 +215,18 @@ print(xtable(head(result, n=8)), type="html", include.rownames=F)
 And visually:
 ```{r variant_cnt, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=8, fig.height=8}
 result$chromosome <- factor(result$chromosome, levels=c(as.character(seq(1,22)), "X", "Y", "M"))
-ggplot(filter(result, dataset != 'cgi_variants'), aes(x=chromosome, y=num_variants, fill=dataset)) + 
+ggplot(filter(result, dataset != 'cgi_variants'), aes(x=chromosome, y=num_variants, fill=dataset)) +
   geom_bar(stat="identity", position="dodge") +
   coord_flip() +
   xlab("Chromosome") +
-  ylab("Count of Variants") 
+  ylab("Count of Variants")
 ```
 ```{r call_cnt, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=8, fig.height=8}
-ggplot(filter(result, dataset != 'cgi_variants'), aes(x=chromosome, y=num_records, fill=dataset)) + 
+ggplot(filter(result, dataset != 'cgi_variants'), aes(x=chromosome, y=num_records, fill=dataset)) +
   geom_bar(stat="identity", position="dodge") +
   coord_flip() +
   xlab("Chromosome") +
-  ylab("Count of Records (Variant-Calls, Ref-Calls, No-Calls)") 
+  ylab("Count of Records (Variant-Calls, Ref-Calls, No-Calls)")
 ```
 
 Let's also confirm with a few tests:
@@ -305,10 +304,10 @@ result$dataset <- factor(result$dataset, levels=c("cgi_variants",
                                                   "variants",
                                                   "gvcf_variants",
                                                   "gvcf_variants_expanded"))
-ggplot(result, aes(x=num_variant_alleles)) + 
+ggplot(result, aes(x=num_variant_alleles)) +
   geom_histogram() +
   facet_wrap(~ dataset) +
-  xlab("Count of Variant Alleles per Sample") 
+  xlab("Count of Variant Alleles per Sample")
 ```
 
 ```{r sample_call_cnt, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=8, fig.height=8}
@@ -316,10 +315,10 @@ result$dataset <- factor(result$dataset, levels=c("cgi_variants",
                                                   "variants",
                                                   "gvcf_variants",
                                                   "gvcf_variants_expanded"))
-ggplot(result, aes(x=num_records)) + 
+ggplot(result, aes(x=num_records)) +
   geom_histogram() +
   facet_wrap(~ dataset) +
-  xlab("Count of Records per Sample (Variant-Calls, Ref-Calls, No-Calls)") 
+  xlab("Count of Records per Sample (Variant-Calls, Ref-Calls, No-Calls)")
 ```
 
 
