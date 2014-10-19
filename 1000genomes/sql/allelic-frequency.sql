@@ -18,49 +18,29 @@ FROM (
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = first_allele,
-        1,
-        0) + IF(0 = second_allele,
-        1,
-        0)) AS ref_count,
-    SUM(IF(alt = first_allele,
-        1,
-        0) + IF(alt = second_allele,
-        1,
-        0)) AS alt_count
-  FROM (
-    SELECT
-      reference_name,
-      start,
-      reference_bases,
-      alternate_bases,
-      POSITION(alternate_bases) AS alt,
-      NTH(1,
-        call.genotype) WITHIN call AS first_allele,
-      NTH(2,
-        call.genotype) WITHIN call AS second_allele,
-    FROM
+    SUM(INTEGER(0 = call.genotype)) WITHIN RECORD AS ref_count,
+    SUM(INTEGER(alt = call.genotype)) WITHIN RECORD AS alt_count
+  FROM
+    FLATTEN(
       FLATTEN((
         SELECT
           reference_name,
           start,
           reference_bases,
           alternate_bases,
-          call.genotype
+          POSITION(alternate_bases) AS alt,
+          call.call_set_name,
+          call.genotype,
         FROM
           [genomics-public-data:1000_genomes.variants]
         WHERE
           reference_name = '17'
           AND start BETWEEN 41196311
           AND 41277499
-          AND vt='SNP'),
-        call))
-  GROUP BY
-    reference_name,
-    start,
-    reference_bases,
-    alternate_bases,
-    alt)
+          AND vt='SNP'
+          ),
+        call),
+      alt))
 GROUP BY
   reference_name,
   start,

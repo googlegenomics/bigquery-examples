@@ -20,38 +20,18 @@ FROM (
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = first_allele,
-        1,
-        0) + IF(0 = second_allele,
-        1,
-        0)) AS ref_count,
-    SUM(IF(alt = first_allele,
-        1,
-        0) + IF(alt = second_allele,
-        1,
-        0)) AS alt_count
-  FROM (
-    SELECT
-      g.reference_name AS reference_name,
-      g.start AS start,
-      p.population AS population,
-      g.reference_bases AS reference_bases,
-      g.alternate_bases AS alternate_bases,
-      POSITION(g.alternate_bases) AS alt,
-      first_allele,
-      second_allele,
-    FROM
-      FLATTEN((
+    SUM(INTEGER(0 = call.genotype)) WITHIN RECORD AS ref_count,
+    SUM(INTEGER(alt = call.genotype)) WITHIN RECORD AS alt_count
+  FROM
+    FLATTEN(FLATTEN((
         SELECT
           reference_name,
           start,
           reference_bases,
           alternate_bases,
+          POSITION(alternate_bases) AS alt,
           call.call_set_name,
-          NTH(1,
-            call.genotype) WITHIN call AS first_allele,
-          NTH(2,
-            call.genotype) WITHIN call AS second_allele,
+          call.genotype,
         FROM
           [genomics-public-data:1000_genomes.variants]
         WHERE
@@ -60,19 +40,12 @@ FROM (
           AND 41277499
           AND vt='SNP'
           ),
-        call) AS g
-    JOIN
-      [genomics-public-data:1000_genomes.sample_info] p
-    ON
-      g.call.call_set_name = p.sample
-      )
-  GROUP BY
-    reference_name,
-    start,
-    population,
-    reference_bases,
-    alternate_bases,
-    alt)
+        call),
+      alt) AS g
+  JOIN
+    [genomics-public-data:1000_genomes.sample_info] p
+  ON
+    g.call.call_set_name = p.sample)
 GROUP BY
   reference_name,
   start,

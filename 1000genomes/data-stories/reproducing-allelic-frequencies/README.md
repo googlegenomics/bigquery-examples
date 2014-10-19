@@ -31,8 +31,8 @@ SELECT
   reference_bases,
   alternate_bases,
   SUM(ref_count)+SUM(alt_count) AS num_sample_alleles,
-  SUM(ref_count) AS sample_allele_ref_cnt,
-  SUM(alt_count) AS sample_allele_alt_cnt,
+  SUM(ref_count) AS ref_cnt,
+  SUM(alt_count) AS alt_cnt,
   SUM(ref_count)/(SUM(ref_count)+SUM(alt_count)) AS ref_freq,
   SUM(alt_count)/(SUM(ref_count)+SUM(alt_count)) AS alt_freq,
   alt_freq_from_1KG
@@ -43,54 +43,31 @@ FROM (
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = first_allele,
-        1,
-        0) + IF(0 = second_allele,
-        1,
-        0)) AS ref_count,
-    SUM(IF(alt = first_allele,
-        1,
-        0) + IF(alt = second_allele,
-        1,
-        0)) AS alt_count,
+    SUM(INTEGER(0 = call.genotype)) WITHIN RECORD AS ref_count,
+    SUM(INTEGER(alt = call.genotype)) WITHIN RECORD AS alt_count,
     alt_freq_from_1KG
-  FROM (
-    SELECT
-      reference_name,
-      start,
-      reference_bases,
-      alternate_bases,
-      alt_freq_from_1KG,
-      POSITION(alternate_bases) AS alt,
-      NTH(1,
-        call.genotype) WITHIN call AS first_allele,
-      NTH(2,
-        call.genotype) WITHIN call AS second_allele,
-    FROM
+  FROM
+    FLATTEN(
       FLATTEN((
         SELECT
           reference_name,
           start,
           reference_bases,
           alternate_bases,
+          POSITION(alternate_bases) AS alt,
           af AS alt_freq_from_1KG,
-          call.genotype
+          call.call_set_name,
+          call.genotype,
         FROM
           [genomics-public-data:1000_genomes.variants]
         WHERE
           reference_name = '17'
           AND start BETWEEN 41196311
           AND 41277499
-          AND vt='SNP'),
-        call)
-      )
-  GROUP BY
-    reference_name,
-    start,
-    reference_bases,
-    alternate_bases,
-    alt,
-    alt_freq_from_1KG)
+          AND vt='SNP'
+          ),
+        call),
+      alt))
 GROUP BY
   reference_name,
   start,
@@ -100,15 +77,18 @@ GROUP BY
   alt_freq_from_1KG
 ORDER BY
   reference_name,
-  start
+  start,
+  reference_bases,
+  alt,
+  alternate_bases
 ```
 Number of rows returned by this query: 843.
 
 Displaying the first few rows of our result:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:45:49 2014 -->
+<!-- Sun Oct 19 16:33:26 2014 -->
 <TABLE border=1>
-<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alternate_bases </TH> <TH> num_sample_alleles </TH> <TH> sample_allele_ref_cnt </TH> <TH> sample_allele_alt_cnt </TH> <TH> ref_freq </TH> <TH> alt_freq </TH> <TH> alt_freq_from_1KG </TH>  </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alternate_bases </TH> <TH> num_sample_alleles </TH> <TH> ref_cnt </TH> <TH> alt_cnt </TH> <TH> ref_freq </TH> <TH> alt_freq </TH> <TH> alt_freq_from_1KG </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2173 </TD> <TD align="right">      11 </TD> <TD align="right"> 0.994963 </TD> <TD align="right"> 0.005037 </TD> <TD align="right"> 0.010000 </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196367 </TD> <TD> C </TD> <TD> T </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196371 </TD> <TD> T </TD> <TD> C </TD> <TD align="right">    2184 </TD> <TD align="right">    2183 </TD> <TD align="right">       1 </TD> <TD align="right"> 0.999542 </TD> <TD align="right"> 0.000458 </TD> <TD align="right"> 0.000500 </TD> </TR>
@@ -157,53 +137,32 @@ FROM (
     reference_bases,
     alternate_bases,
     alt,
-    SUM(IF(0 = first_allele,
-        1,
-        0) + IF(0 = second_allele,
-        1,
-        0)) AS ref_count,
-    SUM(IF(alt = first_allele,
-        1,
-        0) + IF(alt = second_allele,
-        1,
-        0)) AS alt_count,
-    alt_freq_from_1KG
-  FROM (
-    SELECT
-      g.reference_name AS reference_name,
-      g.start AS start,
-      p.super_population AS super_population,
-      g.reference_bases AS reference_bases,
-      g.alternate_bases AS alternate_bases,
-      POSITION(g.alternate_bases) AS alt,
-      first_allele,
-      second_allele,
-      CASE
-      WHEN p.super_population =  'EAS'
-      THEN  g.asn_af
-      WHEN p.super_population=  'EUR'
-      THEN g.eur_af
-      WHEN p.super_population = 'AFR'
-      THEN g.afr_af
-      WHEN p.super_population = 'AMR'
-      THEN  g.amr_af
-      END AS alt_freq_from_1KG
-    FROM
-      FLATTEN((
+    SUM(INTEGER(0 = call.genotype)) WITHIN RECORD AS ref_count,
+    SUM(INTEGER(alt = call.genotype)) WITHIN RECORD AS alt_count,
+    CASE
+    WHEN super_population =  'EAS'
+    THEN  asn_af
+    WHEN super_population=  'EUR'
+    THEN eur_af
+    WHEN super_population = 'AFR'
+    THEN afr_af
+    WHEN super_population = 'AMR'
+    THEN amr_af
+    END AS alt_freq_from_1KG
+  FROM
+    FLATTEN(FLATTEN((
         SELECT
           reference_name,
           start,
           reference_bases,
           alternate_bases,
+          POSITION(alternate_bases) AS alt,
+          call.call_set_name,
+          call.genotype,
           afr_af,
           amr_af,
           asn_af,
           eur_af,
-          call.call_set_name,
-          NTH(1,
-            call.genotype) WITHIN call AS first_allele,
-          NTH(2,
-            call.genotype) WITHIN call AS second_allele,
         FROM
           [genomics-public-data:1000_genomes.variants]
         WHERE
@@ -212,20 +171,12 @@ FROM (
           AND 41277499
           AND vt='SNP'
           ),
-        call) AS g
-    JOIN
-      [genomics-public-data:1000_genomes.sample_info] p
-    ON
-      g.call.call_set_name = p.sample
-      )
-  GROUP BY
-    reference_name,
-    start,
-    super_population,
-    reference_bases,
-    alternate_bases,
-    alt,
-    alt_freq_from_1KG)
+        call),
+      alt) AS g
+  JOIN
+    [genomics-public-data:1000_genomes.sample_info] p
+  ON
+    g.call.call_set_name = p.sample)
 GROUP BY
   reference_name,
   start,
@@ -242,7 +193,7 @@ Number of rows returned by this query: 3372.
 
 Displaying the first few rows of our result:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:46:00 2014 -->
+<!-- Sun Oct 19 16:33:37 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> super_population </TH> <TH> reference_bases </TH> <TH> alternate_bases </TH> <TH> num_sample_alleles </TH> <TH> sample_allele_ref_cnt </TH> <TH> sample_allele_alt_cnt </TH> <TH> ref_freq </TH> <TH> alt_freq </TH> <TH> alt_freq_from_1KG </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> AFR </TD> <TD> C </TD> <TD> T </TD> <TD align="right">     492 </TD> <TD align="right">     492 </TD> <TD align="right">       0 </TD> <TD align="right"> 1.000000 </TD> <TD align="right"> 0.000000 </TD> <TD align="right">  </TD> </TR>
@@ -279,39 +230,21 @@ SELECT
   population,
   super_population,
   COUNT(samples.call.call_set_name) AS num_variants_for_sample,
-  SUM(IF(samples.af >= 0.05,
-      INTEGER(1),
-      INTEGER(0))) AS common_variant,
-  SUM(IF(samples.af < 0.05
-      AND samples.af > 0.005,
-      INTEGER(1),
-      INTEGER(0))) AS middle_variant,
-  SUM(IF(samples.af <= 0.005
-      AND samples.af > 0.001,
-      INTEGER(1),
-      INTEGER(0))) AS rare_variant,
-  SUM(IF(samples.af <= 0.001,
-      INTEGER(1),
-      INTEGER(0))) AS very_rare_variant,
+  SUM(samples.af >= 0.05) AS common_variant,
+  SUM(samples.af < 0.05 AND samples.af > 0.005) AS middle_variant,
+  SUM(samples.af <= 0.005 AND samples.af > 0.001) AS rare_variant,
+  SUM(samples.af <= 0.001) AS very_rare_variant,
 FROM
   FLATTEN((
     SELECT
       af,
       vt,
       call.call_set_name,
-      NTH(1,
-        call.genotype) WITHIN call AS first_allele,
-      NTH(2,
-        call.genotype) WITHIN call AS second_allele,
     FROM
       [genomics-public-data:1000_genomes.variants]
     WHERE
       vt = 'SNP'
-    HAVING
-      first_allele > 0
-      OR (second_allele IS NOT NULL
-          AND second_allele > 0)
-      ),
+    OMIT call IF EVERY(call.genotype <= 0)),
     call) AS samples
 JOIN
   [genomics-public-data:1000_genomes.sample_info] p
@@ -329,7 +262,7 @@ Number of rows returned by this query: 1092.
 
 Displaying the first few rows of our result:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Thu Oct  2 21:46:08 2014 -->
+<!-- Sun Oct 19 16:33:44 2014 -->
 <TABLE border=1>
 <TR> <TH> sample_id </TH> <TH> gender </TH> <TH> population </TH> <TH> super_population </TH> <TH> num_variants_for_sample </TH> <TH> common_variant </TH> <TH> middle_variant </TH> <TH> rare_variant </TH> <TH> very_rare_variant </TH>  </TR>
   <TR> <TD> HG00096 </TD> <TD> male </TD> <TD> GBR </TD> <TD> EUR </TD> <TD align="right"> 3503172 </TD> <TD align="right"> 3339817 </TD> <TD align="right">  128924 </TD> <TD align="right">   24135 </TD> <TD align="right">   10296 </TD> </TR>
@@ -360,41 +293,23 @@ SELECT
   population,
   super_population,
   COUNT(samples.call.call_set_name) AS num_variants_for_sample,
-  SUM(IF(samples.af >= 0.05,
-      INTEGER(1),
-      INTEGER(0))) AS common_variant,
-  SUM(IF(samples.af < 0.05
-      AND samples.af > 0.005,
-      INTEGER(1),
-      INTEGER(0))) AS middle_variant,
-  SUM(IF(samples.af <= 0.005
-      AND samples.af > 0.001,
-      INTEGER(1),
-      INTEGER(0))) AS rare_variant,
-  SUM(IF(samples.af <= 0.001,
-      INTEGER(1),
-      INTEGER(0))) AS very_rare_variant,
+  SUM(samples.af >= 0.05) AS common_variant,
+  SUM(samples.af < 0.05 AND samples.af > 0.005) AS middle_variant,
+  SUM(samples.af <= 0.005 AND samples.af > 0.001) AS rare_variant,
+  SUM(samples.af <= 0.001) AS very_rare_variant,
 FROM
   FLATTEN((
     SELECT
       af,
       vt,
       call.call_set_name,
-      NTH(1,
-        call.genotype) WITHIN call AS first_allele,
-      NTH(2,
-        call.genotype) WITHIN call AS second_allele,
     FROM
       [genomics-public-data:1000_genomes.variants]
     WHERE
       vt = 'SNP'
       AND reference_name != 'X'
       AND reference_name != 'Y'
-    HAVING
-      first_allele > 0
-      OR (second_allele IS NOT NULL
-          AND second_allele > 0)
-      ),
+    OMIT call IF EVERY(call.genotype <= 0)),
     call) AS samples
 JOIN
   [genomics-public-data:1000_genomes.sample_info] p
