@@ -4,32 +4,16 @@ SELECT
   COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM (
   SELECT
-    SUM(first_allele > 0
-      OR (second_allele IS NOT NULL
-        AND second_allele > 0)) AS num_samples_with_variant
-  FROM(
-    SELECT
-      reference_name,
-      start,
-      END,
-      reference_bases,
-      GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-      NTH(1,
-        call.genotype) WITHIN call AS first_allele,
-      NTH(2,
-        call.genotype) WITHIN call AS second_allele,
-    FROM
-      [genomics-public-data:1000_genomes.variants]
-    WHERE
-      reference_name NOT IN ("X", "Y", "MT")
-    )
-    GROUP EACH BY
     reference_name,
     start,
     END,
     reference_bases,
-    alt
-    )
+    GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+    SUM(NOT EVERY(call.genotype <= 0)) WITHIN call AS num_samples_with_variant
+  FROM
+    [genomics-public-data:1000_genomes.variants]
+  WHERE
+    reference_name NOT IN ("X", "Y", "MT"))
 GROUP BY
   num_samples_with_variant
 ORDER BY
