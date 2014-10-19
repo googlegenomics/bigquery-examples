@@ -61,7 +61,7 @@ ORDER BY
 
 We see the tabular results:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Mon Oct  6 15:36:16 2014 -->
+<!-- Sun Oct 19 16:13:59 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> num_dbsnp_variants </TH> <TH> num_variants </TH> <TH> frequency </TH>  </TR>
   <TR> <TD> 2 </TD> <TD align="right"> 3301885 </TD> <TD align="right"> 3307592 </TD> <TD align="right"> 0.998275 </TD> </TR>
@@ -123,7 +123,7 @@ Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Mon Oct  6 15:36:21 2014 -->
+<!-- Sun Oct 19 16:14:12 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> names </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> rs8176320,rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> </TR>
@@ -172,7 +172,7 @@ Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Mon Oct  6 15:36:26 2014 -->
+<!-- Sun Oct 19 16:14:19 2014 -->
 <TABLE border=1>
 <TR> <TH> reference_name </TH> <TH> start </TH> <TH> names </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> phaseset </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> call_ds </TH> <TH> likelihoods </TH>  </TR>
   <TR> <TD> 17 </TD> <TD align="right"> 41196362 </TD> <TD> rs8176320,rs8176320 </TD> <TD> C </TD> <TD> T </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD> SNP </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD> -0.03,-1.19,-5 </TD> </TR>
@@ -197,32 +197,16 @@ SELECT
   COUNT(1) AS num_variants_shared_by_this_many_samples
 FROM (
   SELECT
-    SUM(first_allele > 0
-      OR (second_allele IS NOT NULL
-        AND second_allele > 0)) AS num_samples_with_variant
-  FROM(
-    SELECT
-      reference_name,
-      start,
-      END,
-      reference_bases,
-      GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-      NTH(1,
-        call.genotype) WITHIN call AS first_allele,
-      NTH(2,
-        call.genotype) WITHIN call AS second_allele,
-    FROM
-      [genomics-public-data:1000_genomes.variants]
-    WHERE
-      reference_name NOT IN ("X", "Y", "MT")
-    )
-    GROUP EACH BY
     reference_name,
     start,
     END,
     reference_bases,
-    alt
-    )
+    GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+    SUM(NOT EVERY(call.genotype <= 0)) WITHIN call AS num_samples_with_variant
+  FROM
+    [genomics-public-data:1000_genomes.variants]
+  WHERE
+    reference_name NOT IN ("X", "Y", "MT"))
 GROUP BY
   num_samples_with_variant
 ORDER BY
@@ -232,7 +216,7 @@ Number of rows returned by this query: 1093.
 
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Mon Oct  6 15:36:32 2014 -->
+<!-- Sun Oct 19 16:14:24 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right">   0 </TD> <TD align="right"> 154741 </TD> </TR>
@@ -244,7 +228,7 @@ Examing the first few rows, we see that a substantial number of variants are sha
    </TABLE>
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Mon Oct  6 15:36:32 2014 -->
+<!-- Sun Oct 19 16:14:24 2014 -->
 <TABLE border=1>
 <TR> <TH> num_samples_with_variant </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD align="right"> 1087 </TD> <TD align="right"> 16600 </TD> </TR>
@@ -271,12 +255,11 @@ SELECT
   num_samples / super_population_count
   AS percent_samples,
   COUNT(1) AS num_variants_shared_by_this_many_samples
-FROM
-  (
+FROM  (
   SELECT
     reference_name,
     start,
-    end,
+    END,
     reference_bases,
     alt,
     vt,
@@ -284,48 +267,30 @@ FROM
     is_common_variant,
     SUM(has_variant) AS num_samples
   FROM (
-    SELECT
-      reference_name,
-      start,
-      end,
-      reference_bases,
-      alt,
-      vt,
-      super_population,
-      is_common_variant,
-      IF(first_allele > 0
-        OR (second_allele IS NOT NULL
-            AND second_allele > 0),
-        1,
-        0) AS has_variant
-    FROM (
-        FLATTEN((
-          SELECT
-            reference_name,
-            start,
-            end,
-            reference_bases,
-            GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-            vt,
-            (af IS NOT NULL AND af >= 0.05) AS is_common_variant,
-            call.call_set_name AS sample_id,
-            NTH(1,
-              call.genotype) WITHIN call AS first_allele,
-            NTH(2,
-              call.genotype) WITHIN call AS second_allele,
-          FROM
-            [genomics-public-data:1000_genomes.variants]
-          WHERE
-            reference_name NOT IN ("X", "Y", "MT")),
-          call)) AS samples
-    JOIN
-      [genomics-public-data:1000_genomes.sample_info] p
-    ON
-      samples.sample_id = p.sample)
-    GROUP EACH BY
+      FLATTEN((
+        SELECT
+          reference_name,
+          start,
+          END,
+          reference_bases,
+          GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+          vt,
+          af IS NOT NULL AND af >= 0.05 AS is_common_variant,
+          call.call_set_name AS sample_id,
+          NOT EVERY(call.genotype <= 0) WITHIN call AS has_variant,
+        FROM
+          [genomics-public-data:1000_genomes.variants]
+        WHERE
+          reference_name NOT IN ("X", "Y", "MT")),
+        call)) AS samples
+  JOIN
+    [genomics-public-data:1000_genomes.sample_info] p
+  ON
+    samples.sample_id = p.sample
+  GROUP EACH BY
     reference_name,
     start,
-    end,
+    END,
     reference_bases,
     alt,
     vt,
@@ -359,7 +324,7 @@ Number of rows returned by this query: 1447.
 
 First few rows:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Mon Oct  6 15:36:40 2014 -->
+<!-- Sun Oct 19 16:14:31 2014 -->
 <TABLE border=1>
 <TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples </TH> <TH> percent_samples </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD> AFR </TD> <TD align="right"> 246 </TD> <TD> FALSE </TD> <TD align="right">   0 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 12386569 </TD> </TR>
@@ -371,7 +336,7 @@ First few rows:
    </TABLE>
 Last few rows:
 <!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Mon Oct  6 15:36:40 2014 -->
+<!-- Sun Oct 19 16:14:32 2014 -->
 <TABLE border=1>
 <TR> <TH> super_population </TH> <TH> super_population_count </TH> <TH> is_common_variant </TH> <TH> num_samples </TH> <TH> percent_samples </TH> <TH> num_variants_shared_by_this_many_samples </TH>  </TR>
   <TR> <TD> EUR </TD> <TD align="right"> 379 </TD> <TD> TRUE </TD> <TD align="right"> 374 </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 29660 </TD> </TR>
