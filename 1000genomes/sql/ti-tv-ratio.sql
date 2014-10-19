@@ -28,10 +28,10 @@ FROM (
           alternate_bases)) AS mutation,
       COUNT(alternate_bases) AS num_snps,
     FROM
-      [google.com:biggene:1000genomes.variants1kG]
+      [genomics-public-data:1000_genomes.variants]
     WHERE
       vt = 'SNP'
     GROUP BY
       mutation
     ORDER BY
-      mutation));
+      mutation))

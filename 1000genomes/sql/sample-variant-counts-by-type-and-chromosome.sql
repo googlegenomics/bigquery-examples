@@ -1,18 +1,32 @@
-# Count the number of variants for each sample across the entirety of the 1,000 
+# Count the number of variants for each sample across the entirety of the 1,000
 # Genomes dataset by variant type and chromosome.
 SELECT
-  COUNT(genotype.sample_id) AS variant_count,
-  genotype.sample_id,
-  contig,
+  reference_name,
   vt,
-FROM 
-  [google.com:biggene:1000genomes.variants1kG]
-WHERE
-  genotype.first_allele > 0
-  OR genotype.second_allele > 0
+  sample_id,
+  COUNT(sample_id) AS variant_count,
+FROM
+  (
+  SELECT
+    reference_name,
+    vt,
+    call.call_set_name AS sample_id,
+    NTH(1,
+      call.genotype) WITHIN call AS first_allele,
+    NTH(2,
+      call.genotype) WITHIN call AS second_allele,
+  FROM
+    [genomics-public-data:1000_genomes.variants]
+  HAVING
+    first_allele > 0
+    OR (second_allele IS NOT NULL
+        AND second_allele > 0))
 GROUP BY
-  genotype.sample_id,
-  contig,
+  sample_id,
+  reference_name,
   vt
 ORDER BY
-  variant_count;
+  reference_name,
+  vt,
+  variant_count,
+  sample_id

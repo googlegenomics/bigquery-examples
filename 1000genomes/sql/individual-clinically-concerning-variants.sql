@@ -1,7 +1,9 @@
-# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample
+# Retrieve the SNPs identified by ClinVar as pathenogenic or a risk factor for a particular sample.
+# TODO: double check whether the annotation coordinates are 0-based as is
+#       the case for the variants.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -9,15 +11,19 @@ SELECT
   sample_id,
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    var.start AS start,
     ref,
     alt,
-    genotype.sample_id AS sample_id,
+    call.call_set_name AS sample_id,
+    NTH(1,
+      call.genotype) WITHIN var.call AS first_allele,
+    NTH(2,
+      call.genotype) WITHIN var.call AS second_allele,
     clinicalsignificance,
     disease_id,
   FROM
-    FLATTEN([google.com:biggene:1000genomes.variants1kG],
+    FLATTEN([genomics-public-data:1000_genomes.variants],
       alternate_bases) AS var
   JOIN (
     SELECT
@@ -31,7 +37,7 @@ FROM (
       REGEXP_EXTRACT(phenotypeids,
         r'MedGen:(\w+)') AS disease_id,
     FROM
-      [google.com:biggene:1000genomes.clinvar]
+      [google.com:biggene:annotations.clinvar]
     WHERE
       type='single nucleotide variant'
       AND (clinicalsignificance CONTAINS 'risk factor'
@@ -39,22 +45,24 @@ FROM (
         OR clinicalsignificance CONTAINS 'Pathogenic')
       ) AS clin
   ON
-    var.contig = clin.chromosome
-    AND var.position = clin.start
+    var.reference_name = clin.chromosome
+    AND var.start = clin.start
     AND reference_bases = ref
     AND alternate_bases = alt
   WHERE
-    genotype.sample_id = 'NA19764'
+    call.call_set_name = 'NA19764'
     AND var.vt='SNP'
-    AND (var.genotype.first_allele > 0
-      OR var.genotype.second_allele > 0)) AS sig
+  HAVING
+    first_allele > 0
+    OR (second_allele IS NOT NULL
+        AND second_allele > 0)) AS sig
 JOIN
-  [google.com:biggene:1000genomes.clinvar_disease_names] AS names
+  [google.com:biggene:annotations.clinvar_disease_names] AS names
 ON
   names.conceptid = sig.disease_id
 GROUP BY
-  contig,
-  position,
+  reference_name,
+  start,
   ref,
   alt,
   clinicalsignificance,
@@ -62,5 +70,5 @@ GROUP BY
   sample_id,
 ORDER BY
   clinicalsignificance,
-  contig,
-  position;
+  reference_name,
+  start

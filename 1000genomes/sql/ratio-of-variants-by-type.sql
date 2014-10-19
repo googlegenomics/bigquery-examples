@@ -1,24 +1,24 @@
 # Compute the ratios of variants by type for each chromosome.
 SELECT
-  contig,
+  reference_name,
   vt AS variant_type,
   RATIO_TO_REPORT(variant_count)
 OVER
   (
   PARTITION BY
-    contig
+    reference_name
   ORDER BY
-    variant_count DESC) ratio_of_variants_of_type_for_contig,
+    variant_count DESC) ratio_of_variants_of_type_for_reference_name,
 FROM (
   SELECT
-    contig,
+    reference_name,
     vt,
     COUNT(vt) AS variant_count
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   GROUP BY
-    contig,
+    reference_name,
     vt
   ORDER BY
-    contig,
-    vt);
+    reference_name,
+    vt)

@@ -1,21 +1,21 @@
-# Count number of alternate variants on chromosome 17 for the same position and
+# Count number of alternate variants on chromosome 17 for the same start and
 # reference base
 SELECT
   num_alternates,
   COUNT(num_alternates) AS num_records
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(position) AS num_alternates,
+    COUNT(start) AS num_alternates,
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
+    reference_name = '17'
   GROUP BY
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases)
 GROUP BY
-  num_alternates;
+  num_alternates

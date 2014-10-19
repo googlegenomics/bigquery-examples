@@ -21,268 +21,266 @@ We know from the [FAQ](http://www.1000genomes.org/faq/are-all-genotype-calls-cur
 
 
 
-
-Let’s explore the question _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_
+Let’s explore the question _“Is (reference_name, start, reference_bases) a unique key in the 1,000 Genomes Data?”_
 
 
 ```
-# Find variants on chromosome 17 that reside on the same position with the same reference base
+# Find variants on chromosome 17 that reside on the same start with the same reference base
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
-  COUNT(position) AS num_alternates
+  COUNT(start) AS num_alternates
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig = '17'
+  reference_name = '17'
 GROUP BY
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases
 HAVING
   num_alternates > 1
 ORDER BY
-  contig,
-  position,
-  reference_bases;
+  reference_name,
+  start,
+  reference_bases
 ```
-
 Number of rows returned by this query: 417.
 
 We see the first six tabular results:
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:44:49 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:51:46 2014 -->
 <TABLE border=1>
-<TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 184673 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 211032 </TD> <TD> C </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 240040 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 443436 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 533536 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 557991 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> num_alternates </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 184672 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 211031 </TD> <TD> C </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 240039 </TD> <TD> G </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 443435 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 533535 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 557990 </TD> <TD> A </TD> <TD align="right">   2 </TD> </TR>
    </TABLE>
+So we see from the data that the answer to our question is “No”.
 
-So we see from the data that the answer to our question is “No”.  
-
-So how many rows might we see per (contig, position, reference_bases) tuple?
+So how many rows might we see per (reference_name, start, reference_bases) tuple?
 
 ```
-# Count number of alternate variants on chromosome 17 for the same position and
+# Count number of alternate variants on chromosome 17 for the same start and
 # reference base
 SELECT
   num_alternates,
   COUNT(num_alternates) AS num_records
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(position) AS num_alternates,
+    COUNT(start) AS num_alternates,
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
+    reference_name = '17'
   GROUP BY
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases)
 GROUP BY
-  num_alternates;
+  num_alternates
 ```
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:44:51 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:51:51 2014 -->
 <TABLE border=1>
 <TR> <TH> num_alternates </TH> <TH> num_records </TH>  </TR>
   <TR> <TD align="right">   1 </TD> <TD align="right"> 1045899 </TD> </TR>
   <TR> <TD align="right">   2 </TD> <TD align="right"> 417 </TD> </TR>
    </TABLE>
-
-So we see that for any particular (contig, position, reference_bases) tuple the vast majority have a single alternate allele and a few have two.
+So we see that for any particular (reference_name, start, reference_bases) tuple the vast majority have a single alternate allele and a few have two.
 
 Let’s examine a few of the tuples with two alternate alleles more closely.
 
 ```
-# Get three particular positions on chromosome 17 that have alternate variants.
+# Get three particular start on chromosome 17 that have alternate variants.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
   GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-  GROUP_CONCAT(id) WITHIN RECORD AS ids,
+  GROUP_CONCAT(names) WITHIN RECORD AS names,
   vt,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig = '17'
-  AND (position = 48515943
-    OR position = 48570614
-    OR position = 48659343);
+  reference_name = '17'
+  AND (start = 48515942
+    OR start = 48570613
+    OR start = 48659342)
+ORDER BY
+  start,
+  reference_bases,
+  alt
 ```
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:44:54 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:51:57 2014 -->
 <TABLE border=1>
-<TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> ids </TH> <TH> vt </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> T </TD> <TD> rs113983760 </TD> <TD> SNP </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48659343 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> rs148905490 </TD> <TD> INDEL </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> G </TD> <TD> rs8076712 </TD> <TD> SNP </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> T </TD> <TD> TG </TD> <TD> rs113432301 </TD> <TD> INDEL </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> T </TD> <TD> rs9896330 </TD> <TD> SNP </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48570614 </TD> <TD> A </TD> <TD> AT </TD> <TD> rs201827568 </TD> <TD> INDEL </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> names </TH> <TH> vt </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> rs8076712,rs8076712 </TD> <TD> SNP </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> TG </TD> <TD> rs113432301,rs113432301 </TD> <TD> INDEL </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48570613 </TD> <TD> A </TD> <TD> AT </TD> <TD> rs201827568,rs201827568 </TD> <TD> INDEL </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48570613 </TD> <TD> A </TD> <TD> T </TD> <TD> rs9896330,rs9896330 </TD> <TD> SNP </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659342 </TD> <TD> C </TD> <TD> CTGGT </TD> <TD> rs148905490,rs148905490 </TD> <TD> INDEL </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48659342 </TD> <TD> C </TD> <TD> T </TD> <TD> rs113983760,rs113983760 </TD> <TD> SNP </TD> </TR>
    </TABLE>
+From this small sample, it appears that the alternate allele is either a SNP or an INDEL.
 
-From this small sample, it appears that the alternate allele is either a SNP or an INDEL.  
-
-Is that the case for all the records corresponding to duplicate (contig, position, reference_bases) tuples?  
+Is that the case for all the records corresponding to duplicate (reference_name, start, reference_bases) tuples?
 
 ```
-# Count by variant type the number of alternate variants on chromosome 17 for the same 
-# position and reference base
+# Count by variant type the number of alternate variants on chromosome 17 for the same
+# start and reference base
 SELECT
   vt,
   COUNT(vt) AS num_variant_type
 FROM
-  [google.com:biggene:1000genomes.variants1kG] AS variants
+  [genomics-public-data:1000_genomes.variants] AS variants
 JOIN (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(position) AS num_alternates,
+    COUNT(start) AS num_alternates,
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
+    reference_name = '17'
   GROUP EACH BY
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases
   HAVING
     num_alternates > 1) AS dups
 ON
-  variants.contig = dups.contig
-  AND variants.position = dups.position
+  variants.reference_name = dups.reference_name
+  AND variants.start = dups.start
   AND variants.reference_bases = dups.reference_bases
 WHERE
-  variants.contig = '17'
+  variants.reference_name = '17'
 GROUP EACH BY
-  vt;
+  vt
+ORDER BY
+  vt
 ```
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:44:57 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:52:02 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 412 </TD> </TR>
   <TR> <TD> SNP </TD> <TD align="right"> 417 </TD> </TR>
   <TR> <TD> SV </TD> <TD align="right">   5 </TD> </TR>
    </TABLE>
+It appears that for all records for duplicate (reference_name, start, reference_bases) tuples that we have a SNP and also an INDEL or SV.
 
-It appears that for all records for duplicate (contig, position, reference_bases) tuples that we have a SNP and also an INDEL or SV.  
-
-For records corresponding to a unique (contig, position, reference_bases) tuple, are the variants always SNPs?
+For records corresponding to a unique (reference_name, start, reference_bases) tuple, are the variants always SNPs?
 
 ```
-# Count by variant type the number of variants on chromosome 17 unique for a 
-# position and reference base
+# Count by variant type the number of variants on chromosome 17 unique for a
+# start and reference base
 SELECT
   vt,
   COUNT(vt) AS num_variant_type
 FROM
-  [google.com:biggene:1000genomes.variants1kG] AS variants
+  [genomics-public-data:1000_genomes.variants] AS variants
 JOIN EACH (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
-    COUNT(position) AS num_alternates
+    COUNT(start) AS num_alternates
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
+    reference_name = '17'
   GROUP EACH BY
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases
   HAVING
     num_alternates = 1) AS singles
 ON
-  variants.contig = singles.contig
-  AND variants.position = singles.position
+  variants.reference_name = singles.reference_name
+  AND variants.start = singles.start
   AND variants.reference_bases = singles.reference_bases
 WHERE
-  variants.contig = '17'
+  variants.reference_name = '17'
 GROUP EACH BY
-  vt;
+  vt
+ORDER BY
+  vt
 ```
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:44:59 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:52:09 2014 -->
 <TABLE border=1>
 <TR> <TH> vt </TH> <TH> num_variant_type </TH>  </TR>
-  <TR> <TD> SNP </TD> <TD align="right"> 1006702 </TD> </TR>
   <TR> <TD> INDEL </TD> <TD align="right"> 38754 </TD> </TR>
+  <TR> <TD> SNP </TD> <TD align="right"> 1006702 </TD> </TR>
   <TR> <TD> SV </TD> <TD align="right"> 443 </TD> </TR>
    </TABLE>
+And we see that the answer to our question is “No” - for records corresponding to a unique (reference_name, start, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
 
-And we see that the answer to our question is “No” - for records corresponding to a unique (contig, position, reference_bases) tuple, the variants are mostly SNPs but also INDELs and SVs.
-
-So what does this all mean for a particular duplicate (contig, position, reference_bases) tuple for a particular sample at a particular genomic position?
+So what does this all mean for a particular duplicate (reference_name, start, reference_bases) tuple for a particular sample at a particular genomic position?
 
 ```
-# Get sample alleles for some specific variants.  
-# TODO(deflaux): update this to a user-defined function to generalize 
+# Get sample alleles for some specific variants.
+# TODO(deflaux): update this to a user-defined function to generalize
 # across more than two alternates.  For more info, see
 # https://www.youtube.com/watch?v=GrD7ymUPt3M#t=1377
 SELECT
-  contig,
-  position,
-  ids,
+  reference_name,
+  start,
+  alt,
   reference_bases,
   sample_id,
   CASE
-  WHEN 0 = allele1 THEN reference_bases
-  WHEN 1 = allele1 THEN alt1
-  WHEN 2 = allele1 THEN alt2 END AS allele1,
+  WHEN 0 = first_allele THEN reference_bases
+  WHEN 1 = first_allele THEN alt1
+  WHEN 2 = first_allele THEN alt2 END AS first_allele,
   CASE
-  WHEN 0 = allele2 THEN reference_bases
-  WHEN 1 = allele2 THEN alt1
-  WHEN 2 = allele2 THEN alt2 END AS allele2,
+  WHEN 0 = second_allele THEN reference_bases
+  WHEN 1 = second_allele THEN alt1
+  WHEN 2 = second_allele THEN alt2 END AS second_allele,
 FROM(
   SELECT
-    contig,
-    position,
-    GROUP_CONCAT(id) WITHIN RECORD AS ids,
+    reference_name,
+    start,
+    GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     reference_bases,
-    genotype.sample_id AS sample_id,
+    call.call_set_name AS sample_id,
     NTH(1,
       alternate_bases) WITHIN RECORD AS alt1,
     NTH(2,
       alternate_bases) WITHIN RECORD AS alt2,
-    genotype.first_allele AS allele1,
-    genotype.second_allele AS allele2
+    NTH(1, call.genotype) WITHIN call AS first_allele,
+    NTH(2, call.genotype) WITHIN call AS second_allele,
   FROM
-    [google.com:biggene:1000genomes.variants1kG]
+    [genomics-public-data:1000_genomes.variants]
   WHERE
-    contig = '17'
-    AND position = 48515943
+    reference_name = '17'
+    AND start = 48515942
   HAVING
-    sample_id = 'HG00100' OR sample_id = 'HG00101');
+    sample_id = 'HG00100' OR sample_id = 'HG00101')
+ORDER BY
+  alt,
+  sample_id
 ```
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:45:03 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:52:17 2014 -->
 <TABLE border=1>
-<TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> allele1 </TH> <TH> allele2 </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs8076712 </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs8076712 </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs113432301 </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> TG </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs113432301 </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> alt </TH> <TH> reference_bases </TH> <TH> sample_id </TH> <TH> first_allele </TH> <TH> second_allele </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> G </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> G </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00100 </TD> <TD> T </TD> <TD> TG </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> TG </TD> <TD> T </TD> <TD> HG00101 </TD> <TD> T </TD> <TD> T </TD> </TR>
    </TABLE>
-
-We can see that HG00101 was called the same in both records but HG00100 was called differently.  So which is the [correct interpretation](http://vcftools.sourceforge.net/VCF-poster.pdf) for each allele at position 48515943 on chromosome 17?
+We can see that HG00101 was called the same in both records but HG00100 was called differently.  So which is the [correct interpretation](http://vcftools.sourceforge.net/VCF-poster.pdf) for each allele at position 48515942 on chromosome 17?
 ```
 first allele
 xxxTxxxx
@@ -295,90 +293,87 @@ xxxTGxxx
 Let’s examine the quality, some INFO fields, and the genotype likelihoods a little more closely.
 
 ```
-# Get data sufficient to make a judgment upon this particular sample's genotype.
+# Get data sufficient to make a judgment upon this particular sample's call.
 SELECT
-  contig,
-  position,
-  GROUP_CONCAT(id) WITHIN RECORD AS ids,
+  reference_name,
+  start,
   reference_bases AS ref,
   GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
-  quality,
   GROUP_CONCAT(filter) WITHIN RECORD AS filters,
   avgpost,
   rsq
   vt,
-  genotype.sample_id AS sample_id,
-  genotype.ploidy AS ploidy,
-  genotype.phased AS phased,
-  genotype.first_allele AS allele1,
-  genotype.second_allele AS allele2,
-  genotype.ds AS ds,
-  GROUP_CONCAT(STRING(genotype.gl)) WITHIN genotype AS likelihoods,
+  call.call_set_name AS sample_id,
+  call.phaseset AS phaseset,
+  NTH(1, call.genotype) WITHIN call AS first_allele,
+  NTH(2, call.genotype) WITHIN call AS second_allele,
+  call.ds AS ds,
+  GROUP_CONCAT(STRING(call.genotype_likelihood)) WITHIN call AS likelihoods,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [genomics-public-data:1000_genomes.variants]
 WHERE
-  contig = '17'
-  AND position = 48515943
+  reference_name = '17'
+  AND start = 48515942
 HAVING
-  sample_id = 'HG00100';
+  sample_id = 'HG00100'
+ORDER BY
+  alt
 ```
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:45:06 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:52:22 2014 -->
 <TABLE border=1>
-<TR> <TH> contig </TH> <TH> position </TH> <TH> ids </TH> <TH> ref </TH> <TH> alt </TH> <TH> quality </TH> <TH> filters </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> ploidy </TH> <TH> phased </TH> <TH> allele1 </TH> <TH> allele2 </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs8076712 </TD> <TD> T </TD> <TD> G </TD> <TD align="right"> 100.00 </TD> <TD> PASS </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
-  <TR> <TD> 17 </TD> <TD align="right"> 48515943 </TD> <TD> rs113432301 </TD> <TD> T </TD> <TD> TG </TD> <TD align="right"> 174.00 </TD> <TD> PASS </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 0.90 </TD> <TD> HG00100 </TD> <TD align="right">   2 </TD> <TD> TRUE </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 0.90 </TD> <TD> 0,-0.6,-5.4 </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> ref </TH> <TH> alt </TH> <TH> filters </TH> <TH> avgpost </TH> <TH> vt </TH> <TH> sample_id </TH> <TH> phaseset </TH> <TH> first_allele </TH> <TH> second_allele </TH> <TH> ds </TH> <TH> likelihoods </TH>  </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> G </TD> <TD> PASS </TD> <TD align="right"> 0.99 </TD> <TD align="right"> 0.99 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 1.00 </TD> <TD> -3.52,0,-2.65 </TD> </TR>
+  <TR> <TD> 17 </TD> <TD align="right"> 48515942 </TD> <TD> T </TD> <TD> TG </TD> <TD> PASS </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 0.90 </TD> <TD> HG00100 </TD> <TD> * </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right"> 0.90 </TD> <TD> 0,-0.6,-5.4 </TD> </TR>
    </TABLE>
-
-The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the [schema](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes.variants1kG?pli=1) for details about the other fields.
+The [likelihoods](http://faculty.washington.edu/browning/beagle/intro-to-vcf.html) correspond to the REF/REF, REF/ALT, and ALT/ALT genotypes in that order.  See the table schema for details about the other fields.
 
 So a question for our users who have much experience in this domain, which variant is more likely for the second allele of HG00100?
 
-### But we digress . . . 
+### But we digress . . .
 
-Our original question was _“Is (contig, position, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
+Our original question was _“Is (reference_name, start, reference_bases) a unique key in the 1,000 Genomes Data?”_ which we know is false.  So which columns do constitute a unique key?
 
 
 ```
-# This query demonstrates that some additional field is needed to  
+# This query demonstrates that some additional field is needed to
 # comprise a unique key for the rows in the table.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt,
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     vt,
   FROM
-    [google.com:biggene:1000genomes.variants1kG])
+    [genomics-public-data:1000_genomes.variants])
   GROUP EACH BY
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt
 HAVING
-  cnt > 1;
+  cnt > 1
+ORDER BY
+  reference_name
 ```
 
-
-<!-- html table generated in R 3.0.2 by xtable 1.7-3 package -->
-<!-- Thu Jun 26 14:45:10 2014 -->
+<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
+<!-- Fri Oct  3 08:52:27 2014 -->
 <TABLE border=1>
-<TR> <TH> contig </TH> <TH> position </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
-  <TR> <TD> 6 </TD> <TD align="right"> 26745501 </TD> <TD> C </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 14 </TD> <TD align="right"> 106885901 </TD> <TD> G </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
-  <TR> <TD> 19 </TD> <TD align="right"> 48773401 </TD> <TD> C </TD> <TD> &lt;DEL&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+<TR> <TH> reference_name </TH> <TH> start </TH> <TH> reference_bases </TH> <TH> alt </TH> <TH> vt </TH> <TH> cnt </TH>  </TR>
+  <TR> <TD> 14 </TD> <TD align="right"> 106885900 </TD> <TD> G </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 19 </TD> <TD align="right"> 48773400 </TD> <TD> C </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
+  <TR> <TD> 6 </TD> <TD align="right"> 26745500 </TD> <TD> C </TD> <TD> &lt;U+003c&gt;DEL&lt;U+003e&gt; </TD> <TD> SV </TD> <TD align="right">   2 </TD> </TR>
    </TABLE>
-
 Not quite.  We see a few structural variant deletions called at the same position.
 
 Let's add in the `end` column:
@@ -387,8 +382,8 @@ Let's add in the `end` column:
 # This query demonstrates that an additional field, 'end', is needed to  
 # comprise a unique key for the rows in the table.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt,
@@ -396,25 +391,24 @@ SELECT
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     reference_bases,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     vt,
     end,
   FROM
-    [google.com:biggene:1000genomes.variants1kG])
+    [genomics-public-data:1000_genomes.variants])
   GROUP EACH BY
-  contig,
-  position,
+  reference_name,
+  start,
   reference_bases,
   alt,
   vt,
   end
 HAVING
-  cnt > 1;
+  cnt > 1
 ```
-
 
 
 ```r
@@ -425,8 +419,7 @@ print(expect_true(is.null(result)))
 As expected: is.null(result) is true 
 ```
 
-
-And now we have it, a unique key is: (contig, position, reference_bases, alternate_bases, vt, end)
+And now we have it, a unique key is: (reference_name, start, reference_bases, alternate_bases, vt, end)
 
 Lastly, what is a minimal unique key?
 
@@ -434,28 +427,27 @@ Lastly, what is a minimal unique key?
 # This query demonstrates the minimal set of fields needed to  
 # comprise a unique key for the rows in the table.
 SELECT
-  contig,
-  position,
+  reference_name,
+  start,
   alt,
   end,
   COUNT(1) AS cnt
 FROM (
   SELECT
-    contig,
-    position,
+    reference_name,
+    start,
     GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
     end,
   FROM
-    [google.com:biggene:1000genomes.variants1kG])
+    [genomics-public-data:1000_genomes.variants])
   GROUP EACH BY
-  contig,
-  position,
+  reference_name,
+  start,
   alt,
   end
 HAVING
-  cnt > 1;
+  cnt > 1
 ```
-
 
 
 ```r
@@ -466,5 +458,4 @@ print(expect_true(is.null(result)))
 As expected: is.null(result) is true 
 ```
 
-
-We see that a minimal unique key is: (contig, position, alternate_bases, end) or alternatively (contig, position, end, vt)
+We see that a minimal unique key is: (reference_name, start, alternate_bases, end) or alternatively (reference_name, start, end, vt)

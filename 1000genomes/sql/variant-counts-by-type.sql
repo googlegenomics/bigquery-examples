@@ -3,8 +3,8 @@ SELECT
   vt,
   COUNT(vt) as cnt,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [genomics-public-data:1000_genomes.variants]
 GROUP BY
   vt
 ORDER BY
-  vt;
+  vt

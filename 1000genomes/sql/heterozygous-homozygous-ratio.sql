@@ -1,23 +1,35 @@
-# Count the homozygous and heterozygous variants for each sample across the 
+# Count the homozygous and heterozygous variants for each sample across the
 # entirety of the 1,000 Genomes dataset.
 SELECT
-  genotype.sample_id AS sample_id,
-  SUM(IF(0 = genotype.first_allele
-      AND 0 = genotype.second_allele,
+  sample_id,
+  SUM(IF(0 = first_allele
+      AND 0 = second_allele,
       1,
       0)) AS hom_RR_count,
-  SUM(IF(genotype.first_allele = genotype.second_allele
-      AND genotype.first_allele > 0,
+  SUM(IF(first_allele = second_allele
+      AND first_allele > 0,
       1,
       0)) AS hom_AA_count,
-  SUM(IF(genotype.first_allele != genotype.second_allele
-      AND (genotype.first_allele > 0
-        OR genotype.second_allele > 0),
+  SUM(IF((first_allele != second_allele
+        OR second_allele IS NULL)
+      AND (first_allele > 0
+        OR second_allele > 0),
       1,
       0)) AS het_RA_count
-FROM
-  [google.com:biggene:1000genomes.variants1kG]
+FROM (
+  SELECT
+    reference_name,
+    call.call_set_name AS sample_id,
+    NTH(1,
+      call.genotype) WITHIN call AS first_allele,
+    NTH(2,
+      call.genotype) WITHIN call AS second_allele,
+  FROM
+    [genomics-public-data:1000_genomes.variants]
+  WHERE
+    reference_name != 'Y' AND reference_name != 'M'
+  )
 GROUP BY
   sample_id
 ORDER BY
-  sample_id;
+  sample_id

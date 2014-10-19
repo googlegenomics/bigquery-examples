@@ -1,14 +1,14 @@
-# Count the number of variants across the entirety of 1,000 Genomes by variant type and 
+# Count the number of variants across the entirety of 1,000 Genomes by variant type and
 # chromosome.
 SELECT
-  contig,
+  reference_name,
   vt,
   COUNT(vt) AS cnt,
 FROM
-  [google.com:biggene:1000genomes.variants1kG]
+  [genomics-public-data:1000_genomes.variants]
 GROUP BY
-  contig,
+  reference_name,
   vt
 ORDER BY
-  contig,
-  vt;
+  reference_name,
+  vt

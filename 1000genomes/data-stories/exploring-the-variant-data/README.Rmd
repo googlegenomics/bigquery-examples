@@ -16,11 +16,11 @@
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # What follows is code adapted from work by https://github.com/chrisroat
-library(bigrquery)
-library(ggplot2)
-library(gridExtra)
-library(reshape)
-library(scales)  # for scientific_format
+require(bigrquery)
+require(ggplot2)
+require(gridExtra)
+require(reshape)
+require(scales)  # for scientific_format
 
 # Create colors that are color-blind friendly.
 cbPalette = c("#000000", "#E69F00", "#56B4E9", "#009E73",
@@ -29,12 +29,10 @@ pallette_fill = scale_fill_manual(values=cbPalette)
 pallette_colour = scale_colour_manual(values=cbPalette)
 
 # Run a query against BigQuery 1k genomes table
-RunQuery <- function(sql) {
-  cat(sql)
-  return(query_exec("google.com:biggene",
-                    "1000genomes",
-                    sql,
-                    billing="google.com:biggene"))
+project <- "google.com:biggene" # put your projectID here
+RunQuery <- function(querySql) {
+  cat(querySql)
+  return(query_exec(querySql, project))
 }
 
 # Examines the quality score distibution of each variant type.
@@ -44,9 +42,9 @@ MakeQualityPlot = function() {
                         "  quality,",
                         "  COUNT(1) AS cnt",
                         "FROM",
-                        "  [google.com:biggene:1000genomes.variants1kG]",
+                        "  [genomics-public-data:1000_genomes.variants]",
                         "OMIT RECORD IF",
-                        "  contig IN (\"X\", \"Y\")",
+                        "  reference_name IN (\"X\", \"Y\", \"MT\")",
                         "GROUP BY",
                         "  variant_type,",
                         "  quality", sep="\n"))
@@ -62,13 +60,13 @@ MakeQualityPlot = function() {
 # Examines the per-chromosome frequency of each variant type.
 MakeVariantSummaryPlot = function() {
   data = RunQuery(paste("SELECT",
-                        "  INTEGER(contig) AS chromosome,",
+                        "  INTEGER(reference_name) AS chromosome,",
                         "  vt AS variant_type,",
                         "  COUNT(1) AS cnt",
                         " FROM",
-                        "   [google.com:biggene:1000genomes.variants1kG]",
+                        "   [genomics-public-data:1000_genomes.variants]",
                         " OMIT RECORD IF",
-                        "   contig IN (\"X\", \"Y\")",
+                        "   reference_name IN (\"X\", \"Y\", \"MT\")",
                         " GROUP BY",
                         "   chromosome,",
                         "   variant_type", sep="\n"))
@@ -88,13 +86,13 @@ MakeVariantSummaryPlot = function() {
 # Examine the min/max position of variants on each chromosome.
 MakePositionsPlot = function() {
   data_raw = RunQuery(paste("SELECT",
-                            "   INTEGER(contig) AS chromosome,",
-                            "   MIN(position) AS min,",
-                            "   MAX(position) AS max",
+                            "   INTEGER(reference_name) AS chromosome,",
+                            "   MIN(start) AS min,",
+                            "   MAX(start) AS max",
                             " FROM",
-                            "   [google.com:biggene:1000genomes.variants1kG]",
+                            "   [genomics-public-data:1000_genomes.variants]",
                             " OMIT RECORD IF",
-                            "   contig IN (\"X\", \"Y\")",
+                            "   reference_name IN (\"X\", \"Y\", \"MT\")",
                             " GROUP BY",
                             "   chromosome", sep="\n"))
   data = melt(data_raw, id=c("chromosome"))
@@ -116,21 +114,29 @@ MakeSnpsPlot = function() {
   data = RunQuery(paste("SELECT",
                         "  reference_bases AS reference,",
                         "  CONCAT(",
-                        "    IF(genotype.first_allele=0,",
+                        "    IF(first_allele=0,",
                         "       reference_bases,",
                         "       alternate_bases),",
                         "    \"|\",",
-                        "    IF(genotype.second_allele=0,",
+                        "    IF(second_allele=0,",
                         "       reference_bases,",
                         "       alternate_bases)",
                         "    ) AS alleles,",
                         "  COUNT(1) AS cnt,",
                         "FROM",
-                        "  FLATTEN([google.com:biggene:1000genomes.variants1kG], genotype)",
+                        "     FLATTEN((SELECT ",
+                        "         reference_name,",
+                        "         reference_bases,",
+                        "         alternate_bases,",
+                        "         vt,",
+                        "         NTH(1, call.genotype) WITHIN call AS first_allele,",
+                        "         NTH(2, call.genotype) WITHIN call AS second_allele",
+                        "       FROM [genomics-public-data:1000_genomes.variants])",
+                        "     , call)",
                         "OMIT RECORD IF",
-                        "     contig IN (\"X\", \"Y\")",
-                        "  OR genotype.first_allele < 0",
-                        "  OR genotype.second_allele < 0",
+                        "     reference_name IN (\"X\", \"Y\", \"MT\")",
+                        "  OR first_allele < 0",
+                        "  OR second_allele < 0",
                         "  OR vt != \"SNP\"",
                         "GROUP BY",
                         "  reference,",
@@ -170,14 +176,22 @@ MakeInDelsPlot = function() {
                         "END AS length,",
                         "  COUNT(1) AS cnt",
                         "FROM",
-                        "  FLATTEN([google.com:biggene:1000genomes.variants1kG], genotype)",
+                        "     FLATTEN((SELECT ",
+                        "         reference_name,",
+                        "         reference_bases,",
+                        "         alternate_bases,",
+                        "         vt,",
+                        "         NTH(1, call.genotype) WITHIN call AS first_allele,",
+                        "         NTH(2, call.genotype) WITHIN call AS second_allele",
+                        "       FROM [genomics-public-data:1000_genomes.variants])",
+                        "     , call)",
                         "WHERE",
-                        "      genotype.first_allele =",
+                        "      first_allele =",
                         "      POSITION(alternate_bases)",
                         "  AND LENGTH(alternate_bases) -",
                         "      LENGTH(reference_bases) != 0",
                         "OMIT RECORD IF",
-                        "      contig IN (\"X\", \"Y\")",
+                        "      reference_name IN (\"X\", \"Y\", \"MT\")",
                         "  AND vt != \"INDEL\"",
                         "GROUP BY",
                         "  length", sep="\n"))
@@ -204,22 +218,28 @@ MakeGenomeSnpCountsPlot = function() {
                         "  SUM(variant_info.double) AS cnt2",
                         "FROM",
                         "  (SELECT",
-                        "     genotype.sample_id AS genome,",
-                        "     IF((genotype.first_allele > 0 AND",
-                        "         genotype.second_allele = 0) OR",
-                        "        (genotype.first_allele = 0 AND",
-                        "         genotype.second_allele > 0), 1, 0)",
+                        "     genome,",
+                        "     IF((first_allele > 0 AND",
+                        "         second_allele = 0) OR",
+                        "        (first_allele = 0 AND",
+                        "         second_allele > 0), 1, 0)",
                         "       AS single,",
-                        "     IF(genotype.first_allele > 0 AND",
-                        "        genotype.second_allele > 0, 1, 0)",
+                        "     IF(first_allele > 0 AND",
+                        "        second_allele > 0, 1, 0)",
                         "       AS double,",
                         "   FROM",
-                        "     FLATTEN([google.com:biggene:1000genomes.variants1kG], genotype)",
+                        "     FLATTEN((SELECT ",
+                        "         reference_name,",
+                        "         call.call_set_name AS genome,",
+                        "         NTH(1, call.genotype) WITHIN call AS first_allele,",
+                        "         NTH(2, call.genotype) WITHIN call AS second_allele",
+                        "       FROM [genomics-public-data:1000_genomes.variants])",
+                        "     , call)",
                         "   OMIT RECORD IF",
-                        "     contig IN (\"X\", \"Y\")",
+                        "     reference_name IN (\"X\", \"Y\", \"MT\")",
                         "  ) AS variant_info",
                         "  JOIN",
-                        "    [google.com:biggene:1000genomes.sample_info] AS sample_info",
+                        "    [genomics-public-data:1000_genomes.sample_info] AS sample_info",
                         "  ON",
                         "    variant_info.genome = sample_info.sample",
                         "GROUP BY",
@@ -252,25 +272,34 @@ MakeLikelihoodPlot = function() {
                         "  COUNT(1) AS cnt",
                         "FROM (",
                         "  SELECT",
-                        "    vt AS variant_type,",
-                        "    ROUND(100 * IF(genotype.gl > -0.5, genotype.gl,",
+                        "    variant_type,",
+                        "    ROUND(100 * IF(gl > -0.5, gl,",
                         "          -0.5)) AS likelihood,",
                         "  FROM",
-                        "    FLATTEN([google.com:biggene:1000genomes.variants1kG], genotype)",
+                        "     FLATTEN((SELECT ",
+                        "         reference_name,",
+                        "         vt AS variant_type,",
+                        "         call.call_set_name AS genome,",
+                        "         call.phaseset AS phaseset,",
+                        "         call.genotype_likelihood AS gl,",
+                        "         NTH(1, call.genotype) WITHIN call AS first_allele,",
+                        "         NTH(2, call.genotype) WITHIN call AS second_allele",
+                        "       FROM [genomics-public-data:1000_genomes.variants])",
+                        "     , call)",
                         "  WHERE",
-                        "        (genotype.first_allele <= genotype.second_allele",
-                        "          AND POSITION(genotype.gl) = 1 +",
-                        "          (genotype.second_allele *",
-                        "            (genotype.second_allele + 1) / 2) +",
-                        "          genotype.first_allele)",
-                        "        OR (genotype.second_allele < genotype.first_allele",
-                        "          AND POSITION(genotype.gl) = 1 +",
-                        "          (genotype.first_allele *",
-                        "            (genotype.first_allele + 1) / 2) +",
-                        "          genotype.second_allele)",
+                        "        (first_allele <= second_allele",
+                        "          AND POSITION(gl) = 1 +",
+                        "          (second_allele *",
+                        "            (second_allele + 1) / 2) +",
+                        "          first_allele)",
+                        "        OR (second_allele < first_allele",
+                        "          AND POSITION(gl) = 1 +",
+                        "          (first_allele *",
+                        "            (first_allele + 1) / 2) +",
+                        "          second_allele)",
                         "  OMIT RECORD IF ",
-                        "       contig in (\"X\", \"Y\")",
-                        "    OR genotype.phased = false",
+                        "       reference_name in (\"X\", \"Y\", \"MT\")",
+                        "    OR phaseset IS NULL",
                         ")",
                         "GROUP BY",
                         "  variant_type,",
@@ -296,21 +325,21 @@ Basic Plots of 1k Genome Data
 
 Min/Max Chromosomal Positions of Variants
 -----------------------------------------
-```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=TRUE, comment=NA}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=FALSE, comment=NA}
 plots <- MakePositionsPlot()
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 CreateGriddedPlot(plots)
 ```
  * A basic sanity check
- 
+
  * Chromosomes 13,14,15,21,22 have abnormally high min positions.
  * Chromosome 7 has low min position.
  * Hard to sequence regions?
 
 Frequency of Variant Types Per Chromosome
 -----------------------------------------
-```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=TRUE, comment=NA}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=FALSE, comment=NA}
 plots <- MakeVariantSummaryPlot()
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
@@ -322,7 +351,7 @@ CreateGriddedPlot(plots)
 
 Types of SNP pairs (looks at both alleles)
 ------------------------------------------
-```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=TRUE, comment=NA}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=FALSE, comment=NA}
 plots <- MakeSnpsPlot()
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
@@ -330,16 +359,16 @@ CreateGriddedPlot(plots)
 ```
  * Total count is #genomes * #SNPs.
  * Same data - two views
- 
+
  * Red bars denote no mutation - both alleles equal reference.
- 
+
  * Why are A -> C,C and A-> G,G likely, but not A -> C,G or A -> G,C?
 
  * Note that A & T rows are reverses of each other, as are C & G rows.
 
 Length of Insertion/Deletion
 ---------------------------
-```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=TRUE, comment=NA}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=FALSE, comment=NA}
 plots <- MakeInDelsPlot()
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
@@ -347,29 +376,29 @@ CreateGriddedPlot(plots)
 ```
  * +/-51 are over/under flow bins
  * -> Large tail of deletions
- 
+
  * Positive length = Insertion
  * Negative length = Deletion
- 
+
  * Drops off quickly.
 
 Quality score of calls (at least, of INDELs)
 --------------------------------------------
-```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=TRUE, comment=NA}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=FALSE, comment=NA}
 plots <- MakeQualityPlot()
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 CreateGriddedPlot(plots)
 ```
 From the 1k genome docs:
-> phred-scaled quality score for the assertion made in ALT. i.e. -10log_10 prob(call in ALT is wrong). If ALT is ”.” (no variant) then this is -10log_10 p(variant), and if ALT is not ”.” this is -10log_10 p(no variant). High QUAL scores indicate high confidence calls. 
+> phred-scaled quality score for the assertion made in ALT. i.e. -10log_10 prob(call in ALT is wrong). If ALT is ”.” (no variant) then this is -10log_10 p(variant), and if ALT is not ”.” this is -10log_10 p(no variant). High QUAL scores indicate high confidence calls.
 
 From Broad Institute:
 > The Phred scaled probability that a REF/ALT polymorphism exists at this site given sequencing data. Because the Phred scale is -10 * log(1-p), a value of 10 indicates a 1 in 10 chance of error, while a 100 indicates a 1 in 10^10 chance. These values can grow very large when a large amount of NGS data is used for variant calling.
 
 Likelihood Scores for each Allele
 ---------------------------------
-```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=TRUE, comment=NA}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=FALSE, comment=NA}
 plots <- MakeLikelihoodPlot()
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
@@ -379,7 +408,7 @@ This is the likelihood for the most likely set of alleles for each variant.
 
 SNP distribution in Genomes
 ---------------------------
-```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=TRUE, comment=NA}
+```{r echo=FALSE, message=FALSE, warning=FALSE, error=FALSE, cache=FALSE, comment=NA}
 plots <- MakeGenomeSnpCountsPlot()
 ```
 First by Population:

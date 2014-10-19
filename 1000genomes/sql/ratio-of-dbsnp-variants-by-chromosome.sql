@@ -1,29 +1,24 @@
-# Get the proportion of variants that have been reported in the dbSNP database 
+# Get the proportion of variants that have been reported in the dbSNP database
 # version 132 , by chromosome, in the dataset.
 SELECT
-  all_variants.contig AS contig,
-  dbsnp_variants.num_variants AS num_dbsnp_variants,
-  all_variants.num_variants AS num_variants,
-  dbsnp_variants.num_variants / all_variants.num_variants frequency
+  reference_name,
+  num_dbsnp_variants,
+  num_variants,
+  num_dbsnp_variants / num_variants frequency
 FROM (
   SELECT
-    contig,
-    COUNT(*) num_variants
-  FROM
-    [google.com:biggene:1000genomes.variants1kG]
-  WHERE
-    id IS NOT NULL
+    reference_name,
+    COUNT(1) AS num_variants,
+    SUM(num_dbsnp_ids > 0) AS num_dbsnp_variants,
+  FROM (
+    SELECT
+      reference_name,
+      COUNT(names) WITHIN RECORD AS num_dbsnp_ids
+    FROM
+      [genomics-public-data:1000_genomes.variants]
+      )
   GROUP BY
-    contig) dbsnp_variants
-JOIN (
-  SELECT
-    contig,
-    COUNT(*) num_variants
-  FROM
-    [google.com:biggene:1000genomes.variants1kG]
-  GROUP BY
-    contig
-    ) all_variants
-  ON dbsnp_variants.contig = all_variants.contig
+    reference_name
+    )
 ORDER BY
-  all_variants.num_variants DESC;
+  num_variants DESC
