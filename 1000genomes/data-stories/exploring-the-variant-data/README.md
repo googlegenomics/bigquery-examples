@@ -34,7 +34,7 @@ SELECT
  GROUP BY
    chromosome
 ```
-<img src="figure/unnamed-chunk-3.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
  * A basic sanity check
 
  * Chromosomes 13,14,15,21,22 have abnormally high min positions.
@@ -57,7 +57,7 @@ SELECT
    chromosome,
    variant_type
 ```
-<img src="figure/unnamed-chunk-5.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" />
  * Mostly SNPs.
  * Very few structural variants.
  * Note suppressed zero.
@@ -97,7 +97,7 @@ GROUP BY
   reference,
   alleles
 ```
-<img src="figure/unnamed-chunk-7.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-7-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" />
  * Total count is #genomes * #SNPs.
  * Same data - two views
 
@@ -145,7 +145,7 @@ OMIT RECORD IF
 GROUP BY
   length
 ```
-<img src="figure/unnamed-chunk-9.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" />
  * +/-51 are over/under flow bins
  * -> Large tail of deletions
 
@@ -170,7 +170,7 @@ GROUP BY
   variant_type,
   quality
 ```
-<img src="figure/unnamed-chunk-11.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
 From the 1k genome docs:
 > phred-scaled quality score for the assertion made in ALT. i.e. -10log_10 prob(call in ALT is wrong). If ALT is ”.” (no variant) then this is -10log_10 p(variant), and if ALT is not ”.” this is -10log_10 p(no variant). High QUAL scores indicate high confidence calls.
 
@@ -220,7 +220,7 @@ GROUP BY
   variant_type,
   likelihood
 ```
-<img src="figure/unnamed-chunk-13.png" title="plot of chunk unnamed-chunk-13" alt="plot of chunk unnamed-chunk-13" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-13-1.png" title="plot of chunk unnamed-chunk-13" alt="plot of chunk unnamed-chunk-13" style="display: block; margin: auto;" />
 This is the likelihood for the most likely set of alleles for each variant.
 
 SNP distribution in Genomes
@@ -235,27 +235,16 @@ SELECT
                 AS super_population,
   SUM(variant_info.single) AS cnt1,
   SUM(variant_info.double) AS cnt2
-FROM
-  (SELECT
-     genome,
-     IF((first_allele > 0 AND
-         second_allele = 0) OR
-        (first_allele = 0 AND
-         second_allele > 0), 1, 0)
-       AS single,
-     IF(first_allele > 0 AND
-        second_allele > 0, 1, 0)
-       AS double,
-   FROM
-     FLATTEN((SELECT 
-         reference_name,
-         call.call_set_name AS genome,
-         NTH(1, call.genotype) WITHIN call AS first_allele,
-         NTH(2, call.genotype) WITHIN call AS second_allele
-       FROM [genomics-public-data:1000_genomes.variants])
-     , call)
+FROM (
+  FLATTEN((
+  SELECT 
+    call.call_set_name AS genome,
+    SOME(call.genotype > 0) AND NOT EVERY(call.genotype > 0) WITHIN call AS single,
+    EVERY(call.genotype > 0) WITHIN call AS double,
+   FROM [genomics-public-data:1000_genomes.variants]
    OMIT RECORD IF
-     reference_name IN ("X", "Y", "MT")
+     reference_name IN ("X", "Y", "MT"))
+  , call)
   ) AS variant_info
   JOIN
     [genomics-public-data:1000_genomes.sample_info] AS sample_info
@@ -267,7 +256,7 @@ GROUP BY
   super_population
 ```
 First by Population:
-<img src="figure/unnamed-chunk-15.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" style="display: block; margin: auto;" />
 Each point is a genome:
  * X coord denotes the #SNPs w/ 1 mutation
  * Y coord denotes the #SNPs w/ 2 mutations
@@ -275,4 +264,4 @@ Each point is a genome:
 Cluster correlate very well with ethnicity.
 
 Then by super population:
-<img src="figure/unnamed-chunk-16.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-16-1.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" style="display: block; margin: auto;" />
