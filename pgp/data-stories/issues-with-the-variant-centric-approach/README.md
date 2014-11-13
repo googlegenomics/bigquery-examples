@@ -126,7 +126,7 @@ smarter than average."
 
 The variation in this study corresponds to dbSNP ID rs9536314,
 causing an amino acid substitution in the Klotho gene (KL F327V).
-About 30% of people carry the variant. In build 37, this is an A
+About 30% of people carry the variant. In build 37, this is an T
 to G substition at chromosome 13, position 33628138.
 
 So Thomas builds and runs the following on BigQuery:
