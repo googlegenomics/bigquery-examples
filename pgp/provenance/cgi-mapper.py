@@ -38,7 +38,7 @@ It can also be run as a mapper-only Hadoop Streaming job:
   hadoop jar /path/to/your/hadoop-streaming-*.jar -input inputpath \
   -mapper cgi-mapper.py -file cgi-mapper.py --numReduceTasks 0 \
   -output outputpath
-See also https://developers.google.com/hadoop/
+See also https://cloud.google.com/hadoop/
 
 TODO(deflaux):
  - field relativeCoverageDiploid contains some values that are 'N', consider

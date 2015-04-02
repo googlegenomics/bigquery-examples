@@ -192,9 +192,9 @@ write.csv(cleaned_data, dataFilepath,
 # Load the data to BigQuery.
 # Below we are calling the bq command line tool but the data can also be loaded
 # via the BigQuery browser tool.
-# https://developers.google.com/bigquery/bigquery-browser-tool#createtable
+# https://cloud.google.com/bigquery/bigquery-browser-tool#createtable
 
-# https://developers.google.com/bigquery/bq-command-line-tool#creatingtablefromfile
+# https://cloud.google.com/bigquery/bq-command-line-tool#creatingtablefromfile
 command = paste('~/google-cloud-sdk/bin/bq',
                 'load',
                 '--project_id', destinationProject,

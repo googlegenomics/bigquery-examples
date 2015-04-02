@@ -29,7 +29,7 @@ Source:
 Status: 
 * complete, see script [sample-info-prep.R](./sample-info-prep.R) to see how the data was cleaned and transformed prior to the upload to BigQuery
 
-To load the script output via the [bq command line tool](https://developers.google.com/bigquery/bq-command-line-tool#creatingtablefromfile), run:
+To load the script output via the [bq command line tool](https://cloud.google.com/bigquery/bq-command-line-tool#creatingtablefromfile), run:
 ```
 bq load --project_id <YOUR-PROJECT_ID> --source_format=CSV \
 --skip_leading_rows=1 <YOUR_DATASET.YOUR_TABLE> \
@@ -49,7 +49,7 @@ Source:
 Status: 
 * complete, no cleaning or transformation needed
 
-To load the source file via the [bq command line tool](https://developers.google.com/bigquery/bq-command-line-tool#creatingtablefromfile), download it to your local system and run:
+To load the source file via the [bq command line tool](https://cloud.google.com/bigquery/bq-command-line-tool#creatingtablefromfile), download it to your local system and run:
 ```
 bq load --project_id <YOUR-PROJECT_ID> --source_format=CSV \
 --field_delimiter=tab --skip_leading_rows=1 <YOUR_DATASET.YOUR_TABLE> \

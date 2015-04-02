@@ -45,7 +45,7 @@ It should be run as a mapper-only Hadoop Streaming job:
 Notice that there is a special output format to put the VCF header
 back into the output files including the specific sample id.
 
-See also https://developers.google.com/hadoop/ and
+See also https://cloud.google.com/hadoop/ and
 http://stackoverflow.com/questions/18541503/multiple-output-files-for-hadoop-streaming-with-python-mapper
 
 """

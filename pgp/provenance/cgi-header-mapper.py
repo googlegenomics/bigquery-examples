@@ -30,7 +30,7 @@ It can also be run as a Hadoop Streaming job:
   -mapper cgi-header-mapper.py -file cgi-header-mapper.py \
   -reducer aggregate -output outputpath
 
-See also https://developers.google.com/hadoop/
+See also https://cloud.google.com/hadoop/
 """
 
 import os
