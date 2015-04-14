@@ -27,7 +27,7 @@ Personal Genomes Project
 
 
 
-**Note: the variants schema for the PGP data has not yet been updated to the current schema.**  Some of the column names for common data may differ from those of your own variants data exported to BigQuery.
+**See [PGP Public data](http://googlegenomics.readthedocs.org/en/latest/use_cases/discover_public_data/pgp_public_data.html#bigquery-pgp-tables) for provenance details of the most recent import of the PGP data which has the up-to-date schema.**  The other tables you see here comprise a variety of schema experiments.  Some of the column names for common data may differ from those of your own variants data exported to BigQuery.
 
 Here is an initial query joining the variant data with the phenotypic data.  See the [phenotypes schema](https://bigquery.cloud.google.com/table/google.com:biggene:pgp.phenotypes?pli=1) for more detail.
 
@@ -53,16 +53,16 @@ FROM
     call.callset_name,
     Sex_Gender)
 GROUP BY
-  Sex_Gender
+  Sex_GenderRunning query:   RUNNING  2.1s
 ```
 
-<!-- html table generated in R 3.1.1 by xtable 1.7-3 package -->
-<!-- Fri Oct  3 08:45:11 2014 -->
-<TABLE border=1>
-<TR> <TH> Sex_Gender </TH> <TH> cnt </TH>  </TR>
-  <TR> <TD> Female </TD> <TD align="right">  53 </TD> </TR>
-  <TR> <TD> Male </TD> <TD align="right"> 112 </TD> </TR>
-  <TR> <TD>  </TD> <TD align="right">   6 </TD> </TR>
-   </TABLE>
+<!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
+<!-- Tue Apr 14 07:55:07 2015 -->
+<table border=1>
+<tr> <th> Sex_Gender </th> <th> cnt </th>  </tr>
+  <tr> <td> Female </td> <td align="right">  53 </td> </tr>
+  <tr> <td> Male </td> <td align="right"> 112 </td> </tr>
+  <tr> <td>  </td> <td align="right">   6 </td> </tr>
+   </table>
 
-<img src="figure/gender.png" title="plot of chunk gender" alt="plot of chunk gender" style="display: block; margin: auto;" />
+<img src="figure/gender-1.png" title="plot of chunk gender" alt="plot of chunk gender" style="display: block; margin: auto;" />

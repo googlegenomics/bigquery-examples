@@ -1,16 +1,17 @@
 # Summarize the minimum and maximum number of samples per variant by chromosome.
 SELECT
-  contig_name,
+  reference_name,
   MIN(sample_count) AS minimum_sample_count,
   MAX(sample_count) AS maximum_sample_count,
 FROM (
   SELECT
-    contig_name,
-    COUNT(call.callset_name) WITHIN RECORD AS sample_count
+    reference_name,
+    COUNT(call.call_set_name) WITHIN RECORD AS sample_count
   FROM
-    [google.com:biggene:pgp.variants]
-    )
+    [google.com:biggene:pgp_20150205.variants_cgi_only]
+  # The source data was Complete Genomics which includes non-variant segments.
+  OMIT RECORD IF EVERY(alternate_bases IS NULL))
 GROUP BY
-  contig_name
+  reference_name
 ORDER BY
-  contig_name
+  reference_name
