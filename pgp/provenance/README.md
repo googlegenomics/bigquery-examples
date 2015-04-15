@@ -1,6 +1,8 @@
 Provenance
 ========================================================
 
+**See [PGP Public data](http://googlegenomics.readthedocs.org/en/latest/use_cases/discover_public_data/pgp_public_data.html#bigquery-pgp-tables) for provenance details of the most recent import of the PGP data which has the up-to-date schema.**  The other tables you see here comprise a variety of schema experiments.
+
 Variant Data
 ------------------------------
 

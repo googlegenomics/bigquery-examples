@@ -1,10 +1,13 @@
-# Count the number of sample genotypes.
+# Count the number of genotypes for all individuals in the dataset.
 SELECT
-  call.gt,
-  COUNT(call.gt) AS cnt
-FROM
-  [google.com:biggene:pgp.variants]
+  genotype,
+  COUNT(genotype) AS cnt,
+FROM (
+  SELECT
+    GROUP_CONCAT(STRING(call.genotype)) WITHIN call AS genotype,
+  FROM
+    [google.com:biggene:pgp_20150205.variants_cgi_only])
 GROUP BY
-  call.gt
+  genotype
 ORDER BY
   cnt DESC

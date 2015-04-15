@@ -1,45 +1,44 @@
 # Count the number of variants by variant type and chromosome.
 SELECT
-  contig_name,
+  reference_name,
   vt,
   cnt,
   dataset
 FROM (
   SELECT
-    contig_name,
-    CASE
-    WHEN (svtype IS NULL
-      AND ref_len = 1
-      AND alt_len = 1) THEN "SNP"
-    WHEN (svtype IS NULL) THEN "INDEL"
-    ELSE svtype END AS vt,
-    COUNT(1) AS cnt,
+    # Normalize the reference_name to match that found in 1,000 Genomes.
+    IF(reference_name = 'chrM', 'MT', SUBSTR(reference_name, 4)) AS reference_name,
+    IF(ref_len = 1 AND alt_len = 1, "SNP", "INDEL") AS vt,
+    COUNT(reference_name) AS cnt,
     'PGP' AS dataset
   FROM (
     SELECT
-      contig_name,
+      reference_name,
       svtype,
       LENGTH(reference_bases) AS ref_len,
       MAX(LENGTH(alternate_bases)) WITHIN RECORD AS alt_len,
     FROM
-      [google.com:biggene:pgp.variants]
+      [google.com:biggene:pgp_20150205.variants_cgi_only]
+    # The source data was Complete Genomics which includes non-variant segments.
+    OMIT RECORD IF EVERY(alternate_bases IS NULL)
       )
   GROUP BY
-    contig_name,
+    reference_name,
     vt
     ),
   (
   SELECT
-    contig AS contig_name,
-    vt,
-    COUNT(1) AS cnt,
+    reference_name,
+    IF(vt IS NULL, "not specified", vt) AS vt,
+    COUNT(reference_name) AS cnt,
     '1000Genomes' AS dataset
   FROM
-    [google.com:biggene:1000genomes.phase1_variants]
+    [genomics-public-data:1000_genomes.variants]
   GROUP BY
-    contig_name,
+    reference_name,
     vt
     ),
 ORDER BY
-  contig_name,
-  vt;
+  reference_name,
+  dataset,
+  vt

@@ -10,9 +10,23 @@ SELECT
   afr_af,
   asn_af,
   amr_af
-FROM
-  [google.com:biggene:1000genomes.phase1_variants] AS kg
-JOIN EACH (
+FROM (
+    FLATTEN((
+      SELECT
+        reference_name,
+        start,
+        reference_bases,
+        alternate_bases,
+        AF,
+        AFR_AF,
+        AMR_AF,
+        ASN_AF,
+        EUR_AF
+      FROM
+        [genomics-public-data:1000_genomes.variants]),
+      alternate_bases)) AS kg
+JOIN
+  EACH (
   SELECT
     contig_name,
     reference_bases,
@@ -23,11 +37,11 @@ JOIN EACH (
     [google.com:biggene:pgp_analysis_results.gvcf_variants_allelic_frequency]
     ) AS pgp
 ON
-  pgp.contig_name = kg.contig
-  AND pgp.start_pos = kg.position
+  pgp.contig_name = kg.reference_name
+  AND pgp.start_pos = kg.start
   AND pgp.reference_bases = kg.reference_bases
-  AND pgp.allele = kg.alternate_bases_str
+  AND pgp.allele = kg.alternate_bases
 WHERE
-  kg.contig = '17'
-  AND kg.position BETWEEN 41196312
+  kg.reference_name = '17'
+  AND kg.start BETWEEN 41196312
   AND 41277500
