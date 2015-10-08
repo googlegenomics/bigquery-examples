@@ -16,7 +16,8 @@
 # > qchisq(1 - 5e-08, df=1)
 #   [1] 29.71679
 
-# For example, see alcohol flush reaction at start 112241766
+# For example, alcohol flush reaction rs671 which is the 95th result.
+# For GRCh37, rs671 is on chromosome 12 position 112241765 in zero-based coordinates.
 
 SELECT
   reference_name,
@@ -34,17 +35,17 @@ SELECT
   case_alt_count,
   control_ref_count,
   control_alt_count,
+  # https://en.wikipedia.org/wiki/Yates%27s_correction_for_continuity
   ROUND(
-    POW(case_ref_count - (ref_count/allele_count)*case_count,
+    POW(ABS(case_ref_count - (ref_count/allele_count)*case_count) - 0.5,
       2)/((ref_count/allele_count)*case_count) +
-    POW(control_ref_count - (ref_count/allele_count)*control_count,
+    POW(ABS(control_ref_count - (ref_count/allele_count)*control_count) - 0.5,
       2)/((ref_count/allele_count)*control_count) +
-    POW(case_alt_count - (alt_count/allele_count)*case_count,
+    POW(ABS(case_alt_count - (alt_count/allele_count)*case_count) - 0.5,
       2)/((alt_count/allele_count)*case_count) +
-    POW(control_alt_count - (alt_count/allele_count)*control_count,
+    POW(ABS(control_alt_count - (alt_count/allele_count)*control_count) - 0.5,
       2)/((alt_count/allele_count)*control_count),
-    3)
-  AS chi_squared_score
+    3) AS chi_squared_score
 FROM (
   SELECT
     reference_name,
@@ -56,24 +57,12 @@ FROM (
     SUM(ref_count + alt_count) AS allele_count,
     SUM(ref_count) AS ref_count,
     SUM(alt_count) AS alt_count,
-    SUM(IF(TRUE = is_case,
-        INTEGER(ref_count + alt_count),
-        0)) AS case_count,
-    SUM(IF(FALSE = is_case,
-        INTEGER(ref_count + alt_count),
-        0)) AS control_count,
-    SUM(IF(TRUE = is_case,
-        ref_count,
-        0)) AS case_ref_count,
-    SUM(IF(TRUE = is_case,
-        alt_count,
-        0)) AS case_alt_count,
-    SUM(IF(FALSE = is_case,
-        ref_count,
-        0)) AS control_ref_count,
-    SUM(IF(FALSE = is_case,
-        alt_count,
-        0)) AS control_alt_count,
+    SUM(IF(TRUE = is_case, INTEGER(ref_count + alt_count), 0)) AS case_count,
+    SUM(IF(FALSE = is_case, INTEGER(ref_count + alt_count), 0)) AS control_count,
+    SUM(IF(TRUE = is_case, ref_count, 0)) AS case_ref_count,
+    SUM(IF(TRUE = is_case, alt_count, 0)) AS case_alt_count,
+    SUM(IF(FALSE = is_case, ref_count, 0)) AS control_ref_count,
+    SUM(IF(FALSE = is_case, alt_count, 0)) AS control_alt_count,
   FROM (
     SELECT
       reference_name,
@@ -85,9 +74,9 @@ FROM (
       alternate_bases,
       END,
       vt,
-      # 1000 genomes data IS bi-allelic so there IS only ever a single alt
-      (0 = first_allele) + (0 = second_allele) AS ref_count,
-      (1 = first_allele) + (1 = second_allele) AS alt_count,
+      # 1000 genomes phase 1 data is bi-allelic so there is only ever a single alt
+      SUM(0 = call.genotype) WITHIN RECORD AS ref_count,
+      SUM(1 = call.genotype) WITHIN RECORD AS alt_count,
     FROM
       FLATTEN((
         SELECT
@@ -98,18 +87,11 @@ FROM (
           END,
           vt,
           call.call_set_name,
-          NTH(1,
-            call.genotype) WITHIN call AS first_allele,
-          NTH(2,
-            call.genotype) WITHIN call AS second_allele,
+          call.genotype,
         FROM
           [genomics-public-data:1000_genomes.variants]
         WHERE
           reference_name = '12'
-        HAVING
-          # Exclude calls _where one _or both alleles were NOT called (-1)
-          0 <= first_allele
-          AND 0 <= second_allele
           ),
         call) AS g
     JOIN
