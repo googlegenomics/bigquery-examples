@@ -15,9 +15,6 @@
 # > qnorm(1 - 5e-08)
 # [1] 5.326724
 
-# For example, alcohol flush reaction rs671 which is the 95th result.
-# For GRCh37, rs671 is on chromosome 12 position 112241765 in zero-based coordinates.
-
 SELECT
   reference_name,
   start,
