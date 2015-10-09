@@ -67,9 +67,7 @@ FROM (
     SELECT
       reference_name,
       start,
-      IF('EAS' = super_population,
-        TRUE,
-        FALSE) AS is_case,
+      ('EAS' = super_population) AS is_case,
       reference_bases,
       alternate_bases,
       END,
