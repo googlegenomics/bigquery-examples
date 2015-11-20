@@ -18,7 +18,7 @@ FROM (
       LENGTH(reference_bases) AS ref_len,
       MAX(LENGTH(alternate_bases)) WITHIN RECORD AS alt_len,
     FROM
-      [google.com:biggene:pgp_20150205.variants_cgi_only]
+      [google.com:biggene:pgp_20150205.genome_calls]
     # The source data was Complete Genomics which includes non-variant segments.
     OMIT RECORD IF EVERY(alternate_bases IS NULL)
       )

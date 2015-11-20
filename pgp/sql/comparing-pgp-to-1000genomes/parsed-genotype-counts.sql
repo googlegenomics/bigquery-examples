@@ -3,7 +3,8 @@ SELECT
   first_allele,
   second_allele,
   dataset,
-  COUNT(1) AS cnt
+  # Convert integer to float to avoid numeric overflow in R for integers.
+  FLOAT(COUNT(1)) AS cnt
 FROM (
   SELECT
     NTH(1, call.genotype) WITHIN call AS first_allele,
@@ -18,7 +19,7 @@ FROM (
     NTH(2, call.genotype) WITHIN call AS second_allele,
     'PGP' AS dataset
   FROM
-    [google.com:biggene:pgp_20150205.variants_cgi_only]
+    [google.com:biggene:pgp_20150205.genome_calls]
   OMIT RECORD IF reference_name IN ('chrX', 'chrY', 'chrM'))
 GROUP BY
   first_allele,
