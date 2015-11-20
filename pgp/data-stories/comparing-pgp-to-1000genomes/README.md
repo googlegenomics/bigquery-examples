@@ -51,7 +51,7 @@ FROM (
     COUNT(reference_name) AS cnt,
     'PGP' AS dataset
   FROM
-    [google.com:biggene:pgp_20150205.variants_cgi_only]
+    [google.com:biggene:pgp_20150205.genome_calls]
   # The source data was Complete Genomics which includes non-variant segments.
   OMIT RECORD IF EVERY(alternate_bases IS NULL)
   GROUP BY
@@ -62,16 +62,16 @@ ORDER BY
 ```
 
 We see the first few tabular results:
-<!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Tue Apr 14 07:52:05 2015 -->
+<!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
+<!-- Thu Nov 19 17:22:11 2015 -->
 <table border=1>
 <tr> <th> reference_name </th> <th> cnt </th> <th> dataset </th>  </tr>
   <tr> <td> 1 </td> <td align="right"> 3007196 </td> <td> 1000Genomes </td> </tr>
-  <tr> <td> 1 </td> <td align="right"> 3152732 </td> <td> PGP </td> </tr>
+  <tr> <td> 1 </td> <td align="right"> 2840932 </td> <td> PGP </td> </tr>
   <tr> <td> 10 </td> <td align="right"> 1882663 </td> <td> 1000Genomes </td> </tr>
-  <tr> <td> 10 </td> <td align="right"> 1891393 </td> <td> PGP </td> </tr>
+  <tr> <td> 10 </td> <td align="right"> 1717853 </td> <td> PGP </td> </tr>
   <tr> <td> 11 </td> <td align="right"> 1894908 </td> <td> 1000Genomes </td> </tr>
-  <tr> <td> 11 </td> <td align="right"> 1995608 </td> <td> PGP </td> </tr>
+  <tr> <td> 11 </td> <td align="right"> 1798453 </td> <td> PGP </td> </tr>
    </table>
 
 <img src="figure/variant counts-1.png" title="plot of chunk variant counts" alt="plot of chunk variant counts" style="display: block; margin: auto;" />
@@ -100,7 +100,7 @@ FROM (
       LENGTH(reference_bases) AS ref_len,
       MAX(LENGTH(alternate_bases)) WITHIN RECORD AS alt_len,
     FROM
-      [google.com:biggene:pgp_20150205.variants_cgi_only]
+      [google.com:biggene:pgp_20150205.genome_calls]
     # The source data was Complete Genomics which includes non-variant segments.
     OMIT RECORD IF EVERY(alternate_bases IS NULL)
       )
@@ -129,15 +129,15 @@ Notice that PGP has no column indicating variant type, so it is inferred from th
 data was imported from Complete Genomics masterVar files which do not contain structural variants.
 
 We see the first few tabular results:
-<!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Tue Apr 14 07:52:11 2015 -->
+<!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
+<!-- Thu Nov 19 17:22:14 2015 -->
 <table border=1>
 <tr> <th> reference_name </th> <th> vt </th> <th> cnt </th> <th> dataset </th>  </tr>
   <tr> <td> 1 </td> <td> INDEL </td> <td align="right">  109119 </td> <td> 1000Genomes </td> </tr>
   <tr> <td> 1 </td> <td> SNP </td> <td align="right"> 2896960 </td> <td> 1000Genomes </td> </tr>
   <tr> <td> 1 </td> <td> SV </td> <td align="right">    1117 </td> <td> 1000Genomes </td> </tr>
-  <tr> <td> 1 </td> <td> INDEL </td> <td align="right"> 1256100 </td> <td> PGP </td> </tr>
-  <tr> <td> 1 </td> <td> SNP </td> <td align="right"> 1896632 </td> <td> PGP </td> </tr>
+  <tr> <td> 1 </td> <td> INDEL </td> <td align="right"> 1059880 </td> <td> PGP </td> </tr>
+  <tr> <td> 1 </td> <td> SNP </td> <td align="right"> 1781052 </td> <td> PGP </td> </tr>
   <tr> <td> 10 </td> <td> INDEL </td> <td align="right">   67865 </td> <td> 1000Genomes </td> </tr>
    </table>
 
@@ -169,7 +169,7 @@ FROM (
     call.callset_name,
     GROUP_CONCAT(STRING(call.genotype)) WITHIN call AS genotype,
   FROM
-    [google.com:biggene:pgp_20150205.variants_cgi_only]
+    [google.com:biggene:pgp_20150205.genome_calls]
   WHERE
     reference_name = 'chr3'
     AND start = 65440409)
@@ -185,17 +185,17 @@ ORDER BY
 ```
 
 We see the tabular results:
-<!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Tue Apr 14 07:52:15 2015 -->
+<!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
+<!-- Thu Nov 19 17:22:17 2015 -->
 <table border=1>
 <tr> <th> reference_name </th> <th> start </th> <th> reference_bases </th> <th> alternate_bases </th> <th> genotype </th> <th> number_of_individuals </th>  </tr>
   <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> = </td> <td>  </td> <td> -1,-1 </td> <td align="right">   3 </td> </tr>
   <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td>  </td> <td> 0,-1 </td> <td align="right">   1 </td> </tr>
   <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> AAC </td> <td> 1,-1 </td> <td align="right">   3 </td> </tr>
-  <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> AAC,C </td> <td> 1,2 </td> <td align="right">  39 </td> </tr>
+  <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> AAC,C </td> <td> 1,2 </td> <td align="right">  37 </td> </tr>
   <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> AC,C </td> <td> 1,2 </td> <td align="right">   3 </td> </tr>
-  <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> C </td> <td> 1,1 </td> <td align="right">  51 </td> </tr>
-  <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> C </td> <td> 1,0 </td> <td align="right">  30 </td> </tr>
+  <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> C </td> <td> 1,1 </td> <td align="right">  43 </td> </tr>
+  <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> C </td> <td> 1,0 </td> <td align="right">  28 </td> </tr>
   <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> C </td> <td> 1,-1 </td> <td align="right">  15 </td> </tr>
   <tr> <td> chr3 </td> <td align="right"> 65440409 </td> <td> A </td> <td> C,A? </td> <td> 1,2 </td> <td align="right">   1 </td> </tr>
    </table>
@@ -215,7 +215,7 @@ FROM (
   SELECT
     GROUP_CONCAT(STRING(call.genotype)) WITHIN call AS genotype,
   FROM
-    [google.com:biggene:pgp_20150205.variants_cgi_only])
+    [google.com:biggene:pgp_20150205.genome_calls])
 GROUP BY
   genotype
 ORDER BY
@@ -223,19 +223,19 @@ ORDER BY
 ```
 
 We see the tabular results:
-<!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Tue Apr 14 07:52:17 2015 -->
+<!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
+<!-- Thu Nov 19 17:22:19 2015 -->
 <table border=1>
 <tr> <th> genotype </th> <th> cnt </th>  </tr>
-  <tr> <td> 0,0 </td> <td align="right"> 1617064977 </td> </tr>
-  <tr> <td> -1,-1 </td> <td align="right"> 859682994 </td> </tr>
-  <tr> <td> 1,0 </td> <td align="right"> 404668224 </td> </tr>
-  <tr> <td> 1,1 </td> <td align="right"> 257838585 </td> </tr>
-  <tr> <td> 1,-1 </td> <td align="right"> 64951310 </td> </tr>
-  <tr> <td> 0,-1 </td> <td align="right"> 50308594 </td> </tr>
-  <tr> <td> -1,0 </td> <td align="right"> 27453413 </td> </tr>
-  <tr> <td> 1,2 </td> <td align="right"> 3289958 </td> </tr>
-  <tr> <td> -1,1 </td> <td align="right"> 2329453 </td> </tr>
+  <tr> <td> 0,0 </td> <td align="right"> 1505664389 </td> </tr>
+  <tr> <td> -1,-1 </td> <td align="right"> 806555820 </td> </tr>
+  <tr> <td> 1,0 </td> <td align="right"> 373226428 </td> </tr>
+  <tr> <td> 1,1 </td> <td align="right"> 238037789 </td> </tr>
+  <tr> <td> 1,-1 </td> <td align="right"> 59592931 </td> </tr>
+  <tr> <td> 0,-1 </td> <td align="right"> 47766546 </td> </tr>
+  <tr> <td> -1,0 </td> <td align="right"> 25515702 </td> </tr>
+  <tr> <td> 1,2 </td> <td align="right"> 2593250 </td> </tr>
+  <tr> <td> -1,1 </td> <td align="right"> 2033919 </td> </tr>
    </table>
 
 Comparing this to 1,000 Genomes:
@@ -246,7 +246,8 @@ SELECT
   first_allele,
   second_allele,
   dataset,
-  COUNT(1) AS cnt
+  # Convert integer to float to avoid numeric overflow in R for integers.
+  FLOAT(COUNT(1)) AS cnt
 FROM (
   SELECT
     NTH(1, call.genotype) WITHIN call AS first_allele,
@@ -261,7 +262,7 @@ FROM (
     NTH(2, call.genotype) WITHIN call AS second_allele,
     'PGP' AS dataset
   FROM
-    [google.com:biggene:pgp_20150205.variants_cgi_only]
+    [google.com:biggene:pgp_20150205.genome_calls]
   OMIT RECORD IF reference_name IN ('chrX', 'chrY', 'chrM'))
 GROUP BY
   first_allele,
@@ -271,5 +272,6 @@ GROUP BY
 
 <img src="figure/genotype heatmap-1.png" title="plot of chunk genotype heatmap" alt="plot of chunk genotype heatmap" style="display: block; margin: auto;" />
 The two most notable aspects of these heatmaps is:
+
   1. PGP does have some autosomal variants with more than one alternate allele wherease the 1,000 Genomes phase 1 data is biallelic for the autosomes
-  1. PGP contains no-calls where as 1,000 Genomes had additional processing to impute genotypes at all sites
+  2. PGP contains no-calls where as 1,000 Genomes had additional processing to impute genotypes at all sites

@@ -20,7 +20,7 @@ FROM (
     COUNT(reference_name) AS cnt,
     'PGP' AS dataset
   FROM
-    [google.com:biggene:pgp_20150205.variants_cgi_only]
+    [google.com:biggene:pgp_20150205.genome_calls]
   # The source data was Complete Genomics which includes non-variant segments.
   OMIT RECORD IF EVERY(alternate_bases IS NULL)
   GROUP BY

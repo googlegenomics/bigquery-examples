@@ -22,14 +22,14 @@ How does the structure and composition of the Complete Genomics PGP dataset vary
 ```{r config, echo=FALSE, eval=FALSE}
 ######################[ CHANGE ME ]##################################
 # This codelab assumes that the current working directory is where the Rmd file resides.
-setwd("/YOUR/PATH/TO/codelabs/R/PlatinumGenomes-QC")
+setwd("/YOUR/PATH/TO/bigquery-examples/pgp/data-stories/comparing-pgp-to-1000genomes")
 
 # Set the Google Cloud Platform project id under which these queries will run.
 project <- "YOUR-PROJECT-ID"
 #####################################################################
 ```
 
-```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+```{r init, echo=FALSE, message=FALSE, warning=TRUE, comment=NA}
 require(bigrquery)
 require(ggplot2)
 require(scales)
@@ -47,16 +47,16 @@ Variant Level Data
 ------------------
 
 First let us get an overview of how many variants we have in these datasets:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/variant-counts-by-chromosome.sql")
 ```
 
 We see the first few tabular results:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, results="asis"}
 print(xtable(head(result), digits=6), type="html", include.rownames=F)
 ```
 
-```{r variant counts, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+```{r variant counts, echo=FALSE, message=FALSE, warning=TRUE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 result$reference_name <- factor(result$reference_name, levels=c(as.character(seq(1,22)), "X", "Y", "MT"))
 ggplot(result, aes(x=reference_name, y=cnt, fill=dataset)) +
   geom_bar(stat="identity", position="dodge") +
@@ -68,18 +68,18 @@ ggplot(result, aes(x=reference_name, y=cnt, fill=dataset)) +
 We see that the two datasets have a similar number of variants on each chromosome.
 
 Let's break this down further by variant type:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/variant-counts-by-type-and-chromosome.sql")
 ```
 Notice that PGP has no column indicating variant type, so it is inferred from the data.  The PGP
 data was imported from Complete Genomics masterVar files which do not contain structural variants.
 
 We see the first few tabular results:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, results="asis"}
 print(xtable(head(result), digits=6), type="html", include.rownames=F)
 ```
 
-```{r variant type counts, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+```{r variant type counts, echo=FALSE, message=FALSE, warning=TRUE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 result$reference_name <- factor(result$reference_name, levels=c(as.character(seq(1,22)), "X", "Y", "MT"))
 ggplot(result, aes(x=reference_name, y=cnt, fill=vt)) +
   geom_bar(stat="identity", position="dodge") +
@@ -92,7 +92,7 @@ ggplot(result, aes(x=reference_name, y=cnt, fill=vt)) +
 In 1,000 Genomes the vast majority of variants are SNPs but the PGP dataset has a larger proportion of indels.
 
 Re-plotting the data to just show the PGP variants without the log scale on the y axis:
-```{r pgp variant type counts, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+```{r pgp variant type counts, echo=FALSE, message=FALSE, warning=TRUE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result[result$dataset == 'PGP',], aes(x=reference_name, y=cnt, fill=vt)) +
   geom_bar(stat="identity", position="dodge") +
   scale_y_continuous(labels=comma) +
@@ -102,12 +102,12 @@ ggplot(result[result$dataset == 'PGP',], aes(x=reference_name, y=cnt, fill=vt)) 
 ```
  
 But let's take an even closer look:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/taking-a-closer-look-at-variant-types.sql")
 ```
 
 We see the tabular results:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, results="asis"}
 print(xtable(result), type="html", include.rownames=F)
 ```
 So some records in the PGP data have both SNPs and INDELs, whereas 1,000 Genomes autosomal variants are bi-allelic and therefore are each of a single variant type.
@@ -116,21 +116,21 @@ Sample Level Data
 -----------------
 
 Now let's take a look at the distribution of genotypes across the PGP dataset:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/genotype-counts.sql")
 ```
 
 We see the tabular results:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, results="asis"}
 print(xtable(result, digits=6), type="html", include.rownames=F)
 ```
 
 Comparing this to 1,000 Genomes:
-```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+```{r echo=FALSE, message=FALSE, warning=TRUE, comment=NA, cache=FALSE}
 result <- DisplayAndDispatchQuery("../../sql/comparing-pgp-to-1000genomes/parsed-genotype-counts.sql")
 ```
 
-```{r genotype heatmap, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+```{r genotype heatmap, echo=FALSE, message=FALSE, warning=TRUE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(result) +
   aes(x=first_allele, y=second_allele) +
   geom_tile(aes(fill=cnt)) +
@@ -142,5 +142,6 @@ ggplot(result) +
 
 ```
 The two most notable aspects of these heatmaps is:
+
   1. PGP does have some autosomal variants with more than one alternate allele wherease the 1,000 Genomes phase 1 data is biallelic for the autosomes
-  1. PGP contains no-calls where as 1,000 Genomes had additional processing to impute genotypes at all sites
+  2. PGP contains no-calls where as 1,000 Genomes had additional processing to impute genotypes at all sites
