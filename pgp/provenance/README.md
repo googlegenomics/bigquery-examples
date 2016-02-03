@@ -15,10 +15,8 @@ Source:
 
 Description:
 
-* http://www.completegenomics.com/FAQs/
-* http://www.completegenomics.com/FAQs/Working-with-the-Data/#q1
-* http://www.completegenomics.com/customer-support/documentation/DataFileFormats-100357139.html
-* http://www.completegenomics.com/FAQs/Variant-Calls-SNPs-and-Small-Indels/
+* http://www.completegenomics.com/customer-support/faqs/
+* http://www.completegenomics.com/customer-support/documentation/100357139-2/
 * _Note that VCF positions 1-based but CGI positions 0-based_
 
 CGI Version Information:
