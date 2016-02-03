@@ -12,7 +12,7 @@ Start here: [getting-started-bigquery](https://github.com/googlegenomics/getting
 Loading your own Variant Data into BigQuery
 -------------------------------------------
 
-The Google Genomics API spec includes an [import method that loads VCF and CGI masterVar files](https://cloud.google.com/genomics/v1beta2/managing-variants) directly from Google Cloud Storage. 
+The Google Genomics API spec includes an [import method that loads VCF and CGI masterVar files](https://cloud.google.com/genomics/v1/managing-variants) directly from Google Cloud Storage. 
 
 For other types of data, such as variant annotations, see [Preparing Data for BigQuery](https://cloud.google.com/bigquery/preparing-data-for-bigquery) and also [BigQuery in Practice : Loading Data Sets That are Terabytes and Beyond](https://cloud.google.com/developers/articles/bigquery-in-practice) for more detail.
 
