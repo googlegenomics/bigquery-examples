@@ -11,9 +11,12 @@
 
 # http://www.statisticslectures.com/topics/ztestproportions/
 # two-proportion z-test
-# z-score critical value for p-value=5*10^-8 is +/-5.326724
-# > qnorm(1 - 5e-08)
-# [1] 5.326724
+# z-score critical value for p-value=5*10^-8 is +/-5.45131
+#
+#   > qnorm(1 - ((5e-8)/2), lower.tail=T)
+#   [1] 5.45131
+#   > qnorm(1 - ((5e-8)/2), lower.tail=F)
+#   [1] -5.45131
 
 SELECT
   reference_name,
@@ -107,8 +110,8 @@ FROM (
     alternate_bases,
     vt)
 HAVING
-  z_score >= 5.326724
-  OR z_score <= -5.326724
+  z_score >= 5.45131
+  OR z_score <= -5.45131
 ORDER BY
   z_score DESC,
   allele_count DESC
