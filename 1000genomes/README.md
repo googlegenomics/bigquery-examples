@@ -24,6 +24,7 @@
  * [Exploring the phenotypic data](./data-stories/exploring-the-phenotypic-data)
  * [Exploring the variant data](./data-stories/exploring-the-variant-data)
  * [Understanding Alternate Alleles in 1,000 Genomes](./data-stories/understanding-alternate-alleles)
+ * [Data Analysis Codelab](https://github.com/googlegenomics/codelabs/tree/master/R/1000Genomes-BRCA1-analysis)
 * [Index of variant analyses](./sql)
 
 ### Diving right in

@@ -7,12 +7,15 @@ Have other data stories you would like to see here?  Have any data stories you w
 
 Getting Started
 -----------------
-Start here: [getting-started-bigquery](https://github.com/googlegenomics/getting-started-bigquery).
+
+If you are new to BigQuery, start here instead: [Analyze Variants Using BigQuery](https://cloud.google.com/genomics/v1/analyze-variants).
+
+Otherwise, navigate through the tree of content in this repository.  You will find queries, RMarkdown, rendered analyses, and provenance details.
 
 Loading your own Variant Data into BigQuery
 -------------------------------------------
 
-The Google Genomics API spec includes an [import method that loads VCF and CGI masterVar files](https://cloud.google.com/genomics/v1/managing-variants) directly from Google Cloud Storage. 
+After trying these queries on public data, you can [load your own variant data into BigQuery](https://cloud.google.com/genomics/v1/load-variants).
 
 For other types of data, such as variant annotations, see [Preparing Data for BigQuery](https://cloud.google.com/bigquery/preparing-data-for-bigquery) and also [BigQuery in Practice : Loading Data Sets That are Terabytes and Beyond](https://cloud.google.com/developers/articles/bigquery-in-practice) for more detail.
 

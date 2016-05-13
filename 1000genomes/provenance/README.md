@@ -6,7 +6,7 @@ Source Variant Data
 
 ### variants table
 
-See [Google Genomics Public Data](https://cloud.google.com/genomics/data/1000-genomes) for provenance details for this data.
+See [Google Genomics Public Data](http://googlegenomics.readthedocs.io/en/latest/use_cases/discover_public_data/1000_genomes.html) for provenance details for this data.
 
 Source Sample Information
 --------------------------------
