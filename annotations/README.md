@@ -1,8 +1,7 @@
 Annotations
 ============
 
-__*Note:* Tute Genomics has provided an excellent table of annotations for hg19 SNPs.  Please see [Google Genomics Public Data](https://cloud.google.com/genomics/public-data#community) for more detail.__
-
+__*Note:* Tute Genomics has provided an excellent table of annotations for hg19 SNPs.  Please see [Google Genomics Public Data](http://googlegenomics.readthedocs.io/en/latest/use_cases/discover_public_data/tute_genomics_public_data.html) for more detail.__
 
 A handful of annotation databases have been loaded to BigQuery for prototyping purposes.
 
