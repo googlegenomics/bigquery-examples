@@ -1,0 +1,116 @@
+<!-- R Markdown Documentation, DO NOT EDIT THE PLAIN MARKDOWN VERSION OF THIS FILE -->
+
+<!-- Copyright 2016 Google Inc. All rights reserved. -->
+
+<!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
+<!-- you may not use this file except in compliance with the License. -->
+<!-- You may obtain a copy of the License at -->
+
+<!--     http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- Unless required by applicable law or agreed to in writing, software -->
+<!-- distributed under the License is distributed on an "AS IS" BASIS, -->
+<!-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. -->
+<!-- See the License for the specific language governing permissions and -->
+<!-- limitations under the License. -->
+
+1,000 Genomes Phase 3 Variants
+==============================
+
+### Additional Resources
+* [Schema](https://bigquery.cloud.google.com/table/genomics-public-data:1000_genomes_phase_3.variants_20150220_release?pli=1)
+* [Data Provenance](http://googlegenomics.readthedocs.io/en/latest/use_cases/discover_public_data/1000_genomes.html)
+* [Index of variant analyses](./sql)
+
+### Metrics
+
+In the following plots we display metrics computed on both 1,000 Genomes phase 1 and phase 3 variants.
+
+```{r echo=FALSE, eval=FALSE}
+######################[ CHANGE ME ]##################################
+# This codelab assumes that the current working directory is where the Rmd file resides.
+setwd("/YOUR/PATH/TO/bigquery-examples/1000genomes_phase3")
+
+# Set the Google Cloud Platform project id under which these queries will run.
+project <- "YOUR-PROJECT-ID"
+#####################################################################
+```
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(bigrquery)
+library(ggplot2)
+library(dplyr)
+library(xtable)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+sample_info <- read.csv("http://storage.googleapis.com/genomics-public-data/1000-genomes/other/sample_info/sample_info.csv")
+phase3 <- query_exec(
+  "SELECT * FROM [google.com:biggene:1000genomes_analysis_results.phase3_metrics]",
+  project)
+phase1 <- query_exec(
+  "SELECT * FROM [google.com:biggene:1000genomes_analysis_results.phase1_metrics]",
+  project)
+results <- inner_join(sample_info,
+                      rbind_list(mutate(phase3, dataset = "phase3"),
+                                 mutate(phase1, dataset = "phase1")),
+                      by=c("Sample" = "call_call_set_name"))
+```
+
+```{r titv_metrics, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(results, aes(dataset, ti_tv_ratio)) +
+  geom_boxplot(aes(colour = Super_Population)) +
+  ylab("Het/Hom Ratio") +
+  xlab("Dataset") +
+  ggtitle("Transition/Transversion SNP Ratio") 
+
+ggplot(results, aes(dataset, ti_tv_ratio)) +
+  geom_boxplot(aes(colour = Gender)) +
+  ylab("Het/Hom Ratio") +
+  xlab("Dataset") +
+  ggtitle("Transition/Transversion SNP Ratio") 
+```
+
+```{r hethom_metrics, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(results, aes(dataset, het_hom_ratio)) +
+  geom_boxplot(aes(colour = Super_Population)) +
+  ylab("Ti/Tv Ratio") +
+  xlab("Dataset") +
+  ggtitle("Heterozygous/Homozygous Variant Ratio") 
+
+ggplot(results, aes(dataset, het_hom_ratio)) +
+  geom_boxplot(aes(colour = Gender)) +
+  ylab("Ti/Tv Ratio") +
+  xlab("Dataset") +
+  ggtitle("Heterozygous/Homozygous Variant Ratio") 
+```
+
+```{r indel_metrics, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(results, aes(dataset, ins_del_ratio)) +
+  geom_boxplot(aes(colour = Super_Population)) +
+  ylab("Indel Ratio") +
+  xlab("Dataset") +
+  ggtitle("Insertion/Deletion Ratio") 
+
+ggplot(results, aes(dataset, ins_del_ratio)) +
+  geom_boxplot(aes(colour = Gender)) +
+  ylab("Indel Ratio") +
+  xlab("Dataset") +
+  ggtitle("Insertion/Deletion Ratio") 
+```
+
+### Analysis Provenance
+
+The following query was run over 1,000 Genomes data:
+
+1. phase 3 variantsfor 2,504 individuals and materialized to table [google.com:biggene:1000genomes_analysis_results.phase3_metrics](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes_analysis_results.phase3_metrics?pli=1)
+2. phase 1 variants for 1095 individuals and materialized to table [google.com:biggene:1000genomes_analysis_results.phase1_metrics](https://bigquery.cloud.google.com/table/google.com:biggene:1000genomes_analysis_results.phase1_metrics?pli=1)
+    * note that 1,092 individuals have variants across the entire genome
+    * two individuals have variants on chrM only
+    * one individual has variants on chrY only
+
+Note that it was written to specifically handle the multi-allelic data found in phase 3.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+cat(readChar("./sql/qc-metrics.sql", nchars=1e6))
+```
