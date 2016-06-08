@@ -60,13 +60,13 @@ results <- inner_join(sample_info,
 ```{r titv_metrics, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(results, aes(dataset, ti_tv_ratio)) +
   geom_boxplot(aes(colour = Super_Population)) +
-  ylab("Het/Hom Ratio") +
+  ylab("Ti/Tv Ratio") +
   xlab("Dataset") +
   ggtitle("Transition/Transversion SNP Ratio") 
 
 ggplot(results, aes(dataset, ti_tv_ratio)) +
   geom_boxplot(aes(colour = Gender)) +
-  ylab("Het/Hom Ratio") +
+  ylab("Ti/Tv Ratio") +
   xlab("Dataset") +
   ggtitle("Transition/Transversion SNP Ratio") 
 ```
@@ -74,13 +74,13 @@ ggplot(results, aes(dataset, ti_tv_ratio)) +
 ```{r hethom_metrics, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
 ggplot(results, aes(dataset, het_hom_ratio)) +
   geom_boxplot(aes(colour = Super_Population)) +
-  ylab("Ti/Tv Ratio") +
+  ylab("Het/Hom Ratio") +
   xlab("Dataset") +
   ggtitle("Heterozygous/Homozygous Variant Ratio") 
 
 ggplot(results, aes(dataset, het_hom_ratio)) +
   geom_boxplot(aes(colour = Gender)) +
-  ylab("Ti/Tv Ratio") +
+  ylab("Het/Hom Ratio") +
   xlab("Dataset") +
   ggtitle("Heterozygous/Homozygous Variant Ratio") 
 ```
