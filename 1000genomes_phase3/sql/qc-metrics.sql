@@ -9,7 +9,7 @@ SELECT
   call.call_set_name,
   # Ratios.
   transitions_count / transversions_count AS ti_tv_ratio,
-  (het_RA_count + het_AA_count) / (hom_RR_count + hom_AA_count) AS het_hom_ratio,
+  (het_RA_count + 2 * het_AA_count) / hom_AA_count AS het_hom_ratio,
   insertion_count / deletion_count AS ins_del_ratio,
   # Call type counts.
   hom_RR_count,
