@@ -34,6 +34,11 @@ setwd("/YOUR/PATH/TO/bigquery-examples/1000genomes_phase3")
 # Set the Google Cloud Platform project id under which these queries will run.
 project <- "YOUR-PROJECT-ID"
 #####################################################################
+
+# The currently released version 0.3.0 does not yet have the parameter
+# to use Standard SQL instead of Legacy SQL, so we install from github.
+library(devtools)
+install_github('rstats-db/bigrquery')
 ```
 
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
@@ -46,11 +51,11 @@ library(xtable)
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 sample_info <- read.csv("http://storage.googleapis.com/genomics-public-data/1000-genomes/other/sample_info/sample_info.csv")
 phase3 <- query_exec(
-  "SELECT * FROM [google.com:biggene:1000genomes_analysis_results.phase3_metrics]",
-  project)
+  "SELECT * FROM `google.com:biggene.1000genomes_analysis_results.phase3_metrics`",
+  project, useLegacySql = FALSE)
 phase1 <- query_exec(
-  "SELECT * FROM [google.com:biggene:1000genomes_analysis_results.phase1_metrics]",
-  project)
+  "SELECT * FROM `google.com:biggene.1000genomes_analysis_results.phase1_metrics`",
+  project, useLegacySql = FALSE)
 results <- inner_join(sample_info,
                       rbind_list(mutate(phase3, dataset = "phase3"),
                                  mutate(phase1, dataset = "phase1")),
