@@ -29,17 +29,31 @@
 ### Diving right in
 The following query returns the proportion of variants that have been reported in the [dbSNP database](http://www.ncbi.nlm.nih.gov/projects/SNP/snp_summary.cgi?build_id=132) [version 132](http://www.1000genomes.org/category/variants), by chromosome, across the entirety of the 1,000 Genomes low coverage variant data for 1,092 individuals:
 
+```{r echo=FALSE, eval=FALSE}
+######################[ CHANGE ME ]##################################
+# This codelab assumes that the current working directory is where the Rmd file resides.
+setwd("/YOUR/PATH/TO/codelabs/R/PlatinumGenomes-QC")
+
+# Set the Google Cloud Platform project id under which these queries will run.
+project <- "YOUR-PROJECT-ID"
+#####################################################################
+
+### Install the bigrquery package.  The currently released version 0.3.0 does not yet
+### have the parameter to use Standard SQL instead of Legacy SQL, so we install from github.
+library(devtools)
+install_github('rstats-db/bigrquery')
+```
+
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 require(bigrquery)
 require(ggplot2)
 require(dplyr)
 require(xtable)
 require(testthat)
-project <- "google.com:biggene" # put your projectID here
 DisplayAndDispatchQuery <- function(queryUri) {
   querySql <- readChar(queryUri, nchars=1e6)
   cat(querySql)
-  query_exec(querySql, project)
+  query_exec(querySql, project, useLegacySql = FALSE)
 }
 ```
 
@@ -113,7 +127,7 @@ And visually:
 ggplot(result, aes(x=num_samples_with_variant,
                   y=num_variants_shared_by_this_many_samples)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(labels=comma) +
   ylab("Number of variants (log scale)") +
   xlab("Number of samples") +
   ggtitle(paste("An Overview of How Variation is Shared Across Samples",
@@ -157,7 +171,7 @@ ggplot(result, aes(x=num_samples,
                    color=super_population,
                    shape=is_common_variant)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(labels=comma) +
   ylab("Number of variants (log scale)") +
   xlab("Number of samples") +
   ggtitle(paste("An Overview of How Variation is Shared Across Samples",
@@ -174,7 +188,7 @@ ggplot(filter(result, is_common_variant == TRUE), aes(x=num_samples,
                    color=super_population,
                    shape=is_common_variant)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(labels=comma) +
   ylab("Number of variants (log scale)") +
   xlab("Number of samples") +
   ggtitle(paste("An Overview of How Variation is Shared Across Samples for Common Variants",
@@ -188,7 +202,7 @@ ggplot(filter(result, is_common_variant == TRUE), aes(x=percent_samples,
                    color=super_population,
                    shape=is_common_variant)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(labels=comma) +
   ylab("Number of variants (log scale)") +
   xlab("Percent of super population samples") +
   ggtitle(paste("An Overview of How Variation is Shared Across Samples for Common Variants",
@@ -205,7 +219,7 @@ ggplot(filter(result, is_common_variant == FALSE),
            color=super_population,
            shape=is_common_variant)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(labels=comma) +
   ylab("Number of variants (log scale)") +
   xlab("Number of samples") +
   ggtitle(paste("An Overview of How Variation is Shared Across Samples for Rare Variants",
@@ -220,7 +234,7 @@ ggplot(filter(result, is_common_variant == FALSE),
            color=super_population,
            shape=is_common_variant)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(labels=comma) +
   ylab("Number of variants (log scale)") +
   xlab("Percent of super population samples") +
   ggtitle(paste("An Overview of How Variation is Shared Across Samples for Rare Variants",

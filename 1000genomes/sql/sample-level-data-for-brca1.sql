@@ -1,28 +1,25 @@
-# Get sample level data for variants within BRCA1.
+-- Retrieve sample-level information for BRCA1 variants.
 SELECT
   reference_name,
   start,
-  GROUP_CONCAT(names) WITHIN RECORD AS names,
-  reference_bases AS ref,
-  GROUP_CONCAT(alternate_bases) WITHIN RECORD AS alt,
+  `end`,
+  reference_bases,
+  ARRAY_TO_STRING(v.alternate_bases, ',') AS alts,
   quality,
-  GROUP_CONCAT(filter) WITHIN RECORD AS filters,
+  ARRAY_TO_STRING(v.filter, ',') AS filters,
   vt,
-  call.call_set_name AS sample_id,
-  call.phaseset AS phaseset,
-  NTH(1,
-    call.genotype) WITHIN call AS first_allele,
-  NTH(2,
-    call.genotype) WITHIN call AS second_allele,
+  ARRAY_TO_STRING(v.names, ',') AS names,
+  call.call_set_name,
+  call.phaseset,
+  (SELECT STRING_AGG(CAST(gt AS STRING)) from UNNEST(call.genotype) gt) AS genotype,
   call.ds,
-  GROUP_CONCAT(STRING(call.genotype_likelihood)) WITHIN call AS likelihoods,
+  (SELECT STRING_AGG(CAST(lh AS STRING)) from UNNEST(call.genotype_likelihood) lh) AS likelihoods
 FROM
-  [genomics-public-data:1000_genomes.variants]
+  `genomics-public-data.1000_genomes.variants` v, v.call call
 WHERE
-  reference_name = '17'
-  AND start BETWEEN 41196311
-      AND 41277499
-HAVING
-  sample_id = 'HG00100'
+  reference_name IN ('17', 'chr17')
+  AND start BETWEEN 41196311 AND 41277499 # per GRCh37
+  AND call_set_name = 'HG00100'
 ORDER BY
-  start
+  start,
+  alts
