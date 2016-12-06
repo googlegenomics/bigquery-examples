@@ -1,0 +1,85 @@
+Platinum Genomes
+================
+
+### Additional Resources
+
+There are just a handful of queries below but you will find a whole suite of
+queries for the Platinum Genome dataset written as a codelab for performing
+[Quality Control on Variants](https://github.com/googlegenomics/codelabs/tree/master/R/PlatinumGenomes-QC).
+
+* [variants table](https://bigquery.cloud.google.com/table/genomics-public-data:platinum_genomes.variants?pli=1)
+* [sample_info table](https://bigquery.cloud.google.com/table/google.com:biggene:platinum_genomes.sample_info)
+* See [Google Genomics Public Data](http://googlegenomics.readthedocs.io/en/latest/use_cases/discover_public_data/platinum_genomes.html)
+for provenance details for this data.
+
+```{r echo=FALSE, eval=FALSE}
+######################[ CHANGE ME ]##################################
+# This codelab assumes that the current working directory is where the Rmd file resides.
+setwd("/YOUR/PATH/TO/bigquery-examples/platinumGenomes")
+
+# Set the Google Cloud Platform project id under which these queries will run.
+project <- "YOUR-PROJECT-ID"
+#####################################################################
+
+### Install the bigrquery package.  The currently released version 0.3.0 does not yet
+### have the parameter to use Standard SQL instead of Legacy SQL, so we install from github.
+library(devtools)
+install_github('rstats-db/bigrquery')
+```
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(devtools)
+library(testthat)
+source_url("https://raw.githubusercontent.com/googlegenomics/codelabs/master/R/PlatinumGenomes-QC/rHelpers/setup.R")
+```
+
+### SNP Annotation
+
+Let's annotate variants in the [Illumina Platinum Genomes dataset](http://googlegenomics.readthedocs.io/en/latest/use_cases/discover_public_data/platinum_genomes.html)
+using Tute Genomics' table of annotations for hg19 SNPs.  Please see [Google Genomics Public Data](http://googlegenomics.readthedocs.io/en/latest/use_cases/discover_public_data/tute_genomics_public_data.html)
+for more detail about these annotations.
+
+First we'll count variants by exonic functional impact:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("./sql/sample-snps-by-exonic-function.sql",
+                                  project=project)
+```
+
+Results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(head(result), digits=6), type="html", include.rownames=F)
+```
+
+Visualized:
+```{r function, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
+ggplot(result, aes(y=variant_count, x=ExonicFunc)) +
+  geom_boxplot() +
+  scale_y_log10(labels=comma) +
+  ylab("Number of variants (log scale)") +
+  xlab("Exonic Function") +
+  ggtitle("Functional impact of Platinum Genomes SNPs") +
+  theme(axis.text.x=element_text(angle=50, hjust=1))
+```
+
+Next we'll identify rare variants across the cohort indicated as pathenogenic
+by [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/):
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("./sql/cohort-rare-pathenogenic-snps.sql",
+                                  project=project)
+```
+
+Results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result, digits=6), type="html", include.rownames=F)
+```
+
+And finally we'll re-run this analysis using only the variants for one specific individual:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
+result <- DisplayAndDispatchQuery("./sql/sample-rare-pathenogenic-snps.sql",
+                                  project=project)
+```
+
+Results:
+```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
+print(xtable(result, digits=6), type="html", include.rownames=F)
+```
