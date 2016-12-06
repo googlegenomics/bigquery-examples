@@ -32,7 +32,7 @@ The following query returns the proportion of variants that have been reported i
 ```{r echo=FALSE, eval=FALSE}
 ######################[ CHANGE ME ]##################################
 # This codelab assumes that the current working directory is where the Rmd file resides.
-setwd("/YOUR/PATH/TO/codelabs/R/PlatinumGenomes-QC")
+setwd("/YOUR/PATH/TO/bigquery-examples/1000genomes")
 
 # Set the Google Cloud Platform project id under which these queries will run.
 project <- "YOUR-PROJECT-ID"
