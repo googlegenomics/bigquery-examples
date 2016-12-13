@@ -11,6 +11,4 @@ The following sections demonstrate some interactive exploration within the 1,000
    * [Reproducing the output of vcfstats](./reproducing-vcfstats)
    * [Reproducing Allelic Frequencies](./reproducing-allelic-frequencies)
    * [Reproducing the Hardy-Weinberg Equilibrium test](./reproducing-hardy-weinberg-equilibrium)
- * Advanced Topics
-   * [JOINs 1,000 Genomes with Variant Annotation Databases](./annotation-joins)
 
