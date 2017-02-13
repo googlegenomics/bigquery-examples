@@ -75,6 +75,10 @@ wide_remapped$id_from_vcf = gsub("LP6005442-DNA_B09",
                                  "SS6004477",
                                  wide_remapped$id_from_vcf,
                                  fixed=TRUE)
+wide_remapped$id_from_vcf = gsub("LP6005441-DNA_A09",
+                                 "LP6005443-DNA_C01",
+                                 wide_remapped$id_from_vcf,
+                                 fixed=TRUE)
 
 write.csv(wide_remapped, "simons-sample-attributes.csv", row.names=FALSE, na="")
 
