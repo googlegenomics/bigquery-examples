@@ -1,5 +1,8 @@
+#standardSQL
+--
 -- Get the proportion of variants (per chromosome) in the dataset
 -- that have been reported in the dbSNP database (version 132).
+--
 WITH
   counts AS (
   SELECT

@@ -1,4 +1,7 @@
+#standardSQL
+  --
   -- Count SNPs by functional impact for each sample in Platinum Genomes.
+  --
 WITH
   sample_variants AS (
   SELECT

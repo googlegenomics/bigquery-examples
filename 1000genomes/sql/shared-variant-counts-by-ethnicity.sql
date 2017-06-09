@@ -1,3 +1,5 @@
+#standardSQL
+--
 -- We'd like to see how the members of each super population share variation.
 --
 -- Let's generate a table where the records indicate:
@@ -10,6 +12,7 @@
 --  how many variants are shared by all members of the super population?
 --
 -- The variants and counts are further partitioned by whether the variant is common or rare.
+--
 WITH
   population_counts AS (
   SELECT

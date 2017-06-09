@@ -35,8 +35,11 @@ The following query returns the proportion of variants that have been reported i
 
 
 ```
+#standardSQL
+--
 -- Get the proportion of variants (per chromosome) in the dataset
 -- that have been reported in the dbSNP database (version 132).
+--
 WITH
   counts AS (
   SELECT
@@ -61,36 +64,34 @@ ORDER BY
 ```
 
 We see the tabular results:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Fri Dec  2 16:55:21 2016 -->
-<table border=1>
-<tr> <th> reference_name </th> <th> num_dbsnp_variants </th> <th> num_variants </th> <th> frequency </th>  </tr>
-  <tr> <td> 2 </td> <td align="right"> 3301885 </td> <td align="right"> 3307592 </td> <td align="right"> 0.998275 </td> </tr>
-  <tr> <td> 1 </td> <td align="right"> 3001739 </td> <td align="right"> 3007196 </td> <td align="right"> 0.998185 </td> </tr>
-  <tr> <td> 3 </td> <td align="right"> 2758667 </td> <td align="right"> 2763454 </td> <td align="right"> 0.998268 </td> </tr>
-  <tr> <td> 4 </td> <td align="right"> 2731973 </td> <td align="right"> 2736765 </td> <td align="right"> 0.998249 </td> </tr>
-  <tr> <td> 5 </td> <td align="right"> 2525874 </td> <td align="right"> 2530217 </td> <td align="right"> 0.998284 </td> </tr>
-  <tr> <td> 6 </td> <td align="right"> 2420027 </td> <td align="right"> 2424425 </td> <td align="right"> 0.998186 </td> </tr>
-  <tr> <td> 7 </td> <td align="right"> 2211317 </td> <td align="right"> 2215231 </td> <td align="right"> 0.998233 </td> </tr>
-  <tr> <td> 8 </td> <td align="right"> 2180311 </td> <td align="right"> 2183839 </td> <td align="right"> 0.998384 </td> </tr>
-  <tr> <td> 11 </td> <td align="right"> 1891627 </td> <td align="right"> 1894908 </td> <td align="right"> 0.998269 </td> </tr>
-  <tr> <td> 10 </td> <td align="right"> 1879337 </td> <td align="right"> 1882663 </td> <td align="right"> 0.998233 </td> </tr>
-  <tr> <td> 12 </td> <td align="right"> 1824513 </td> <td align="right"> 1828006 </td> <td align="right"> 0.998089 </td> </tr>
-  <tr> <td> 9 </td> <td align="right"> 1649563 </td> <td align="right"> 1652388 </td> <td align="right"> 0.998290 </td> </tr>
-  <tr> <td> X </td> <td align="right"> 1482078 </td> <td align="right"> 1487477 </td> <td align="right"> 0.996370 </td> </tr>
-  <tr> <td> 13 </td> <td align="right"> 1370342 </td> <td align="right"> 1373000 </td> <td align="right"> 0.998064 </td> </tr>
-  <tr> <td> 14 </td> <td align="right"> 1255966 </td> <td align="right"> 1258254 </td> <td align="right"> 0.998182 </td> </tr>
-  <tr> <td> 16 </td> <td align="right"> 1208679 </td> <td align="right"> 1210619 </td> <td align="right"> 0.998398 </td> </tr>
-  <tr> <td> 15 </td> <td align="right"> 1128457 </td> <td align="right"> 1130554 </td> <td align="right"> 0.998145 </td> </tr>
-  <tr> <td> 18 </td> <td align="right"> 1086823 </td> <td align="right"> 1088820 </td> <td align="right"> 0.998166 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 1044658 </td> <td align="right"> 1046733 </td> <td align="right"> 0.998018 </td> </tr>
-  <tr> <td> 20 </td> <td align="right">  853680 </td> <td align="right">  855166 </td> <td align="right"> 0.998262 </td> </tr>
-  <tr> <td> 19 </td> <td align="right">  814343 </td> <td align="right">  816115 </td> <td align="right"> 0.997829 </td> </tr>
-  <tr> <td> 21 </td> <td align="right">  517920 </td> <td align="right">  518965 </td> <td align="right"> 0.997986 </td> </tr>
-  <tr> <td> 22 </td> <td align="right">  493717 </td> <td align="right">  494328 </td> <td align="right"> 0.998764 </td> </tr>
-  <tr> <td> Y </td> <td align="right">    3403 </td> <td align="right">   18728 </td> <td align="right"> 0.181707 </td> </tr>
-  <tr> <td> MT </td> <td align="right">     585 </td> <td align="right">    2834 </td> <td align="right"> 0.206422 </td> </tr>
-   </table>
+
+|reference_name | num_dbsnp_variants| num_variants| frequency|
+|:--------------|------------------:|------------:|---------:|
+|2              |            3301885|      3307592|  0.998275|
+|1              |            3001739|      3007196|  0.998185|
+|3              |            2758667|      2763454|  0.998268|
+|4              |            2731973|      2736765|  0.998249|
+|5              |            2525874|      2530217|  0.998284|
+|6              |            2420027|      2424425|  0.998186|
+|7              |            2211317|      2215231|  0.998233|
+|8              |            2180311|      2183839|  0.998384|
+|11             |            1891627|      1894908|  0.998269|
+|10             |            1879337|      1882663|  0.998233|
+|12             |            1824513|      1828006|  0.998089|
+|9              |            1649563|      1652388|  0.998290|
+|X              |            1482078|      1487477|  0.996370|
+|13             |            1370342|      1373000|  0.998064|
+|14             |            1255966|      1258254|  0.998182|
+|16             |            1208679|      1210619|  0.998398|
+|15             |            1128457|      1130554|  0.998145|
+|18             |            1086823|      1088820|  0.998166|
+|17             |            1044658|      1046733|  0.998018|
+|20             |             853680|       855166|  0.998262|
+|19             |             814343|       816115|  0.997829|
+|21             |             517920|       518965|  0.997986|
+|22             |             493717|       494328|  0.998764|
+|Y              |               3403|        18728|  0.181707|
+|MT             |                585|         2834|  0.206422|
 
 And visually:
 <img src="figure/dbSNP Variants-1.png" title="plot of chunk dbSNP Variants" alt="plot of chunk dbSNP Variants" style="display: block; margin: auto;" />
@@ -101,7 +102,10 @@ The 1000 Genomes variant data is stored in the [variants](https://bigquery.cloud
 Show variants within BRCA1:
 
 ```
+#standardSQL
+--
 -- Retrieve variant-level information for BRCA1 variants.
+--
 SELECT
   reference_name,
   start,
@@ -125,24 +129,25 @@ ORDER BY
 Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Fri Dec  2 16:55:25 2016 -->
-<table border=1>
-<tr> <th> reference_name </th> <th> start </th> <th> end </th> <th> reference_bases </th> <th> alts </th> <th> quality </th> <th> filter </th> <th> names </th> <th> vt </th> <th> num_samples </th>  </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196362 </td> <td align="right"> 41196363 </td> <td> C </td> <td> T </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> rs8176320,rs8176320 </td> <td> SNP </td> <td align="right"> 1092 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196367 </td> <td align="right"> 41196368 </td> <td> C </td> <td> T </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> rs184237074,rs184237074 </td> <td> SNP </td> <td align="right"> 1092 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196371 </td> <td align="right"> 41196372 </td> <td> T </td> <td> C </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> rs189382442,rs189382442 </td> <td> SNP </td> <td align="right"> 1092 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196402 </td> <td align="right"> 41196403 </td> <td> A </td> <td> G </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> rs182218567,rs182218567 </td> <td> SNP </td> <td align="right"> 1092 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196407 </td> <td align="right"> 41196408 </td> <td> G </td> <td> A </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> rs12516,rs12516 </td> <td> SNP </td> <td align="right"> 1092 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196581 </td> <td align="right"> 41196582 </td> <td> C </td> <td> T </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> rs111791349,rs111791349 </td> <td> SNP </td> <td align="right"> 1092 </td> </tr>
-   </table>
+
+|reference_name |    start|      end|reference_bases |alts | quality|filter |names                   |vt  | num_samples|
+|:--------------|--------:|--------:|:---------------|:----|-------:|:------|:-----------------------|:---|-----------:|
+|17             | 41196362| 41196363|C               |T    |     100|PASS   |rs8176320,rs8176320     |SNP |        1092|
+|17             | 41196367| 41196368|C               |T    |     100|PASS   |rs184237074,rs184237074 |SNP |        1092|
+|17             | 41196371| 41196372|T               |C    |     100|PASS   |rs189382442,rs189382442 |SNP |        1092|
+|17             | 41196402| 41196403|A               |G    |     100|PASS   |rs182218567,rs182218567 |SNP |        1092|
+|17             | 41196407| 41196408|G               |A    |     100|PASS   |rs12516,rs12516         |SNP |        1092|
+|17             | 41196581| 41196582|C               |T    |     100|PASS   |rs111791349,rs111791349 |SNP |        1092|
 One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
 
 ### Sample Data
 Show variants for a particular sample within BRCA1:
 
 ```
+#standardSQL
+--
 -- Retrieve sample-level information for BRCA1 variants.
+--
 SELECT
   reference_name,
   start,
@@ -171,17 +176,15 @@ ORDER BY
 Number of rows returned by this query: 879.
 
 Examing the first few rows, we see:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Fri Dec  2 16:55:27 2016 -->
-<table border=1>
-<tr> <th> reference_name </th> <th> start </th> <th> end </th> <th> reference_bases </th> <th> alts </th> <th> quality </th> <th> filters </th> <th> vt </th> <th> names </th> <th> call_set_name </th> <th> phaseset </th> <th> genotype </th> <th> ds </th> <th> likelihoods </th>  </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196362 </td> <td align="right"> 41196363 </td> <td> C </td> <td> T </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> SNP </td> <td> rs8176320,rs8176320 </td> <td> HG00100 </td> <td> * </td> <td> 0,0 </td> <td align="right"> 0.00 </td> <td> -0.03,-1.19,-5 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196367 </td> <td align="right"> 41196368 </td> <td> C </td> <td> T </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> SNP </td> <td> rs184237074,rs184237074 </td> <td> HG00100 </td> <td> * </td> <td> 0,0 </td> <td align="right"> 0.00 </td> <td> -0.02,-1.35,-5 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196371 </td> <td align="right"> 41196372 </td> <td> T </td> <td> C </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> SNP </td> <td> rs189382442,rs189382442 </td> <td> HG00100 </td> <td> * </td> <td> 0,0 </td> <td align="right"> 0.00 </td> <td> -0.01,-1.48,-5 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196402 </td> <td align="right"> 41196403 </td> <td> A </td> <td> G </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> SNP </td> <td> rs182218567,rs182218567 </td> <td> HG00100 </td> <td> * </td> <td> 0,0 </td> <td align="right"> 0.00 </td> <td> -0.03,-1.16,-5 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196407 </td> <td align="right"> 41196408 </td> <td> G </td> <td> A </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> SNP </td> <td> rs12516,rs12516 </td> <td> HG00100 </td> <td> * </td> <td> 1,0 </td> <td align="right"> 1.00 </td> <td> -5,-0,-2.53 </td> </tr>
-  <tr> <td> 17 </td> <td align="right"> 41196581 </td> <td align="right"> 41196582 </td> <td> C </td> <td> T </td> <td align="right"> 100.00 </td> <td> PASS </td> <td> SNP </td> <td> rs111791349,rs111791349 </td> <td> HG00100 </td> <td> * </td> <td> 0,0 </td> <td align="right"> 0.00 </td> <td> -0.18,-0.46,-2.43 </td> </tr>
-   </table>
+
+|reference_name |    start|      end|reference_bases |alts | quality|filters |vt  |names                   |call_set_name |phaseset |genotype | ds|likelihoods       |
+|:--------------|--------:|--------:|:---------------|:----|-------:|:-------|:---|:-----------------------|:-------------|:--------|:--------|--:|:-----------------|
+|17             | 41196362| 41196363|C               |T    |     100|PASS    |SNP |rs8176320,rs8176320     |HG00100       |*        |0,0      |  0|-0.03,-1.19,-5    |
+|17             | 41196367| 41196368|C               |T    |     100|PASS    |SNP |rs184237074,rs184237074 |HG00100       |*        |0,0      |  0|-0.02,-1.35,-5    |
+|17             | 41196371| 41196372|T               |C    |     100|PASS    |SNP |rs189382442,rs189382442 |HG00100       |*        |0,0      |  0|-0.01,-1.48,-5    |
+|17             | 41196402| 41196403|A               |G    |     100|PASS    |SNP |rs182218567,rs182218567 |HG00100       |*        |0,0      |  0|-0.03,-1.16,-5    |
+|17             | 41196407| 41196408|G               |A    |     100|PASS    |SNP |rs12516,rs12516         |HG00100       |*        |1,0      |  1|-5,-0,-2.53       |
+|17             | 41196581| 41196582|C               |T    |     100|PASS    |SNP |rs111791349,rs111791349 |HG00100       |*        |0,0      |  0|-0.18,-0.46,-2.43 |
 Note that this is equivalent to the [vcf-query](http://vcftools.sourceforge.net/perl_module.html#vcf-query) command
 ```
 vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 17:41196312-41277500 -c HG00100
@@ -191,7 +194,10 @@ vcf-query ALL.chr17.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz 
 Lastly, let us get an overview of how much variation is shared across the samples.
 
 ```
+#standardSQL
+--
 -- Count the number of variants shared by none, shared by one sample, two samples, etc...
+--
 SELECT
   num_samples_with_variant,
   COUNT(1) AS num_variants_shared_by_this_many_samples
@@ -217,29 +223,25 @@ ORDER BY
 Number of rows returned by this query: 1093.
 
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Fri Dec  2 16:55:30 2016 -->
-<table border=1>
-<tr> <th> num_samples_with_variant </th> <th> num_variants_shared_by_this_many_samples </th>  </tr>
-  <tr> <td align="right">   0 </td> <td align="right"> 154741 </td> </tr>
-  <tr> <td align="right">   1 </td> <td align="right"> 7966985 </td> </tr>
-  <tr> <td align="right">   2 </td> <td align="right"> 4070129 </td> </tr>
-  <tr> <td align="right">   3 </td> <td align="right"> 2538218 </td> </tr>
-  <tr> <td align="right">   4 </td> <td align="right"> 1776034 </td> </tr>
-  <tr> <td align="right">   5 </td> <td align="right"> 1327409 </td> </tr>
-   </table>
+
+| num_samples_with_variant| num_variants_shared_by_this_many_samples|
+|------------------------:|----------------------------------------:|
+|                        0|                                   154741|
+|                        1|                                  7966985|
+|                        2|                                  4070129|
+|                        3|                                  2538218|
+|                        4|                                  1776034|
+|                        5|                                  1327409|
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Fri Dec  2 16:55:30 2016 -->
-<table border=1>
-<tr> <th> num_samples_with_variant </th> <th> num_variants_shared_by_this_many_samples </th>  </tr>
-  <tr> <td align="right"> 1087 </td> <td align="right"> 16600 </td> </tr>
-  <tr> <td align="right"> 1088 </td> <td align="right"> 18551 </td> </tr>
-  <tr> <td align="right"> 1089 </td> <td align="right"> 22949 </td> </tr>
-  <tr> <td align="right"> 1090 </td> <td align="right"> 28745 </td> </tr>
-  <tr> <td align="right"> 1091 </td> <td align="right"> 40019 </td> </tr>
-  <tr> <td align="right"> 1092 </td> <td align="right"> 119373 </td> </tr>
-   </table>
+
+|     | num_samples_with_variant| num_variants_shared_by_this_many_samples|
+|:----|------------------------:|----------------------------------------:|
+|1088 |                     1087|                                    16600|
+|1089 |                     1088|                                    18551|
+|1090 |                     1089|                                    22949|
+|1091 |                     1090|                                    28745|
+|1092 |                     1091|                                    40019|
+|1093 |                     1092|                                   119373|
 And visually:
 <img src="figure/shared Variants-1.png" title="plot of chunk shared Variants" alt="plot of chunk shared Variants" style="display: block; margin: auto;" />
 At the left edge of the plot we see the data point for the number of variants for which all samples match the reference (X=0).  At the right edge of the plot we see the number of variants for which all samples do _not_ match the reference (X=1,092).  In between we see the counts of variants shared by X samples.
@@ -247,6 +249,8 @@ At the left edge of the plot we see the data point for the number of variants fo
 Now let us drill down by super population and common versus rare variants:
 
 ```
+#standardSQL
+--
 -- We'd like to see how the members of each super population share variation.
 --
 -- Let's generate a table where the records indicate:
@@ -259,6 +263,7 @@ Now let us drill down by super population and common versus rare variants:
 --  how many variants are shared by all members of the super population?
 --
 -- The variants and counts are further partitioned by whether the variant is common or rare.
+--
 WITH
   population_counts AS (
   SELECT
@@ -344,29 +349,25 @@ Number of rows returned by this query: 1439.
 
 
 First few rows:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Fri Dec  2 16:55:35 2016 -->
-<table border=1>
-<tr> <th> super_population </th> <th> super_population_count </th> <th> is_common_variant </th> <th> num_samples </th> <th> percent_samples </th> <th> num_variants_shared_by_this_many_samples </th>  </tr>
-  <tr> <td> AFR </td> <td align="right"> 246 </td> <td> FALSE </td> <td align="right">   1 </td> <td align="right"> 0.00 </td> <td align="right"> 3850133 </td> </tr>
-  <tr> <td> AFR </td> <td align="right"> 246 </td> <td> TRUE </td> <td align="right">   1 </td> <td align="right"> 0.00 </td> <td align="right"> 43369 </td> </tr>
-  <tr> <td> AMR </td> <td align="right"> 181 </td> <td> FALSE </td> <td align="right">   1 </td> <td align="right"> 0.01 </td> <td align="right"> 5307115 </td> </tr>
-  <tr> <td> AMR </td> <td align="right"> 181 </td> <td> TRUE </td> <td align="right">   1 </td> <td align="right"> 0.01 </td> <td align="right"> 9233 </td> </tr>
-  <tr> <td> EAS </td> <td align="right"> 286 </td> <td> FALSE </td> <td align="right">   1 </td> <td align="right"> 0.00 </td> <td align="right"> 2877481 </td> </tr>
-  <tr> <td> EAS </td> <td align="right"> 286 </td> <td> TRUE </td> <td align="right">   1 </td> <td align="right"> 0.00 </td> <td align="right"> 162776 </td> </tr>
-   </table>
+
+|super_population | super_population_count|is_common_variant | num_samples| percent_samples| num_variants_shared_by_this_many_samples|
+|:----------------|----------------------:|:-----------------|-----------:|---------------:|----------------------------------------:|
+|AFR              |                    246|FALSE             |           1|       0.0040650|                                  3850133|
+|AFR              |                    246|TRUE              |           1|       0.0040650|                                    43369|
+|AMR              |                    181|FALSE             |           1|       0.0055249|                                  5307115|
+|AMR              |                    181|TRUE              |           1|       0.0055249|                                     9233|
+|EAS              |                    286|FALSE             |           1|       0.0034965|                                  2877481|
+|EAS              |                    286|TRUE              |           1|       0.0034965|                                   162776|
 Last few rows:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Fri Dec  2 16:55:35 2016 -->
-<table border=1>
-<tr> <th> super_population </th> <th> super_population_count </th> <th> is_common_variant </th> <th> num_samples </th> <th> percent_samples </th> <th> num_variants_shared_by_this_many_samples </th>  </tr>
-  <tr> <td> EUR </td> <td align="right"> 379 </td> <td> TRUE </td> <td align="right"> 374 </td> <td align="right"> 0.99 </td> <td align="right"> 29660 </td> </tr>
-  <tr> <td> EUR </td> <td align="right"> 379 </td> <td> TRUE </td> <td align="right"> 375 </td> <td align="right"> 0.99 </td> <td align="right"> 32821 </td> </tr>
-  <tr> <td> EUR </td> <td align="right"> 379 </td> <td> TRUE </td> <td align="right"> 376 </td> <td align="right"> 0.99 </td> <td align="right"> 37886 </td> </tr>
-  <tr> <td> EUR </td> <td align="right"> 379 </td> <td> TRUE </td> <td align="right"> 377 </td> <td align="right"> 0.99 </td> <td align="right"> 42649 </td> </tr>
-  <tr> <td> EUR </td> <td align="right"> 379 </td> <td> TRUE </td> <td align="right"> 378 </td> <td align="right"> 1.00 </td> <td align="right"> 57257 </td> </tr>
-  <tr> <td> EUR </td> <td align="right"> 379 </td> <td> TRUE </td> <td align="right"> 379 </td> <td align="right"> 1.00 </td> <td align="right"> 320149 </td> </tr>
-   </table>
+
+|     |super_population | super_population_count|is_common_variant | num_samples| percent_samples| num_variants_shared_by_this_many_samples|
+|:----|:----------------|----------------------:|:-----------------|-----------:|---------------:|----------------------------------------:|
+|1434 |EUR              |                    379|TRUE              |         374|       0.9868074|                                    29660|
+|1435 |EUR              |                    379|TRUE              |         375|       0.9894459|                                    32821|
+|1436 |EUR              |                    379|TRUE              |         376|       0.9920844|                                    37886|
+|1437 |EUR              |                    379|TRUE              |         377|       0.9947230|                                    42649|
+|1438 |EUR              |                    379|TRUE              |         378|       0.9973615|                                    57257|
+|1439 |EUR              |                    379|TRUE              |         379|       1.0000000|                                   320149|
 
 <img src="figure/shared variants by pop-1.png" title="plot of chunk shared variants by pop" alt="plot of chunk shared variants by pop" style="display: block; margin: auto;" />
 The plot is interesting but a little too busy.  Let us break it down into

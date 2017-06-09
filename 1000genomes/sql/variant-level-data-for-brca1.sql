@@ -1,4 +1,7 @@
+#standardSQL
+--
 -- Retrieve variant-level information for BRCA1 variants.
+--
 SELECT
   reference_name,
   start,

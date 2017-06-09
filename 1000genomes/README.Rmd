@@ -45,15 +45,15 @@ install_github('rstats-db/bigrquery')
 ```
 
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-require(bigrquery)
-require(ggplot2)
-require(dplyr)
-require(xtable)
-require(testthat)
+library(bigrquery)
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(testthat)
 DisplayAndDispatchQuery <- function(queryUri) {
   querySql <- readChar(queryUri, nchars=1e6)
   cat(querySql)
-  query_exec(querySql, project, useLegacySql = FALSE)
+  query_exec(querySql, project, use_legacy_sql = FALSE)
 }
 ```
 
@@ -63,7 +63,7 @@ result <- DisplayAndDispatchQuery("./sql/ratio-of-dbsnp-variants-by-chromosome.s
 
 We see the tabular results:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(result, digits=6), type="html", include.rownames=F)
+knitr::kable(result, digits=6)
 ```
 
 And visually:
@@ -87,7 +87,7 @@ Number of rows returned by this query: `r nrow(result)`.
 
 Examing the first few rows, we see:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(head(result)), type="html", include.rownames=F)
+knitr::kable(head(result))
 ```
 One can add more columns to the SELECT statement corresponding to INFO fields of interest as desired.
 
@@ -100,7 +100,7 @@ Number of rows returned by this query: `r nrow(result)`.
 
 Examing the first few rows, we see:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(head(result)), type="html", include.rownames=F)
+knitr::kable(head(result))
 ```
 Note that this is equivalent to the [vcf-query](http://vcftools.sourceforge.net/perl_module.html#vcf-query) command
 ```
@@ -116,11 +116,11 @@ Number of rows returned by this query: `r nrow(result)`.
 
 Examing the first few rows, we see that a substantial number of variants are shared by **none** of the samples but a larger number of the variants are shared by only one sample:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(head(result)), type="html", include.rownames=F)
+knitr::kable(head(result))
 ```
 Looking at the last few rows in the result, we see that some variants are shared by all samples:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(tail(result)), type="html", include.rownames=F)
+knitr::kable(tail(result))
 ```
 And visually:
 ```{r shared Variants, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}
@@ -158,11 +158,11 @@ result$is_common_variant <- as.logical(result$is_common_variant)
 ```
 First few rows:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(head(result)), type="html", include.rownames=F)
+knitr::kable(head(result))
 ```
 Last few rows:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(tail(result)), type="html", include.rownames=F)
+knitr::kable(tail(result))
 ```
 
 ```{r shared variants by pop, echo=FALSE, message=FALSE, warning=FALSE, comment=NA, fig.align="center", fig.width=12, fig.height=8}

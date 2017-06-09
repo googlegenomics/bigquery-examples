@@ -28,9 +28,16 @@ install_github('rstats-db/bigrquery')
 ```
 
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
-library(devtools)
+library(bigrquery)
+library(ggplot2)
+library(scales)
+library(dplyr)
 library(testthat)
-source_url("https://raw.githubusercontent.com/googlegenomics/codelabs/master/R/PlatinumGenomes-QC/rHelpers/setup.R")
+DisplayAndDispatchQuery <- function(queryUri) {
+  querySql <- readChar(queryUri, nchars=1e6)
+  cat(querySql)
+  query_exec(querySql, project, use_legacy_sql = FALSE)
+}
 ```
 
 ### SNP Annotation
@@ -41,13 +48,12 @@ for more detail about these annotations.
 
 First we'll count variants by exonic functional impact:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
-result <- DisplayAndDispatchQuery("./sql/sample-snps-by-exonic-function.sql",
-                                  project=project)
+result <- DisplayAndDispatchQuery("./sql/sample-snps-by-exonic-function.sql")
 ```
 
 Results:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(head(result), digits=6), type="html", include.rownames=F)
+knitr::kable(head(result), digits=6)
 ```
 
 Visualized:
@@ -64,22 +70,20 @@ ggplot(result, aes(y=variant_count, x=ExonicFunc)) +
 Next we'll identify rare variants across the cohort indicated as pathenogenic
 by [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/):
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
-result <- DisplayAndDispatchQuery("./sql/cohort-rare-pathenogenic-snps.sql",
-                                  project=project)
+result <- DisplayAndDispatchQuery("./sql/cohort-rare-pathenogenic-snps.sql")
 ```
 
 Results:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(result, digits=6), type="html", include.rownames=F)
+knitr::kable(result, digits=6)
 ```
 
 And finally we'll re-run this analysis using only the variants for one specific individual:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, cache=FALSE}
-result <- DisplayAndDispatchQuery("./sql/sample-rare-pathenogenic-snps.sql",
-                                  project=project)
+result <- DisplayAndDispatchQuery("./sql/sample-rare-pathenogenic-snps.sql")
 ```
 
 Results:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, comment=NA, results="asis"}
-print(xtable(result, digits=6), type="html", include.rownames=F)
+knitr::kable(result, digits=6)
 ```
