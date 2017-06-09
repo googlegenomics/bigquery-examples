@@ -44,18 +44,18 @@ install_github('rstats-db/bigrquery')
 ```{r init, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
 library(bigrquery)
 library(ggplot2)
+library(scales)
 library(dplyr)
-library(xtable)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 sample_info <- read.csv("http://storage.googleapis.com/genomics-public-data/1000-genomes/other/sample_info/sample_info.csv")
 phase3 <- query_exec(
   "SELECT * FROM `google.com:biggene.1000genomes_analysis_results.phase3_metrics`",
-  project, useLegacySql = FALSE)
+  project, use_legacy_sql = FALSE)
 phase1 <- query_exec(
   "SELECT * FROM `google.com:biggene.1000genomes_analysis_results.phase1_metrics`",
-  project, useLegacySql = FALSE)
+  project, use_legacy_sql = FALSE)
 results <- inner_join(sample_info,
                       rbind_list(mutate(phase3, dataset = "phase3"),
                                  mutate(phase1, dataset = "phase1")),

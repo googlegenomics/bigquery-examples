@@ -1,6 +1,9 @@
+#standardSQL
+  --
   -- Return all SNPs from the Platinum Genomes cohort that are:
   --   annotated as 'pathogenic' in ClinVar
   --   with observed population frequency less than 1%
+  --
 WITH
   cohort_variants AS (
   SELECT

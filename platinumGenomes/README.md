@@ -25,7 +25,10 @@ for more detail about these annotations.
 First we'll count variants by exonic functional impact:
 
 ```
+#standardSQL
+  --
   -- Count SNPs by functional impact for each sample in Platinum Genomes.
+  --
 WITH
   sample_variants AS (
   SELECT
@@ -67,17 +70,15 @@ ORDER BY
 ```
 
 Results:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Mon Dec  5 14:37:49 2016 -->
-<table border=1>
-<tr> <th> call_set_name </th> <th> ExonicFunc </th> <th> variant_count </th>  </tr>
-  <tr> <td> NA12877 </td> <td> missense </td> <td align="right">   13377 </td> </tr>
-  <tr> <td> NA12877 </td> <td> nonsense </td> <td align="right">     116 </td> </tr>
-  <tr> <td> NA12877 </td> <td> silent </td> <td align="right">   13313 </td> </tr>
-  <tr> <td> NA12877 </td> <td> stoploss </td> <td align="right">      18 </td> </tr>
-  <tr> <td> NA12878 </td> <td> missense </td> <td align="right">   13399 </td> </tr>
-  <tr> <td> NA12878 </td> <td> nonsense </td> <td align="right">     115 </td> </tr>
-   </table>
+
+|call_set_name |ExonicFunc | variant_count|
+|:-------------|:----------|-------------:|
+|NA12877       |missense   |         13377|
+|NA12877       |nonsense   |           116|
+|NA12877       |silent     |         13313|
+|NA12877       |stoploss   |            18|
+|NA12878       |missense   |         13399|
+|NA12878       |nonsense   |           115|
 
 Visualized:
 <img src="figure/function-1.png" title="plot of chunk function" alt="plot of chunk function" style="display: block; margin: auto;" />
@@ -86,9 +87,12 @@ Next we'll identify rare variants across the cohort indicated as pathenogenic
 by [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/):
 
 ```
+#standardSQL
+  --
   -- Return all SNPs from the Platinum Genomes cohort that are:
   --   annotated as 'pathogenic' in ClinVar
   --   with observed population frequency less than 1%
+  --
 WITH
   cohort_variants AS (
   SELECT
@@ -137,29 +141,30 @@ ORDER BY
 ```
 
 Results:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Mon Dec  5 14:37:54 2016 -->
-<table border=1>
-<tr> <th> Chr </th> <th> Start </th> <th> Ref </th> <th> Alt </th> <th> Func </th> <th> Gene </th> <th> PopFreqMax </th> <th> ExonicFunc </th> <th> ClinVar_SIG </th> <th> ClinVar_DIS </th>  </tr>
-  <tr> <td> 1 </td> <td align="right"> 155205633 </td> <td> T </td> <td> C </td> <td> exonic </td> <td> GBA </td> <td align="right"> 0.002800 </td> <td> missense </td> <td> pathogenic|other|other|pathogenic </td> <td> Gaucher's_disease,_type_1|Parkinson_disease,_late-onset,_susceptibility_to|Dementia,_Lewy_body,_susceptibility_to|not_provided;Gaucher_disease </td> </tr>
-  <tr> <td> 11 </td> <td align="right"> 6638384 </td> <td> C </td> <td> T </td> <td> splicing </td> <td> TPP1 </td> <td align="right"> 0.001000 </td> <td>  </td> <td> pathogenic|pathogenic </td> <td> Ceroid_lipofuscinosis,_neuronal,_2|Spinocerebellar_ataxia,_autosomal_recessive_7 </td> </tr>
-  <tr> <td> 12 </td> <td align="right"> 103234251 </td> <td> T </td> <td> C </td> <td> exonic </td> <td> PAH </td> <td align="right"> 0.001000 </td> <td> missense </td> <td> pathogenic|pathogenic </td> <td> Hyperphenylalaninemia,_non-pku|not_provided </td> </tr>
-  <tr> <td> 15 </td> <td align="right"> 89870431 </td> <td> C </td> <td> T </td> <td> exonic </td> <td> POLG </td> <td align="right"> 0.001400 </td> <td> missense </td> <td> pathogenic|pathogenic|pathogenic|pathogenic </td> <td> Cerebellar_ataxia_infantile_with_progressive_external_ophthalmoplegia|Sensory_ataxic_neuropathy,_dysarthria,_and_ophthalmoparesis|Myoclonic_epilepsy_myopathy_sensory_ataxia|Progressive_sclerosing_poliodystrophy </td> </tr>
-  <tr> <td> 16 </td> <td align="right"> 29825021 </td> <td> C </td> <td> T </td> <td> exonic </td> <td> PRRT2 </td> <td align="right"> 0.010000 </td> <td> missense </td> <td> pathogenic </td> <td> Dystonia_10;not_specified|not_provided </td> </tr>
-  <tr> <td> 6 </td> <td align="right"> 161127500 </td> <td> A </td> <td> G </td> <td> exonic </td> <td> PLG </td> <td align="right"> 0.008900 </td> <td> missense </td> <td> pathogenic </td> <td> PLASMINOGEN_DEFICIENCY,_TYPE_I </td> </tr>
-  <tr> <td> 7 </td> <td align="right"> 87060843 </td> <td> C </td> <td> T </td> <td> exonic </td> <td> ABCB4 </td> <td align="right"> 0.010000 </td> <td> missense </td> <td> pathogenic|pathogenic </td> <td> Cholestasis,_intrahepatic,_of_pregnancy_3|Cholecystitis </td> </tr>
-  <tr> <td> 7 </td> <td align="right"> 117227791 </td> <td> G </td> <td> A </td> <td> splicing </td> <td> CFTR </td> <td align="right"> 0.001400 </td> <td>  </td> <td> pathogenic </td> <td> Cystic_fibrosis </td> </tr>
-  <tr> <td> 7 </td> <td align="right"> 143048770 </td> <td> C </td> <td> T </td> <td> exonic </td> <td> CLCN1 </td> <td align="right"> 0.008000 </td> <td> nonsense </td> <td> pathogenic|pathogenic|pathogenic </td> <td> Congenital_myotonia,_autosomal_recessive_form|Congenital_myotonia,_autosomal_dominant_form|Myotonia_congenita </td> </tr>
-  <tr> <td> 7 </td> <td align="right"> 150884002 </td> <td> C </td> <td> T </td> <td> exonic </td> <td> ASB10 </td> <td align="right"> 0.004000 </td> <td> missense </td> <td> pathogenic </td> <td> Glaucoma_1,_open_angle,_F </td> </tr>
-  <tr> <td> 8 </td> <td align="right"> 106431419 </td> <td> A </td> <td> G </td> <td> exonic </td> <td> ZFPM2 </td> <td align="right"> 0.006000 </td> <td> missense </td> <td> pathogenic|pathogenic </td> <td> Tetralogy_of_Fallot|Double_outlet_right_ventricle </td> </tr>
-   </table>
+
+|Chr |     Start|Ref |Alt |Func     |Gene  | PopFreqMax|ExonicFunc |ClinVar_SIG                                                |ClinVar_DIS                                                                                                                                                                                                                       |
+|:---|---------:|:---|:---|:--------|:-----|----------:|:----------|:----------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|1   | 155205633|T   |C   |exonic   |GBA   |     0.0028|missense   |pathogenic&#124;other&#124;other&#124;pathogenic           |Gaucher's_disease,_type_1&#124;Parkinson_disease,_late-onset,_susceptibility_to&#124;Dementia,_Lewy_body,_susceptibility_to&#124;not_provided;Gaucher_disease                                                                     |
+|11  |   6638384|C   |T   |splicing |TPP1  |     0.0010|NA         |pathogenic&#124;pathogenic                                 |Ceroid_lipofuscinosis,_neuronal,_2&#124;Spinocerebellar_ataxia,_autosomal_recessive_7                                                                                                                                             |
+|12  | 103234251|T   |C   |exonic   |PAH   |     0.0010|missense   |pathogenic&#124;pathogenic                                 |Hyperphenylalaninemia,_non-pku&#124;not_provided                                                                                                                                                                                  |
+|15  |  89870431|C   |T   |exonic   |POLG  |     0.0014|missense   |pathogenic&#124;pathogenic&#124;pathogenic&#124;pathogenic |Cerebellar_ataxia_infantile_with_progressive_external_ophthalmoplegia&#124;Sensory_ataxic_neuropathy,_dysarthria,_and_ophthalmoparesis&#124;Myoclonic_epilepsy_myopathy_sensory_ataxia&#124;Progressive_sclerosing_poliodystrophy |
+|16  |  29825021|C   |T   |exonic   |PRRT2 |     0.0100|missense   |pathogenic                                                 |Dystonia_10;not_specified&#124;not_provided                                                                                                                                                                                       |
+|6   | 161127500|A   |G   |exonic   |PLG   |     0.0089|missense   |pathogenic                                                 |PLASMINOGEN_DEFICIENCY,_TYPE_I                                                                                                                                                                                                    |
+|7   |  87060843|C   |T   |exonic   |ABCB4 |     0.0100|missense   |pathogenic&#124;pathogenic                                 |Cholestasis,_intrahepatic,_of_pregnancy_3&#124;Cholecystitis                                                                                                                                                                      |
+|7   | 117227791|G   |A   |splicing |CFTR  |     0.0014|NA         |pathogenic                                                 |Cystic_fibrosis                                                                                                                                                                                                                   |
+|7   | 143048770|C   |T   |exonic   |CLCN1 |     0.0080|nonsense   |pathogenic&#124;pathogenic&#124;pathogenic                 |Congenital_myotonia,_autosomal_recessive_form&#124;Congenital_myotonia,_autosomal_dominant_form&#124;Myotonia_congenita                                                                                                           |
+|7   | 150884002|C   |T   |exonic   |ASB10 |     0.0040|missense   |pathogenic                                                 |Glaucoma_1,_open_angle,_F                                                                                                                                                                                                         |
+|8   | 106431419|A   |G   |exonic   |ZFPM2 |     0.0060|missense   |pathogenic&#124;pathogenic                                 |Tetralogy_of_Fallot&#124;Double_outlet_right_ventricle                                                                                                                                                                            |
 
 And finally we'll re-run this analysis using only the variants for one specific individual:
 
 ```
+#standardSQL
+  --
   -- Return SNPs for sample NA12878 that are:
   --   annotated as 'pathogenic' in ClinVar
   --   with observed population frequency less than 1%
+  --
 WITH
   sample_variants AS (
   SELECT
@@ -212,11 +217,9 @@ ORDER BY
 ```
 
 Results:
-<!-- html table generated in R 3.2.3 by xtable 1.8-2 package -->
-<!-- Mon Dec  5 14:37:59 2016 -->
-<table border=1>
-<tr> <th> call_set_name </th> <th> Chr </th> <th> Start </th> <th> Ref </th> <th> Alt </th> <th> Func </th> <th> Gene </th> <th> PopFreqMax </th> <th> ExonicFunc </th> <th> ClinVar_SIG </th> <th> ClinVar_DIS </th>  </tr>
-  <tr> <td> NA12878 </td> <td> 11 </td> <td align="right"> 6638384 </td> <td> C </td> <td> T </td> <td> splicing </td> <td> TPP1 </td> <td align="right"> 0.001000 </td> <td>  </td> <td> pathogenic|pathogenic </td> <td> Ceroid_lipofuscinosis,_neuronal,_2|Spinocerebellar_ataxia,_autosomal_recessive_7 </td> </tr>
-  <tr> <td> NA12878 </td> <td> 12 </td> <td align="right"> 103234251 </td> <td> T </td> <td> C </td> <td> exonic </td> <td> PAH </td> <td align="right"> 0.001000 </td> <td> missense </td> <td> pathogenic|pathogenic </td> <td> Hyperphenylalaninemia,_non-pku|not_provided </td> </tr>
-  <tr> <td> NA12878 </td> <td> 6 </td> <td align="right"> 161127500 </td> <td> A </td> <td> G </td> <td> exonic </td> <td> PLG </td> <td align="right"> 0.008900 </td> <td> missense </td> <td> pathogenic </td> <td> PLASMINOGEN_DEFICIENCY,_TYPE_I </td> </tr>
-   </table>
+
+|call_set_name |Chr |     Start|Ref |Alt |Func     |Gene | PopFreqMax|ExonicFunc |ClinVar_SIG                |ClinVar_DIS                                                                           |
+|:-------------|:---|---------:|:---|:---|:--------|:----|----------:|:----------|:--------------------------|:-------------------------------------------------------------------------------------|
+|NA12878       |11  |   6638384|C   |T   |splicing |TPP1 |     0.0010|NA         |pathogenic&#124;pathogenic |Ceroid_lipofuscinosis,_neuronal,_2&#124;Spinocerebellar_ataxia,_autosomal_recessive_7 |
+|NA12878       |12  | 103234251|T   |C   |exonic   |PAH  |     0.0010|missense   |pathogenic&#124;pathogenic |Hyperphenylalaninemia,_non-pku&#124;not_provided                                      |
+|NA12878       |6   | 161127500|A   |G   |exonic   |PLG  |     0.0089|missense   |pathogenic                 |PLASMINOGEN_DEFICIENCY,_TYPE_I                                                        |

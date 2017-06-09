@@ -52,6 +52,8 @@ Note that it was written to specifically handle the multi-allelic data found in 
 
 
 ```
+#standardSQL
+--
 -- Compute several common metrics on multi-allelic data.  This will work on data
 -- in either "genome call" format or in "multi-sample variants" format since hom_RR_count
 -- is not used in any of the ratios computed.
@@ -61,7 +63,6 @@ Note that it was written to specifically handle the multi-allelic data found in 
 -- Genomes phase 1 variants.
 -- http://googlegenomics.readthedocs.io/en/latest/use_cases/discover_public_data/1000_genomes.html
 --
-
 WITH calls AS (
   -- For multi-allelic data we FLATTEN by both alternate_bases and call which yields the
   -- cross product of those values.  We provide the alt_num value so that queries downstream

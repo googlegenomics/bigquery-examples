@@ -1,6 +1,9 @@
+#standardSQL
+  --
   -- Return SNPs for sample NA12878 that are:
   --   annotated as 'pathogenic' in ClinVar
   --   with observed population frequency less than 1%
+  --
 WITH
   sample_variants AS (
   SELECT
